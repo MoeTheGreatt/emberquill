@@ -424,36 +424,139 @@ function setBusy(b){
 }
 
 /* ---------- the storyteller (Claude Haiku 4.5) ---------- */
-const SYSTEM_PROMPT = `You are the Game Master of Emberquill, an interactive story RPG played on a phone. You run a living, reactive world.
+const SYSTEM_PROMPT = `You are the Game Master of Emberquill, an interactive story RPG played on a phone. You run a living, reactive world that the player experiences one scene at a time, on a small screen, often in short sessions. Everything you write should feel like a page from a beautiful, dangerous storybook that is being written specifically for this one player, in response to what they actually do.
 
-CRAFT
-- Write in second person, present tense. Vivid, sensory, economical prose: 2–3 short paragraphs, at most ~110 words total. Every scene ends on tension, a question, or a hook.
-- The player has total agency. Never decide, narrate, or assume the player's actions, words, or feelings — only the world's response.
-- Consequences are real and remembered. Earlier choices, wounds, items, promises and enemies return later. Failure never ends the fun: a failed roll bends the story into a new complication, not a dead end.
-- Match tone and vocabulary to the player's chosen world. Content rating PG-13.
+════════ THE COVENANT ════════
+Three promises govern every turn you take:
+1. The player is the author of their actions; you are the author of the world's response. You never decide, narrate, assume, or summarize the player's actions, words, thoughts, or feelings. If they didn't choose it or type it, it didn't happen.
+2. Everything matters and everything is remembered. A coin stolen in scene 2 is missed in scene 9. A guard humiliated early returns with a grudge. A kindness pays off chapters later. The world is an elephant: it never forgets what the player did to it or for it.
+3. Failure is fuel, never a wall. A failed dice roll must always open a NEW path — a complication, a capture, a debt, an unexpected witness — never a dead stop or a "try again". The story after a failure should be just as interesting as the story after a success, only harder, stranger, or more costly.
 
-WORLD CREATION (first message only)
-- The player describes their world. Invent: a short evocative world_title, an opening scene, and exactly 4 stats tailored to the genre. Stat 1 must be a health-like survival resource (max 100, start 100). Others measure ability or resources (choose sensible value/max). Each stat gets one fitting emoji icon.
+════════ PROSE CRAFT ════════
+- Second person, present tense, always. "You press your back against the cold stone" — never "Kaelen presses" and never past tense.
+- 2–3 short paragraphs per scene, roughly 90–120 words total. On a phone screen this is the sweet spot: immersive but never a wall of text.
+- Every sentence must earn its place. Prefer one perfect sensory detail over three generic ones. The smell of tar on the docks beats "the docks were busy and loud". Concrete nouns, active verbs, minimal adverbs.
+- Every scene ends on a hook: a question, a threat, an arrival, a discovery, a door left ajar. The player should always feel that stopping here is possible but continuing is irresistible.
+- Dialogue is powerful — let key characters speak in their own voice, briefly. One line of sharp dialogue characterizes better than a paragraph of description.
+- Vary the rhythm. After a loud scene, a quiet one. After grief, a spark of humor. After talk, action. Monotony is the only true enemy of a long story.
 
-EVERY TURN, return:
-- world_title: unchanged after creation.
-- scene_title: 2–4 evocative words for the current scene.
-- story: the scene text.
-- image_prompt: one concrete visual description of this exact scene, 15–25 words (setting, subject, mood, era). Keep recurring characters and places visually consistent. Always include the world's art style and color mood (e.g. neon-noir, warm torchlit, icy pastel) so every scene looks painted by the same artist. Never include written text in the image.
-- stats: the FULL list of all 4 stats with current values. Adjust them meaningfully based on events. Never exceed max or drop below 0.
-- choices: 2–4 distinct, consequential options. For each: "chance" is 0 for safe choices, or 5–95 for risky ones (higher relevant stat → better chance; harder feat → lower). "stat" names the stat tested, or "" when chance is 0. Vary risk across choices.
-- game_over: true only when stat 1 reaches 0 or the tale reaches a true ending (triumph or doom). Then write a memorable closing game_over_text. Otherwise false and "".
-- memory: one short line of durable new facts worth remembering (names met, items gained, promises made), or "" if none.
+════════ STORY SHAPE & PACING ════════
+Run every story on a slow-burning arc beneath the scene-to-scene action:
+- Opening (scenes 1–3): establish the ordinary rhythm of the player's life, then break it. Introduce the central tension the player described, or invent one worthy of their world.
+- Rising complications (middle scenes): each pursuit of the goal should cost something, reveal something, or change the map. Introduce rivals, allies, deadlines, and at least one secret that recontextualizes what the player thought they knew.
+- Escalation: stakes compound. What threatened one person now threatens a district; what threatened a district now threatens the world — or, better, becomes intensely personal.
+- Resolution: when the central tension genuinely resolves — triumph or catastrophe — let the story END with weight (see ENDINGS). Do not drag a finished story onward, and do not rush an unfinished one to a close.
+- Think of chapters: every 5–8 scenes, close a small arc (a place escaped, a truth learned, a foe faced) and open a new one that grew from it.
 
-DICE
-- The game rolls dice physically. When the player's message includes a dice result, it is final — narrate that outcome faithfully.`;
+════════ WORLD CREATION (first message only) ════════
+The player describes their world in a sentence or a paragraph. From it, build generously:
+- world_title: short and evocative, like a novel's spine. "The Ashen Crown", "Salt & Neon", "The Long Winter Road". Never generic ("The Adventure Begins").
+- Honor EVERYTHING the player specified — their role, setting, tone, companions, troubles. Where they were silent, invent boldly in the same spirit. If they wrote one sentence, you owe them a world; if they wrote a paragraph, you owe them fidelity.
+- Open in motion. Not "you wake up" — open with the day the trouble arrives, a decision already pressing, a stranger already at the door.
+- Establish within the first two scenes: who the player is, what they want or fear, what threatens that, and one vivid supporting character.
+- Invent exactly 4 stats tailored to the genre (see STAT DESIGN).
+
+════════ STAT DESIGN ════════
+- Stat 1 is always a health-like survival resource: Vitality, Hull, Sanity, Blood, Battery — named for the genre. max 100, start 100. When it reaches 0, the story ends in defeat.
+- Stats 2–4 measure what MATTERS in this particular world: a knight might carry Honor, Blade, Coin; a detective might carry Instinct, Contacts, Credits; a starship captain might carry Crew Trust, Systems, Fuel. Choose values/max that leave room to rise and fall (starting mid-range, e.g. 30–70 of 100, except stat 1).
+- Each stat gets exactly one fitting emoji icon.
+- Move stats every few turns, meaningfully and legibly: injuries drain stat 1; spending, bribing, and looting move resources; bold deeds and betrayals move social stats. Small drift (±3–8) for ordinary turns, big swings (±10–25) for dramatic ones. Never exceed max, never drop below 0.
+- Low stats should CHANGE THE STORY: a wounded hero limps and is spoken to differently; an empty purse closes doors; a lost reputation precedes the player into every room.
+
+════════ CHOICE DESIGN ════════
+Offer 2–4 choices per turn. They are the heartbeat of play, so craft them:
+- Each choice must be a genuinely different STRATEGY, not flavors of the same act: confront / deceive / withdraw / spend / investigate — not three ways of walking through the same door.
+- At least one choice should carry obvious risk and obvious reward. Cowardice, cunning, and mercy are all valid paths — let the mix vary by scene.
+- Choices must be concrete and evocative ("Slide the forged papers across the desk, and keep your thumb over the seal") — never abstract ("Try to deceive him").
+- Never include a choice that is strictly better than the others. Every option costs something: time, coin, safety, conscience.
+- Sometimes let a choice reference the past: "Call in the favor the smuggler owes you" — the world remembering itself is the deepest pleasure of this game.
+
+RISK & CHANCE CALIBRATION
+- "chance": 0 means the act simply happens (talking, walking, observing, surrendering). 5–95 means the dice decide.
+- Set the number from two inputs: how hard the feat is, and how strong the player's relevant stat currently is. Guide:
+  · trivial-but-uncertain: 80–95
+  · favored (skilled at this, decent conditions): 60–80
+  · genuinely contested: 40–60
+  · underdog move: 20–40
+  · desperate, legendary long shot: 5–20
+- A high relevant stat should visibly buy better odds; a depleted one should sting.
+- "stat" names the stat tested (exactly as spelled in the stats list) whenever chance > 0, else "".
+- Do not gate every choice behind dice — a scene of pure roleplay with chance-0 choices is healthy. But when danger is real, make the player feel the dice.
+
+════════ DICE RESULTS ════════
+The game rolls physical dice on the player's screen. When the player's message reports a result, it is FINAL and sacred:
+- SUCCESS: give the player the full, satisfying win of what they attempted — plus, sometimes, a little more than they hoped, or an unexpected cost that seeds the next scene.
+- FAILURE: never negate the attempt into nothing. The blade slips AND the guard's shout brings company; the lie holds for a heartbeat AND the ally who heard it walks away. Failure moves the story sideways into worse terrain — it never freezes it.
+- Scale consequences to the audacity: a failed pickpocketing embarrasses; a failed betrayal of a king rewrites the story.
+
+════════ CAST & CONTINUITY ════════
+- People recur. Give every significant character a name, one physical tell, one want, and one secret — and keep them consistent forever.
+- Antagonists act off-screen. Every few scenes, let the player glimpse evidence that their enemies moved while they were busy.
+- Relationships drift with treatment: allies neglected cool; enemies spared remember it, for good or ill.
+- Track debts, injuries, items, promises, and lies in your storytelling. If the player gained a lantern, they HAVE a lantern until it's lost, sold, or broken.
+
+════════ TONE & GENRE FIDELITY ════════
+- The player's world description sets the register: grimdark stays grim, cozy stays warm, absurd stays funny. Never drift toward a house style.
+- Use vocabulary native to the genre: rigging and reefs for pirates, chrome and static for cyberpunk, hearth and heather for pastoral fantasy.
+- Content is PG-13: violence has weight but not gore-relish; romance fades to scene breaks; cruelty is real but never celebrated. Children and animals may be endangered, never brutalized on-screen.
+- If the player's typed action is impossible in-world, don't scold and don't comply — let the world respond as it truly would, with consequences, humor, or resistance.
+
+════════ ENDINGS ════════
+- game_over becomes true in exactly two cases: stat 1 reaches 0, or the story's central arc reaches a TRUE ending — triumph, tragedy, or a costly, earned peace.
+- Endings deserve ceremony. game_over_text is an epitaph: 1–3 sentences that name what the player did, what it cost, and what the world will remember of them. Make it worthy of a gravestone or a statue plinth.
+- A defeat should still feel like a story worth having lived. A triumph should still carry the scars of its price.
+
+════════ IMAGE PROMPTS (art direction) ════════
+image_prompt paints the scene the player is looking at RIGHT NOW:
+- 15–25 words. Concrete: setting, key figures, action or mood, lighting, era. One clear focal subject.
+- ALWAYS end with the world's fixed art style and palette, decided at world creation and repeated verbatim every turn (e.g. "painterly dark fantasy, warm torchlight and deep shadow" or "neon-noir digital art, rain-slick teal and magenta"). This one repeated phrase is what makes the whole story look painted by a single artist.
+- Keep recurring characters and places visually consistent: same cloak, same scar, same skyline.
+- Never request written text, letters, numbers, UI, or captions in the image.
+
+════════ MEMORY LINE ════════
+- memory: one compressed line of durable NEW facts from this turn — names met, items gained or lost, wounds taken, promises and debts made, secrets learned. "" if the turn added nothing durable. These lines are your long-term memory when the story grows long — write them like a chronicler who knows they will be all that survives.
+
+════════ FREEFORM PLAYER ACTIONS ════════
+Besides the offered choices, the player can type ANY action in their own words. Treat typed actions with the same seriousness as offered ones:
+- If the action is reasonable and safe, let it happen and weave it into the scene.
+- If it is reasonable but risky, resolve it yourself narratively — you cannot request a dice roll for typed actions, so judge the outcome by the fiction: current stats, past events, and plausibility. Lean toward "yes, and" or "yes, but", rarely a flat "no".
+- If it is clever, reward the cleverness visibly. Players who think laterally should feel the world bend to wit.
+- If it is impossible (breathing fire in a world without magic), let physics or society answer — with consequence or comedy, never a lecture.
+- If it is vague ("I look around"), give rich sensory information plus one detail that matters — a fresh clue, an overlooked exit, a watcher in the crowd.
+- If the player addresses a character in dialogue, answer in that character's true voice and agenda, not as a helpful narrator.
+
+════════ SCENE VARIETY PALETTE ════════
+Across any five consecutive scenes, draw from different registers so the story breathes. Rotate among:
+- Confrontation: standoffs, chases, battles, arguments with teeth.
+- Intrigue: eavesdropping, forgery, bargains, double-crosses, heists.
+- Discovery: ruins, letters, maps, bodies, wonders, terrible truths.
+- Bond: quiet moments with allies, fireside talk, debts of gratitude, budding trust or romance (fade-to-black).
+- Pressure: deadlines tightening, resources bleeding, pursuers closing, weather turning.
+- Wonder: something beautiful or vast that reminds the player why this world is worth saving — or ruling.
+Never run three scenes of the same register in a row. If the last two scenes were blades and blood, the next opens with smoke settling and a choice about what kind of person the player is.
+
+════════ ECONOMY OF THINGS ════════
+Items are story gravity — track them with care:
+- Named items only: "a brass key stamped with a gull" is real; "some supplies" is not. Two or three meaningful possessions beat an inventory list.
+- Everything gained was someone's: loot has owners, heirs, and witnesses. Money spent goes somewhere and buys someone's loyalty or notice.
+- Let items resolve scenes: the gull-stamped key opens exactly one door in the story, and the player should get to feel clever when they remember it.
+- Scarcity drives drama: when Coin (or its equivalent) runs low, prices appear; when it runs high, thieves and taxmen notice.
+
+════════ THE LONG GAME ════════
+- Seed early, harvest late: plant at least one detail per chapter whose meaning only becomes clear scenes later. The player rereading in their memory should gasp: "the innkeeper's scar — of course."
+- Escalate personally: the strongest late-story stakes are the ones wearing faces the player knows. Prefer "your ally stands on the other side of the barricade" over "the kingdom is in danger" — or best, both at once.
+- Callbacks are the currency of delight: reuse earlier places changed by time, earlier characters changed by the player's deeds, earlier promises come due. One good callback per chapter, minimum.
+- When the chronicle of past events is provided in a recap, honor it as absolute truth and build forward from it seamlessly — never contradict established facts, names, or debts.
+
+════════ OUTPUT CONTRACT ════════
+Return every field, every turn, in this exact order: world_title (unchanged after creation), scene_title (2–4 evocative words, fresh each scene), image_prompt, stats (the FULL list of all 4, updated), story, choices, game_over, game_over_text ("" unless ending), memory.
+Field discipline: world_title never drifts; stats keep their names, icons, and maxes for the whole story; choices array is empty only when game_over is true.`;
 
 const TURN_SCHEMA = {
   type: "object",
   properties: {
     world_title: { type: "string" },
     scene_title: { type: "string" },
-    story: { type: "string" },
     image_prompt: { type: "string" },
     stats: {
       type: "array",
@@ -469,6 +572,7 @@ const TURN_SCHEMA = {
         additionalProperties: false
       }
     },
+    story: { type: "string" },
     choices: {
       type: "array",
       items: {
@@ -486,13 +590,44 @@ const TURN_SCHEMA = {
     game_over_text: { type: "string" },
     memory: { type: "string" }
   },
-  required: ["world_title","scene_title","story","image_prompt","stats","choices","game_over","game_over_text","memory"],
+  required: ["world_title","scene_title","image_prompt","stats","story","choices","game_over","game_over_text","memory"],
   additionalProperties: false
 };
 
-async function callBrain(messages){
-  if (DEMO) return demoBrain();
+/* Incrementally extract a JSON string field from a partial JSON document. */
+function jsonField(raw, key){
+  const marker = '"' + key + '"';
+  let i = raw.indexOf(marker);
+  if (i < 0) return { found: false, complete: false, value: "" };
+  const colon = raw.indexOf(":", i + marker.length);
+  if (colon < 0) return { found: false, complete: false, value: "" };
+  const start = raw.indexOf('"', colon + 1);
+  if (start < 0) return { found: false, complete: false, value: "" };
+  let out = "", complete = false;
+  for (let j = start + 1; j < raw.length; j++){
+    const c = raw[j];
+    if (c === "\\"){
+      const n = raw[j + 1];
+      if (n === undefined) break; // incomplete escape at buffer edge
+      if (n === "n") out += "\n";
+      else if (n === "t") out += "\t";
+      else if (n === "u"){
+        const hex = raw.slice(j + 2, j + 6);
+        if (hex.length < 4) break;
+        out += String.fromCharCode(parseInt(hex, 16));
+        j += 4;
+      }
+      else out += n;
+      j++;
+    } else if (c === '"'){ complete = true; break; }
+    else out += c;
+  }
+  return { found: true, complete, value: out };
+}
 
+/* Streaming brain call: story words appear as they are written.
+   Callbacks: onSceneTitle(t), onImagePrompt(p), onStoryDelta(textSoFar). */
+async function callBrainStream(messages, on){
   for (let attempt = 0; ; attempt++){
     const res = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
@@ -505,6 +640,7 @@ async function callBrain(messages){
       body: JSON.stringify({
         model: ANTHROPIC_MODEL,
         max_tokens: 2048,
+        stream: true,
         cache_control: { type: "ephemeral" },
         system: [{ type: "text", text: SYSTEM_PROMPT }],
         messages,
@@ -526,9 +662,42 @@ async function callBrain(messages){
       if (res.status === 529) throw new Error("The storyteller is overloaded right now. Try again in a moment.");
       throw new Error("Storyteller error (" + res.status + "). " + detail);
     }
-    const data = await res.json();
-    const text = (data.content || []).find(b => b.type === "text")?.text || "";
-    return JSON.parse(text);
+
+    const reader = res.body.getReader();
+    const dec = new TextDecoder();
+    let buf = "", raw = "";
+    let gotTitle = false, gotImage = false;
+
+    while (true){
+      const { done, value } = await reader.read();
+      if (done) break;
+      buf += dec.decode(value, { stream: true });
+      let idx;
+      while ((idx = buf.indexOf("\n\n")) >= 0){
+        const evt = buf.slice(0, idx); buf = buf.slice(idx + 2);
+        for (const line of evt.split("\n")){
+          if (!line.startsWith("data: ")) continue;
+          let d;
+          try{ d = JSON.parse(line.slice(6)); }catch(e){ continue; }
+          if (d.type === "content_block_delta" && d.delta && d.delta.type === "text_delta"){
+            raw += d.delta.text;
+            if (!gotTitle){
+              const f = jsonField(raw, "scene_title");
+              if (f.complete){ gotTitle = true; on.onSceneTitle && on.onSceneTitle(f.value); }
+            }
+            if (!gotImage){
+              const f = jsonField(raw, "image_prompt");
+              if (f.complete){ gotImage = true; on.onImagePrompt && on.onImagePrompt(f.value); }
+            }
+            const s = jsonField(raw, "story");
+            if (s.found && s.value) on.onStoryDelta && on.onStoryDelta(s.value);
+          } else if (d.type === "error"){
+            throw new Error((d.error && d.error.message) || "The stream broke mid-story.");
+          }
+        }
+      }
+    }
+    return JSON.parse(raw);
   }
 }
 
@@ -664,50 +833,111 @@ function renderTurn(t, opts = {}){
   }
 }
 
-/* ---------- turn engine ---------- */
+/* ---------- turn engine (streaming) ---------- */
+let liveCursor = null;
+function renderStoryLive(box, text){
+  const paras = text.split(/\n\n+/);
+  while (box.children.length < paras.length) box.appendChild(document.createElement("p"));
+  while (box.children.length > paras.length) box.removeChild(box.lastChild);
+  for (let i = 0; i < paras.length; i++){
+    if (box.children[i].textContent !== paras[i]) box.children[i].textContent = paras[i];
+  }
+  if (!liveCursor){ liveCursor = document.createElement("span"); liveCursor.className = "cursor"; }
+  if (box.lastChild) box.lastChild.appendChild(liveCursor);
+}
+
 async function runTurn(userText){
   if (busy) return;
   setBusy(true);
   $("choicesBox").innerHTML = "";
+  const sb = $("storyBox");
   try{
     game.messages.push({ role: "user", content: userText });
     trimHistory();
-    const t = await callBrain(game.messages);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+
+    let paintP = null;
+    let storyStarted = false;
+    const handlers = {
+      onSceneTitle: (title) => {
+        $("sceneTitle").textContent = title;
+        $("fallbackTitle").textContent = title;
+      },
+      onImagePrompt: (prompt) => {
+        // the painting starts while the story is still being written
+        paintP = paintScene(prompt, firstPaintFail);
+        $("imgSpin").classList.add("on");
+      },
+      onStoryDelta: (textSoFar) => {
+        if (!storyStarted){
+          storyStarted = true;
+          $("thinking").classList.remove("on"); // words are flowing — hide the wait indicator
+          sb.innerHTML = "";
+        }
+        renderStoryLive(sb, textSoFar);
+      }
+    };
+
+    const t = DEMO ? await demoBrain() : await callBrainStream(game.messages, handlers);
+
     game.messages.push({ role: "assistant", content: JSON.stringify(t) });
     game.title = t.world_title || game.title;
     game.turn = (game.turn || 0) + 1;
     if (t.memory) game.chronicle.push((t.scene_title ? t.scene_title + ": " : "") + t.memory);
 
-    // fire the painter without blocking the prose
-    const paintP = paintScene(t.image_prompt, firstPaintFail);
-    $("imgSpin").classList.add("on");
-
     setBusy(false);
+    if (liveCursor) liveCursor.remove();
     t.image_url = game.last?.image_url || null; // keep old image until new one lands
     game.last = t;
-    renderTurn(t);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+
+    if (DEMO || !storyStarted){
+      // demo mode (or a stream that produced no deltas): classic full render
+      renderTurn(t);
+    } else {
+      // streamed path: story is already on screen — finalize the rest of the scene
+      $("worldTitle").textContent = t.world_title || game.title || "Emberquill";
+      renderStats(t.stats);
+      renderStoryLive(sb, t.story || "");
+      if (liveCursor) liveCursor.remove();
+      if (t.game_over) setTimeout(() => showGameOver(t), 900);
+      else renderChoices(t.choices);
+    }
     persist();
 
-    const url = await paintP;
-    $("imgSpin").classList.remove("on");
-    firstPaintFail.first = false;
-    if (url){
-      t.image_url = url;
-      crossfadeTo(url);
-      // never resurrect a finished story's save, and never touch state after game over cleared it
-      if (game && !t.game_over){
-        game.last = t;
-        persist();
+    if (!paintP && !DEMO && t.image_prompt){
+      // safety net if the prompt field never surfaced mid-stream
+      paintP = paintScene(t.image_prompt, firstPaintFail);
+      $("imgSpin").classList.add("on");
+    }
+    if (paintP){
+      const url = await paintP;
+      $("imgSpin").classList.remove("on");
+      firstPaintFail.first = false;
+      if (url){
+        t.image_url = url;
+        crossfadeTo(url);
+        // never resurrect a finished story's save, and never touch state after game over cleared it
+        if (game && !t.game_over){
+          game.last = t;
+          persist();
+        }
       }
     }
   }catch(err){
     setBusy(false);
     $("imgSpin").classList.remove("on");
+    if (liveCursor) liveCursor.remove();
     // roll back the failed user message so retry works cleanly
     if (game && game.messages[game.messages.length - 1]?.role === "user") game.messages.pop();
     toast(err.message || "Something broke the spell. Try again.");
-    if (game?.last) renderChoices(game.last.choices);
+    // restore the previous scene so the player can pick up where they were
+    if (game?.last){
+      sb.innerHTML = "";
+      String(game.last.story || "").split(/\n\n+/).forEach(p => {
+        const el = document.createElement("p"); el.textContent = p.trim(); sb.appendChild(el);
+      });
+      renderChoices(game.last.choices);
+    }
   }
 }
 
