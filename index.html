@@ -275,6 +275,13 @@
       <p class="hint" data-i18n="falHint">Paints each scene live (~1–2s, ≈0.3¢ per image). Get one at <a href="https://fal.ai/dashboard/keys" target="_blank" rel="noopener">fal.ai/dashboard/keys</a>. Without it, scenes appear as elegant title cards — you can add it later in Settings.</p>
     </div>
 
+    <div class="panel">
+      <h3 data-i18n="keyAdult">The Adult Storyteller's Key</h3>
+      <label class="field" for="keyAtlas" data-i18n="atlasLabel">AtlasCloud API key · adult mode</label>
+      <input class="key" id="keyAtlas" type="password" placeholder="apikey-…" autocomplete="off">
+      <p class="hint" data-i18n="atlasHint">Adult mode switches the storyteller to Qwen3.6 Plus and scenes to Flux Dev LoRA through AtlasCloud. Store the key only on this device.</p>
+    </div>
+
     <div class="privacy"><span data-ic="lock" data-icsize="17" style="color:var(--amber);flex:0 0 auto;margin-top:1px"></span><span data-i18n="privacy">Your keys are stored only on this device and sent only to Anthropic / fal.ai. Never share this page's saved data with anyone.</span></div>
 
     <button class="btn primary mt" id="btnSetupDone" data-i18n="enter">Enter the story ✦</button>
@@ -383,6 +390,8 @@
       <input class="key" id="setKeyAnthropic" type="password" placeholder="sk-ant-..." autocomplete="off">
       <label class="field" for="setKeyFal" data-i18n="falLabel2">fal.ai API key (images)</label>
       <input class="key" id="setKeyFal" type="password" data-i18n-ph="falPh2" placeholder="Empty = title cards instead of images" autocomplete="off">
+      <label class="field" for="setKeyAtlas" data-i18n="atlasLabel2">AtlasCloud API key (adult mode)</label>
+      <input class="key" id="setKeyAtlas" type="password" placeholder="apikey-…" autocomplete="off">
       <button class="btn ghost mt" id="btnSaveKeys" data-i18n="saveKeys">Save keys</button>
     </div>
 
@@ -452,6 +461,10 @@ const LS_SAVE = "eq_save_v1";
 const LS_PREFS = "eq_prefs_v1";
 const LS_LIB = "eq_library_v1";
 const ANTHROPIC_MODEL = "claude-haiku-4-5";
+const ATLAS_TEXT_MODEL = "qwen/qwen3.6-plus";
+const ATLAS_IMAGE_MODEL = "black-forest-labs/flux-dev-lora";
+const ATLAS_CHAT_URL = "https://api.atlascloud.ai/v1/chat/completions";
+const ATLAS_IMAGE_URL = "https://api.atlascloud.ai/api/v1/model/generateImage";
 const IMG_STYLE = ", cinematic film still, candid unposed moment, subjects absorbed in the scene and engaged with each other, no eye contact with the camera, atmospheric lighting, highly detailed digital painting, no text, no words";
 
 const $ = (id) => document.getElementById(id);
@@ -502,7 +515,7 @@ function hydrateIcons(){
 }
 
 /* ---------- state ---------- */
-let keys = { anthropic: "", fal: "" };
+let keys = { anthropic: "", fal: "", atlas: "" };
 let prefs = { brush: "master", pace: "brisk", voice: true, bionic: false, lang: "en", mature: false };
 let game = null; // {worldDesc, title, messages[], chronicle[], last:{...}, turn}
 let busy = false;
@@ -526,7 +539,9 @@ const I18N = {
     anthHint: 'Powers the story. Create one at <a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a> → API Keys. A few dollars of credit lasts a very long time (≈25¢ per hour of play).',
     keyPainter: "The Painter's Key", falLabel: "fal.ai API key · optional",
     falHint: 'Paints each scene live (~1–2s, ≈0.3¢ per image). Get one at <a href="https://fal.ai/dashboard/keys" target="_blank" rel="noopener">fal.ai/dashboard/keys</a>. Without it, scenes appear as elegant title cards — you can add it later in Settings.',
-    privacy: "Your keys are stored only on this device and sent only to Anthropic / fal.ai. Never share this page's saved data with anyone.",
+    keyAdult: "The Adult Storyteller's Key", atlasLabel: "AtlasCloud API key · adult mode",
+    atlasHint: "Adult mode switches the storyteller to Qwen3.6 Plus and scenes to Flux Dev LoRA through AtlasCloud. Store the key only on this device.",
+    privacy: "Your keys are stored only on this device and sent only to Anthropic, fal.ai, or AtlasCloud depending on the mode. Never share this page's saved data with anyone.",
     enter: "Enter the story ✦",
     beginNew: "Begin a new story",
     worldPh: "Describe any world… who are you, where are you, what trouble is brewing? A sentence is enough — the story does the rest.",
@@ -535,8 +550,8 @@ const I18N = {
     storyBegins: "The story begins…", unfolds: "The story unfolds…", freePh: "Or write your own action…",
     needRoll: "Need {n} or less", rolling: "The dice are rolling…", fortune: "Fortune favors you.", fates: "The fates turn away…",
     storyEnds: "The story ends", endedDefault: "Your tale has reached its close.", newStory: "Begin a new story",
-    settings: "Settings", settingsSub: "Emberquill · Claude Haiku 4.5 storyteller · Z-Image & Seedream painters",
-    keysH: "Keys", anthLabel2: "Anthropic API key", falLabel2: "fal.ai API key (images)",
+    settings: "Settings", settingsSub: "Emberquill · Claude Haiku 4.5 / Qwen3.6 Plus storytellers · Z-Image / Flux Dev LoRA painters",
+    keysH: "Keys", anthLabel2: "Anthropic API key", falLabel2: "fal.ai API key (images)", atlasLabel2: "AtlasCloud API key (adult mode)",
     falPh2: "Empty = title cards instead of images", saveKeys: "Save keys",
     focusH: "Focus & Reading", paceBrisk: "Brisk scenes — short, punchy, fast", paceRich: "Rich scenes — fuller storybook prose",
     tglVoice: "Read scenes aloud", tglBionic: "Focus lettering — bolds word starts",
@@ -637,31 +652,44 @@ const LANG_ADDON = () => prefs.lang === "ar"
   : "\n\n════════ LANGUAGE: ENGLISH ════════\nWrite all player-facing text in English. If earlier turns were written in another language, continue the same story seamlessly in English, keeping recurring names consistent.";
 
 async function translateScene(){
-  if (!game?.last || DEMO || !keys.anthropic) return;
+  if (!game?.last || DEMO || (prefs.mature ? !keys.atlas : !keys.anthropic)) return;
   $("thinking").classList.add("on");
   try{
     const src = Object.assign({}, game.last);
     const imgUrl = src.image_url || null;
     delete src.image_url;
     const target = prefs.lang === "ar" ? "Modern Standard Arabic" : "English";
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        "x-api-key": keys.anthropic,
-        "anthropic-version": "2023-06-01",
-        "anthropic-dangerous-direct-browser-access": "true"
-      },
-      body: JSON.stringify({
-        model: ANTHROPIC_MODEL, max_tokens: 2048,
-        system: [{ type: "text", text: "You translate RPG game turns. Translate every player-facing text field (world_title, scene_title, story, stats[].name, choices[].text, choices[].stat, game_over_text, memory) into " + target + ", faithfully preserving meaning, tone, and names. Keep protagonist_look and image_prompt EXACTLY unchanged. Keep stats[].icon values, all numbers, chance values, and booleans unchanged. Return the full turn." }],
-        messages: [{ role: "user", content: JSON.stringify(src) }],
-        output_config: { format: { type: "json_schema", schema: TURN_SCHEMA } }
-      })
-    });
-    if (!res.ok) throw new Error("translate " + res.status);
-    const data = await res.json();
-    const tr = JSON.parse((data.content || []).find(b => b.type === "text")?.text || "");
+    const translatePrompt = "You translate RPG game turns. Translate every player-facing text field (world_title, scene_title, story, stats[].name, choices[].text, choices[].stat, game_over_text, memory) into " + target + ", faithfully preserving meaning, tone, and names. Keep protagonist_look and image_prompt EXACTLY unchanged. Keep stats[].icon values, all numbers, chance values, and booleans unchanged. Return the full turn as JSON only.";
+    let tr;
+    if (prefs.mature){
+      const res = await fetch(ATLAS_CHAT_URL, {
+        method: "POST",
+        headers: { "content-type": "application/json", "Authorization": "Bearer " + keys.atlas },
+        body: JSON.stringify({ model: ATLAS_TEXT_MODEL, messages: [{ role: "system", content: translatePrompt }, { role: "user", content: JSON.stringify(src) }], max_tokens: 2048, temperature: 0.2 })
+      });
+      if (!res.ok) throw new Error("translate " + res.status);
+      const data = await res.json();
+      tr = parseAtlasTurn(data.choices?.[0]?.message?.content || data.choices?.[0]?.text || data.content || "");
+    } else {
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          "x-api-key": keys.anthropic,
+          "anthropic-version": "2023-06-01",
+          "anthropic-dangerous-direct-browser-access": "true"
+        },
+        body: JSON.stringify({
+          model: ANTHROPIC_MODEL, max_tokens: 2048,
+          system: [{ type: "text", text: translatePrompt }],
+          messages: [{ role: "user", content: JSON.stringify(src) }],
+          output_config: { format: { type: "json_schema", schema: TURN_SCHEMA } }
+        })
+      });
+      if (!res.ok) throw new Error("translate " + res.status);
+      const data = await res.json();
+      tr = JSON.parse((data.content || []).find(b => b.type === "text")?.text || "");
+    }
     tr.image_url = imgUrl;
     game.last = tr;
     game.title = tr.world_title || game.title;
@@ -992,7 +1020,13 @@ The player is an adult who opted into mature storytelling. Raise the rating from
 
 /* Streaming brain call: story words appear as they are written.
    Callbacks: onSceneTitle(t), onImagePrompt(p), onStoryDelta(textSoFar). */
-async function callBrainStream(messages, on){
+function storySystemPrompt(){
+  return SYSTEM_PROMPT + (prefs.pace === "rich" ? "" : BRISK_ADDON) + (prefs.mature ? MATURE_ADDON : "") + LANG_ADDON() +
+    (prefs.mature ? "\n\nReturn ONLY the required Emberquill turn as valid JSON. Do not wrap it in markdown fences or add commentary." : "");
+}
+
+async function callAnthropicStream(messages, on){
+  if (!keys.anthropic) throw new Error("The Storyteller's key (Anthropic) is required to play.");
   for (let attempt = 0; ; attempt++){
     const res = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
@@ -1007,7 +1041,7 @@ async function callBrainStream(messages, on){
         max_tokens: 2048,
         stream: true,
         cache_control: { type: "ephemeral" },
-        system: [{ type: "text", text: SYSTEM_PROMPT + (prefs.pace === "rich" ? "" : BRISK_ADDON) + (prefs.mature ? MATURE_ADDON : "") + LANG_ADDON() }],
+        system: [{ type: "text", text: storySystemPrompt() }],
         messages,
         output_config: { format: { type: "json_schema", schema: TURN_SCHEMA } }
       })
@@ -1070,6 +1104,76 @@ async function callBrainStream(messages, on){
   }
 }
 
+function parseAtlasTurn(raw){
+  let text = String(raw || "").trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "");
+  const start = text.indexOf("{");
+  const end = text.lastIndexOf("}");
+  if (start >= 0 && end > start) text = text.slice(start, end + 1);
+  return JSON.parse(text);
+}
+
+async function callAtlasStream(messages, on){
+  if (!keys.atlas) throw new Error("AtlasCloud key is required while adult mode is on. Add it in Settings.");
+  const res = await fetch(ATLAS_CHAT_URL, {
+    method: "POST",
+    headers: { "content-type": "application/json", "Authorization": "Bearer " + keys.atlas },
+    body: JSON.stringify({
+      model: ATLAS_TEXT_MODEL,
+      messages: [{ role: "system", content: storySystemPrompt() }].concat(messages.map(m => ({
+        role: m.role,
+        content: typeof m.content === "string" ? m.content : JSON.stringify(m.content)
+      }))),
+      max_tokens: 2048,
+      temperature: 0.85,
+      stream: true
+    })
+  });
+  if (!res.ok){
+    if (res.status === 401 || res.status === 403) throw new Error("Your AtlasCloud key was rejected. Check it in Settings.");
+    if (res.status === 429) throw new Error("AtlasCloud is rate-limiting the storyteller. Try again in a moment.");
+    let detail = ""; try{ detail = (await res.json()).error?.message || ""; }catch(e){}
+    throw new Error("AtlasCloud storyteller error (" + res.status + "). " + detail);
+  }
+
+  const reader = res.body.getReader();
+  const dec = new TextDecoder();
+  let buf = "", raw = "";
+  let gotTitle = false, gotImage = false, gotLook = false;
+  const emit = (delta) => {
+    if (!delta) return;
+    raw += delta;
+    if (!gotTitle){ const f = jsonField(raw, "scene_title"); if (f.complete){ gotTitle = true; on.onSceneTitle && on.onSceneTitle(f.value); } }
+    if (!gotLook){ const f = jsonField(raw, "protagonist_look"); if (f.complete){ gotLook = true; on.onLook && on.onLook(f.value); } }
+    if (!gotImage){ const f = jsonField(raw, "image_prompt"); if (f.complete){ gotImage = true; on.onImagePrompt && on.onImagePrompt(f.value); } }
+    const s = jsonField(raw, "story");
+    if (s.found && s.value) on.onStoryDelta && on.onStoryDelta(s.value);
+  };
+  while (true){
+    const { done, value } = await reader.read();
+    if (done) break;
+    buf += dec.decode(value, { stream: true });
+    let idx;
+    while ((idx = buf.indexOf("\n\n")) >= 0){
+      const evt = buf.slice(0, idx); buf = buf.slice(idx + 2);
+      for (const line of evt.split("\n")){
+        if (!line.startsWith("data: ")) continue;
+        const payload = line.slice(6).trim();
+        if (!payload || payload === "[DONE]") continue;
+        try{
+          const d = JSON.parse(payload);
+          const delta = d.choices?.[0]?.delta?.content || d.choices?.[0]?.message?.content || d.content || "";
+          emit(Array.isArray(delta) ? delta.map(x => x.text || "").join("") : delta);
+        }catch(e){}
+      }
+    }
+  }
+  return parseAtlasTurn(raw);
+}
+
+async function callBrainStream(messages, on){
+  return prefs.mature ? callAtlasStream(messages, on) : callAnthropicStream(messages, on);
+}
+
 /* ---------- the painter (Z-Image Turbo + Seedream identity lock via fal.ai) ---------- */
 async function falCall(endpoint, body){
   const res = await fetch("https://fal.run/" + endpoint, {
@@ -1082,10 +1186,58 @@ async function falCall(endpoint, body){
   return data.images?.[0]?.url || null;
 }
 
+async function atlasImageCall(prompt){
+  if (!keys.atlas) throw new Error("AtlasCloud key is missing.");
+  const headers = { "Authorization": "Bearer " + keys.atlas, "Content-Type": "application/json" };
+  const res = await fetch(ATLAS_IMAGE_URL, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      model: ATLAS_IMAGE_MODEL,
+      prompt,
+      size: "1024*768",
+      num_images: 1,
+      loras: [],
+      enable_sync_mode: true,
+      enable_base64_output: false
+    })
+  });
+  if (!res.ok) throw new Error("atlas image " + res.status);
+  let data = await res.json();
+  const first = (v) => Array.isArray(v) ? v[0] : (typeof v === "string" ? v : null);
+  const output = (x) => first(x?.outputs) || first(x?.output) || x?.images?.[0]?.url || x?.urls?.result || null;
+  let url = output(data) || output(data.data);
+  if (url) return url;
+  const id = data.id || data.data?.id;
+  if (!id) return null;
+  for (let i = 0; i < 30; i++){
+    await new Promise(r => setTimeout(r, 2000));
+    const poll = await fetch("https://api.atlascloud.ai/api/v1/model/prediction/" + encodeURIComponent(id), { headers: { "Authorization": "Bearer " + keys.atlas } });
+    if (!poll.ok) continue;
+    data = await poll.json();
+    url = output(data) || output(data.data);
+    if (url) return url;
+    const status = data.status || data.data?.status;
+    if (status === "failed" || status === "canceled") throw new Error("atlas image " + status);
+  }
+  return null;
+}
+
 async function paintScene(prompt, token){
-  if (DEMO || !keys.fal) return null;
+  if (DEMO) return null;
   const hero = /^\[HERO\]\s*/.test(prompt);
   const clean = prompt.replace(/^\[HERO\]\s*/, "");
+  if (prefs.mature){
+    if (!keys.atlas) return null;
+    try{
+      return await atlasImageCall(clean + IMG_STYLE);
+    }catch(e){
+      console.warn("Atlas painter failed:", e);
+      if (token.first) toast("Adult-mode scene images are unavailable right now — continuing with title cards.");
+      return null;
+    }
+  }
+  if (!keys.fal) return null;
   try{
     // Master brush: paint hero scenes FROM the reference portrait — same face, same body, every scene
     if (hero && prefs.brush === "master" && game?.refImg){
@@ -1116,7 +1268,7 @@ let firstPaintFail = { first: true };
 /* Generate the hero's reference portrait once per story (Master brush only). */
 let refBusy = false;
 async function ensureRef(){
-  if (DEMO || !keys.fal || prefs.brush !== "master") return;
+  if (DEMO || prefs.mature || !keys.fal || prefs.brush !== "master") return;
   if (!game || game.refImg || !game.look || refBusy) return;
   refBusy = true;
   try{
@@ -1538,7 +1690,7 @@ function boot(){
   }catch(e){}
   renderLibrary();
 
-  if (!keys.anthropic && !DEMO) show("setup");
+  if ((prefs.mature ? !keys.atlas : !keys.anthropic) && !DEMO) show("setup");
   else show("menu");
 }
 
@@ -1561,6 +1713,7 @@ $("btnUnlock").onclick = async () => {
     const k = await unlockVault(code);
     keys.anthropic = k.anthropic || keys.anthropic;
     keys.fal = k.fal || keys.fal;
+    keys.atlas = k.atlas || keys.atlas;
     saveKeys();
     toast("Vault unlocked — keys saved on this device.");
     show("menu");
@@ -1574,9 +1727,14 @@ $("vaultCode").addEventListener("keydown", e => { if (e.key === "Enter") $("btnU
 $("btnSetupDone").onclick = () => {
   const a = $("keyAnthropic").value.trim();
   const f = $("keyFal").value.trim();
-  if (!a && !DEMO){ toast("The Storyteller's key (Anthropic) is required to play."); return; }
+  const at = $("keyAtlas").value.trim();
+  if (!DEMO && !(prefs.mature ? (at || keys.atlas) : (a || keys.anthropic))){
+    toast(prefs.mature ? "The AtlasCloud key is required while adult mode is on." : "The Storyteller's key (Anthropic) is required to play.");
+    return;
+  }
   keys.anthropic = a || keys.anthropic;
   if (f) keys.fal = f;
+  if (at) keys.atlas = at;
   saveKeys();
   show("menu");
 };
@@ -1632,7 +1790,18 @@ $("tglBionic").onclick = () => {
     });
   }
 };
-$("tglMature").onclick = () => { prefs.mature = !prefs.mature; savePrefs(); reflectBrush(); };
+$("tglMature").onclick = () => {
+  const next = !prefs.mature;
+  if (next && !keys.atlas){
+    toast("Add your AtlasCloud key in Settings before enabling adult mode.");
+    openSettings();
+    return;
+  }
+  prefs.mature = next;
+  savePrefs();
+  reflectBrush();
+  toast(next ? "Adult mode on — Qwen3.6 Plus + Flux Dev LoRA." : "Adult mode off — Anthropic + Z-Image restored.");
+};
 $("btnSpeak").onclick = () => {
   if (!game?.last){ return; }
   if (window.speechSynthesis && window.speechSynthesis.speaking){ stopSpeak(); }
@@ -1641,6 +1810,7 @@ $("btnSpeak").onclick = () => {
 function openSettings(){
   $("setKeyAnthropic").value = keys.anthropic;
   $("setKeyFal").value = keys.fal;
+  $("setKeyAtlas").value = keys.atlas;
   reflectBrush();
   $("settingsSheet").classList.add("on");
 }
@@ -1651,6 +1821,7 @@ $("settingsSheet").addEventListener("click", e => { if (e.target === $("settings
 $("btnSaveKeys").onclick = () => {
   keys.anthropic = $("setKeyAnthropic").value.trim();
   keys.fal = $("setKeyFal").value.trim();
+  keys.atlas = $("setKeyAtlas").value.trim();
   saveKeys();
   toast("Keys saved on this device.");
 };
@@ -1734,7 +1905,7 @@ $("btnWipe").onclick = async () => {
   if (!ok) return;
   localStorage.removeItem(LS_KEYS); localStorage.removeItem(LS_SAVE);
   localStorage.removeItem(LS_LIB); localStorage.removeItem(LS_PREFS);
-  keys = { anthropic: "", fal: "" }; prefs = { brush: "master" }; game = null;
+  keys = { anthropic: "", fal: "", atlas: "" }; prefs = { brush: "master", pace: "brisk", voice: true, bionic: false, lang: "en", mature: false }; game = null;
   $("settingsSheet").classList.remove("on");
   renderLibrary();
   show("setup");
