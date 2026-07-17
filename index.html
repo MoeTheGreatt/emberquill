@@ -1302,7 +1302,17 @@ function crossfadeTo(url){
 function renderStats(stats){
   const row = $("statsRow");
   row.innerHTML = "";
-  (stats || []).forEach(s => {
+  // Anthropic enforces the array schema, but AtlasCloud's compatible endpoint
+  // can occasionally return the same stats as an object keyed by stat name.
+  // Normalize both shapes so one malformed/mixed response cannot break the
+  // entire scene renderer on mobile Safari.
+  let list = [];
+  if (Array.isArray(stats)) list = stats;
+  else if (stats && typeof stats === "object"){
+    list = stats.name ? [stats] : Object.values(stats).filter(s => s && typeof s === "object");
+  }
+  list.forEach(s => {
+    if (!s || typeof s !== "object") return;
     const pct = s.max > 0 ? Math.max(0, Math.min(100, (s.value / s.max) * 100)) : 0;
     const el = document.createElement("div");
     el.className = "stat" + (pct <= 25 ? " low" : "");
