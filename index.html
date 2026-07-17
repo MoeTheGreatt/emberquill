@@ -377,7 +377,7 @@ const DEMO = new URLSearchParams(location.search).has("demo");
 const LS_KEYS = "eq_keys_v1";
 const LS_SAVE = "eq_save_v1";
 const ANTHROPIC_MODEL = "claude-haiku-4-5";
-const IMG_STYLE = ", cinematic digital painting, rich warm color grading, dramatic atmospheric lighting, highly detailed, no text";
+const IMG_STYLE = ", cinematic digital painting, atmospheric lighting, highly detailed, no text, no words";
 
 const $ = (id) => document.getElementById(id);
 
@@ -429,7 +429,7 @@ EVERY TURN, return:
 - world_title: unchanged after creation.
 - scene_title: 2–4 evocative words for the current scene.
 - story: the scene text.
-- image_prompt: one concrete visual description of this exact scene, 15–25 words (setting, subject, mood, era). Keep recurring characters and places visually consistent. Never include written text in the image.
+- image_prompt: one concrete visual description of this exact scene, 15–25 words (setting, subject, mood, era). Keep recurring characters and places visually consistent. Always include the world's art style and color mood (e.g. neon-noir, warm torchlit, icy pastel) so every scene looks painted by the same artist. Never include written text in the image.
 - stats: the FULL list of all 4 stats with current values. Adjust them meaningfully based on events. Never exceed max or drop below 0.
 - choices: 2–4 distinct, consequential options. For each: "chance" is 0 for safe choices, or 5–95 for risky ones (higher relevant stat → better chance; harder feat → lower). "stat" names the stat tested, or "" when chance is 0. Vary risk across choices.
 - game_over: true only when stat 1 reaches 0 or the tale reaches a true ending (triumph or doom). Then write a memorable closing game_over_text. Otherwise false and "".
@@ -483,35 +483,43 @@ const TURN_SCHEMA = {
 async function callBrain(messages){
   if (DEMO) return demoBrain();
 
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      "x-api-key": keys.anthropic,
-      "anthropic-version": "2023-06-01",
-      "anthropic-dangerous-direct-browser-access": "true"
-    },
-    body: JSON.stringify({
-      model: ANTHROPIC_MODEL,
-      max_tokens: 1600,
-      cache_control: { type: "ephemeral" },
-      system: [{ type: "text", text: SYSTEM_PROMPT }],
-      messages,
-      output_config: { format: { type: "json_schema", schema: TURN_SCHEMA } }
-    })
-  });
+  for (let attempt = 0; ; attempt++){
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-api-key": keys.anthropic,
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true"
+      },
+      body: JSON.stringify({
+        model: ANTHROPIC_MODEL,
+        max_tokens: 2048,
+        cache_control: { type: "ephemeral" },
+        system: [{ type: "text", text: SYSTEM_PROMPT }],
+        messages,
+        output_config: { format: { type: "json_schema", schema: TURN_SCHEMA } }
+      })
+    });
 
-  if (!res.ok){
-    let detail = "";
-    try{ detail = (await res.json()).error?.message || ""; }catch(e){}
-    if (res.status === 401) throw new Error("Your Anthropic key was rejected. Check it in Settings.");
-    if (res.status === 429) throw new Error("The storyteller needs a breath (rate limit). Try again in a moment.");
-    if (res.status === 529) throw new Error("The storyteller is overloaded right now. Try again in a moment.");
-    throw new Error("Storyteller error (" + res.status + "). " + detail);
+    // one quiet automatic retry when the servers are momentarily busy
+    if ((res.status === 429 || res.status === 529) && attempt < 1){
+      await new Promise(r => setTimeout(r, 2500));
+      continue;
+    }
+
+    if (!res.ok){
+      let detail = "";
+      try{ detail = (await res.json()).error?.message || ""; }catch(e){}
+      if (res.status === 401) throw new Error("Your Anthropic key was rejected. Check it in Settings.");
+      if (res.status === 429) throw new Error("The storyteller needs a breath (rate limit). Try again in a moment.");
+      if (res.status === 529) throw new Error("The storyteller is overloaded right now. Try again in a moment.");
+      throw new Error("Storyteller error (" + res.status + "). " + detail);
+    }
+    const data = await res.json();
+    const text = (data.content || []).find(b => b.type === "text")?.text || "";
+    return JSON.parse(text);
   }
-  const data = await res.json();
-  const text = (data.content || []).find(b => b.type === "text")?.text || "";
-  return JSON.parse(text);
 }
 
 /* ---------- the painter (FLUX schnell via fal.ai) ---------- */
@@ -549,6 +557,12 @@ function crossfadeTo(url){
     hideEl.classList.remove("show");
     curImg = curImg === "A" ? "B" : "A";
     $("scene").classList.remove("noimg");
+  };
+  showEl.onerror = () => {
+    // expired or unreachable image — fall back to the title card unless another image is already showing
+    if (!$("imgA").classList.contains("show") && !$("imgB").classList.contains("show")){
+      $("scene").classList.add("noimg");
+    }
   };
   showEl.src = url;
 }
@@ -608,6 +622,12 @@ function renderChoices(choices){
   });
 }
 
+function showGameOver(t){
+  $("goTitle").textContent = t.scene_title || "The story ends";
+  $("goText").textContent = t.game_over_text || "Your tale has reached its close.";
+  $("goOverlay").classList.add("on");
+  clearSave();
+}
 function renderTurn(t, opts = {}){
   $("worldTitle").textContent = t.world_title || game.title || "Emberquill";
   $("sceneTitle").textContent = t.scene_title || "";
@@ -620,20 +640,17 @@ function renderTurn(t, opts = {}){
     String(t.story || "").split(/\n\n+/).forEach(p => {
       const el = document.createElement("p"); el.textContent = p.trim(); box.appendChild(el);
     });
-    if (!t.game_over) renderChoices(t.choices);
+    if (t.game_over) setTimeout(() => showGameOver(t), 600);
+    else renderChoices(t.choices);
   } else {
-    typeStory(t.story || "", () => { if (!t.game_over) renderChoices(t.choices); });
+    // game-over fires right when the text finishes (or is skipped), never on a timer guess
+    typeStory(t.story || "", () => {
+      if (t.game_over) setTimeout(() => showGameOver(t), 900);
+      else renderChoices(t.choices);
+    });
   }
   if (t.image_url){
     crossfadeTo(t.image_url);
-  }
-  if (t.game_over){
-    setTimeout(() => {
-      $("goTitle").textContent = t.scene_title || "The story ends";
-      $("goText").textContent = t.game_over_text || "Your tale has reached its close.";
-      $("goOverlay").classList.add("on");
-      clearSave();
-    }, opts.instant ? 400 : Math.min(6000, (t.story || "").split(/\s+/).length * 42 + 1200));
   }
 }
 
@@ -659,6 +676,7 @@ async function runTurn(userText){
     t.image_url = game.last?.image_url || null; // keep old image until new one lands
     game.last = t;
     renderTurn(t);
+    window.scrollTo({ top: 0, behavior: "smooth" });
     persist();
 
     const url = await paintP;
@@ -666,9 +684,12 @@ async function runTurn(userText){
     firstPaintFail.first = false;
     if (url){
       t.image_url = url;
-      game.last = t;
       crossfadeTo(url);
-      persist();
+      // never resurrect a finished story's save, and never touch state after game over cleared it
+      if (game && !t.game_over){
+        game.last = t;
+        persist();
+      }
     }
   }catch(err){
     setBusy(false);
