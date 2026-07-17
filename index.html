@@ -648,7 +648,7 @@ function applyLang(){
   renderLibrary();
 }
 const LANG_ADDON = () => prefs.lang === "ar"
-  ? "\n\n════════ LANGUAGE: ARABIC ════════\nWrite every player-facing field in Modern Standard Arabic with a natural literary storytelling voice: world_title, scene_title, story, stats names, choices text and their stat references, game_over_text, memory. EXCEPTIONS that must stay in English: protagonist_look, image_prompt (the painting engine reads English only), stats icon names (fixed icon list), and the [HERO] tag prefix. Use Western digits (1 2 3). If earlier turns were written in English, continue the same story seamlessly in Arabic, translating recurring names and stat names consistently."
+  ? "\n\n════════ LANGUAGE: ARABIC ════════\nWrite every player-facing field in Modern Standard Arabic with a natural literary storytelling voice: world_title, scene_title, story, stats names, choices text and their stat references, game_over_text, memory. EXCEPTIONS that must stay in English: protagonist_look, cast_sheet, image_cast, image_prompt (the painting engine reads English only), stats icon names (fixed icon list), and the [HERO] tag prefix. Use Western digits (1 2 3). If earlier turns were written in English, continue the same story seamlessly in Arabic, translating recurring names and stat names consistently."
   : "\n\n════════ LANGUAGE: ENGLISH ════════\nWrite all player-facing text in English. If earlier turns were written in another language, continue the same story seamlessly in English, keeping recurring names consistent.";
 
 async function translateScene(){
@@ -659,7 +659,9 @@ async function translateScene(){
     const imgUrl = src.image_url || null;
     delete src.image_url;
     const target = prefs.lang === "ar" ? "Modern Standard Arabic" : "English";
-    const translatePrompt = "You translate RPG game turns. Translate every player-facing text field (world_title, scene_title, story, stats[].name, choices[].text, choices[].stat, game_over_text, memory) into " + target + ", faithfully preserving meaning, tone, and names. Keep protagonist_look and image_prompt EXACTLY unchanged. Keep stats[].icon values, all numbers, chance values, and booleans unchanged. Return the full turn as JSON only.";
+    src.cast_sheet = src.cast_sheet || game.castSheet || "";
+    src.image_cast = src.image_cast || "NONE";
+    const translatePrompt = "You translate RPG game turns. Translate every player-facing text field (world_title, scene_title, story, stats[].name, choices[].text, choices[].stat, game_over_text, memory) into " + target + ", faithfully preserving meaning, tone, and names. Keep protagonist_look, cast_sheet, image_cast, and image_prompt EXACTLY unchanged. Keep stats[].icon values, all numbers, chance values, and booleans unchanged. Return the full turn as JSON only.";
     let tr;
     if (prefs.mature){
       const res = await fetch(ATLAS_CHAT_URL, {
@@ -690,9 +692,12 @@ async function translateScene(){
       const data = await res.json();
       tr = JSON.parse((data.content || []).find(b => b.type === "text")?.text || "");
     }
+    tr.cast_sheet = tr.cast_sheet || game.castSheet || "";
+    tr.image_cast = tr.image_cast || src.image_cast || "NONE";
     tr.image_url = imgUrl;
     game.last = tr;
     game.title = tr.world_title || game.title;
+    game.castSheet = tr.cast_sheet;
     renderTurn(tr, { instant: true });
     persist();
   }catch(e){
@@ -816,6 +821,7 @@ The player describes their world in a sentence or a paragraph. From it, build ge
 - Establish within the first two scenes: who the player is, what they want or fear, what threatens that, and one vivid supporting character.
 - Invent exactly 4 stats tailored to the genre (see STAT DESIGN).
 - Invent protagonist_look: one fixed visual identity for the player character — species or build, coloring, face and hair or features, signature clothing, one distinguishing mark. 15–25 words, concrete and paintable. This is FROZEN at creation: repeat it character-for-character every turn for the rest of the story.
+- Start cast_sheet as a persistent visual registry for named supporting characters likely to recur (maximum eight; omit one-scene extras). Each entry uses one line in this exact format: Name :: age or adult/child status; 15–25 concrete visual words covering build, skin or coloring, face, hair or features, signature clothing, and one distinguishing mark.
 
 ════════ STAT DESIGN ════════
 - Stat 1 is always a health-like survival resource: Vitality, Hull, Sanity, Blood, Battery — named for the genre. max 100, start 100. When it reaches 0, the story ends in defeat.
@@ -852,6 +858,8 @@ The game rolls physical dice on the player's screen. When the player's message r
 
 ════════ CAST & CONTINUITY ════════
 - People recur. Give every significant character a name, one physical tell, one want, and one secret — and keep them consistent forever.
+- cast_sheet is the canonical visual registry for supporting characters. Repeat the ENTIRE registry every turn. Existing lines are frozen character-for-character; only append a new line when a newly named character is likely to recur. Never silently redesign, rename, age-shift, or remove a registered character.
+- image_cast lists the foreground identities in image_prompt as exact cast_sheet names separated by " | ". Use HERO for the protagonist and NONE when no registered person is visible. Maximum two foreground identities.
 - Antagonists act off-screen. Every few scenes, let the player glimpse evidence that their enemies moved while they were busy.
 - Relationships drift with treatment: allies neglected cool; enemies spared remember it, for good or ill.
 - Track debts, injuries, items, promises, and lies in your storytelling. If the player gained a lantern, they HAVE a lantern until it's lost, sold, or broken.
@@ -881,10 +889,11 @@ THE FOURTH WALL IS SACRED
 
 DIRECT THE CAMERA
 - Open every image_prompt with a shot call: "close-up of", "medium shot,", "over-the-shoulder view past the hero toward", "wide shot of", "low angle looking up at". Choose the shot that serves the beat: close-up for emotion and revelations, medium/over-the-shoulder for dialogue, wide for arrivals, vistas and dread. VARY the shot from scene to scene like a film editor would.
-- 20–35 words total: shot, subject + action, second character + their action if present, setting essentials, lighting.
+- 20–35 words when no registered character is visible; up to 70 words when exact frozen character descriptors are needed. Include only shot, identities + actions, setting essentials, and lighting.
 
 CONSISTENCY
 - If the protagonist is visible, begin with the exact tag "[HERO] " then the shot call, weaving the protagonist_look descriptors in verbatim. If the protagonist is not visible (a landscape, an object, the thing they see), no tag — and a hero-absent POV shot is often the strongest choice for discoveries.
+- For every visible supporting character named in image_cast, weave that character's frozen cast_sheet descriptors into image_prompt verbatim. Never replace a registered character with a generic man, woman, lover, guard, or stranger.
 - ALWAYS end with the world's fixed art style and palette phrase, decided at creation and repeated verbatim every turn.
 - Recurring characters and places keep the same described features every appearance.
 - Never request written text, letters, numbers, UI, or captions in the image.
@@ -926,8 +935,8 @@ Items are story gravity — track them with care:
 - When the chronicle of past events is provided in a recap, honor it as absolute truth and build forward from it seamlessly — never contradict established facts, names, or debts.
 
 ════════ OUTPUT CONTRACT ════════
-Return every field, every turn, in this exact order: world_title (unchanged after creation), scene_title (2–4 evocative words, fresh each scene), protagonist_look (frozen at creation, repeated verbatim forever), image_prompt, stats (the FULL list of all 4, updated), story, choices, game_over, game_over_text ("" unless ending), memory.
-Field discipline: world_title and protagonist_look never drift; stats keep their names, icons, and maxes for the whole story; choices array is empty only when game_over is true.`;
+Return every field, every turn, in this exact order: world_title (unchanged after creation), scene_title (2–4 evocative words, fresh each scene), protagonist_look (frozen at creation, repeated verbatim forever), cast_sheet (the full frozen registry), image_cast, image_prompt, stats (the FULL list of all 4, updated), story, choices, game_over, game_over_text ("" unless ending), memory.
+Field discipline: world_title, protagonist_look, and existing cast_sheet entries never drift; stats keep their names, icons, and maxes for the whole story; choices array is empty only when game_over is true.`;
 
 const TURN_SCHEMA = {
   type: "object",
@@ -935,6 +944,8 @@ const TURN_SCHEMA = {
     world_title: { type: "string" },
     scene_title: { type: "string" },
     protagonist_look: { type: "string" },
+    cast_sheet: { type: "string" },
+    image_cast: { type: "string" },
     image_prompt: { type: "string" },
     stats: {
       type: "array",
@@ -968,7 +979,7 @@ const TURN_SCHEMA = {
     game_over_text: { type: "string" },
     memory: { type: "string" }
   },
-  required: ["world_title","scene_title","protagonist_look","image_prompt","stats","story","choices","game_over","game_over_text","memory"],
+  required: ["world_title","scene_title","protagonist_look","cast_sheet","image_cast","image_prompt","stats","story","choices","game_over","game_over_text","memory"],
   additionalProperties: false
 };
 
@@ -1015,13 +1026,16 @@ The player is an adult who opted into mature storytelling. Raise the rating from
 - Violence lands with true weight, pain, and consequence; wounds change people.
 - Moral darkness is in bounds: vice, corruption, addiction, betrayal, cruelty with a cost.
 - Romance and desire may be genuinely charged: attraction, seduction, tension, intimacy — written with heat and sophistication. Explicit sexual description stays off-page: build the moment, then cut the scene like a great show-runner would; what happens behind the door is felt in the next scene, not narrated.
+- Every character involved in romance, desire, sensuality, or intimate imagery must be explicitly established in cast_sheet as an adult age 21 or older. Ambiguous age means the intimate beat is not used.
+- When the player's action genuinely advances intimacy, do not retreat to a generic conversation image. Choose the scene's most emotionally charged, physically close, story-specific beat: a decisive kiss, an embrace against the door, hands at a collar, a half-dressed silhouette, or the breath before a fade-to-black. Intimacy must be earned by the current action and relationship, never inserted into an unrelated scene.
 - Profanity is allowed where it belongs in a character's mouth.
 - Absolute lines that never move: no sexual content involving minors, no sexualized violence.
 
-IMAGE PROMPTS IN MATURE MODE: the painting engine renders only non-explicit imagery. Keep image_prompt tasteful and suggestive — imply heat through composition, silhouettes, a closing door, tangled hands, a bare shoulder in candlelight, or faces close in low light. Never describe nudity, genitals, or sexual acts in image_prompt.`;
+IMAGE PROMPTS IN MATURE MODE: direct the strongest non-explicit intimate frame that the current scene has actually earned. Sensual kissing, close embraces, partially removed clothing, bare shoulders or backs, silhouettes, sheets, steam, and strategic composition are in bounds. Keep breasts and genitals covered or outside the frame; never depict a sexual act, fetish close-up, coercive sexual situation, or sexualized minor. Preserve every visible identity exactly through protagonist_look, cast_sheet, and image_cast.`;
 
 /* Streaming brain call: story words appear as they are written.
-   Callbacks: onSceneTitle(t), onImagePrompt(p), onStoryDelta(textSoFar). */
+   Callbacks: onSceneTitle(t), onLook(l), onCastSheet(c), onImageCast(c),
+   onImagePrompt(p), onStoryDelta(textSoFar). */
 function storySystemPrompt(){
   return SYSTEM_PROMPT + (prefs.pace === "rich" ? "" : BRISK_ADDON) + (prefs.mature ? MATURE_ADDON : "") + LANG_ADDON() +
     (prefs.mature ? "\n\nReturn ONLY the required Emberquill turn as valid JSON. Do not wrap it in markdown fences or add commentary." : "");
@@ -1067,7 +1081,7 @@ async function callAnthropicStream(messages, on){
     const reader = res.body.getReader();
     const dec = new TextDecoder();
     let buf = "", raw = "";
-    let gotTitle = false, gotImage = false, gotLook = false;
+    let gotTitle = false, gotImage = false, gotLook = false, gotCast = false, gotImageCast = false;
 
     while (true){
       const { done, value } = await reader.read();
@@ -1089,6 +1103,14 @@ async function callAnthropicStream(messages, on){
             if (!gotLook){
               const f = jsonField(raw, "protagonist_look");
               if (f.complete){ gotLook = true; on.onLook && on.onLook(f.value); }
+            }
+            if (!gotCast){
+              const f = jsonField(raw, "cast_sheet");
+              if (f.complete){ gotCast = true; on.onCastSheet && on.onCastSheet(f.value); }
+            }
+            if (!gotImageCast){
+              const f = jsonField(raw, "image_cast");
+              if (f.complete){ gotImageCast = true; on.onImageCast && on.onImageCast(f.value); }
             }
             if (!gotImage){
               const f = jsonField(raw, "image_prompt");
@@ -1140,12 +1162,14 @@ async function callAtlasStream(messages, on){
   const reader = res.body.getReader();
   const dec = new TextDecoder();
   let buf = "", raw = "";
-  let gotTitle = false, gotImage = false, gotLook = false;
+  let gotTitle = false, gotImage = false, gotLook = false, gotCast = false, gotImageCast = false;
   const emit = (delta) => {
     if (!delta) return;
     raw += delta;
     if (!gotTitle){ const f = jsonField(raw, "scene_title"); if (f.complete){ gotTitle = true; on.onSceneTitle && on.onSceneTitle(f.value); } }
     if (!gotLook){ const f = jsonField(raw, "protagonist_look"); if (f.complete){ gotLook = true; on.onLook && on.onLook(f.value); } }
+    if (!gotCast){ const f = jsonField(raw, "cast_sheet"); if (f.complete){ gotCast = true; on.onCastSheet && on.onCastSheet(f.value); } }
+    if (!gotImageCast){ const f = jsonField(raw, "image_cast"); if (f.complete){ gotImageCast = true; on.onImageCast && on.onImageCast(f.value); } }
     if (!gotImage){ const f = jsonField(raw, "image_prompt"); if (f.complete){ gotImage = true; on.onImagePrompt && on.onImagePrompt(f.value); } }
     const s = jsonField(raw, "story");
     if (s.found && s.value) on.onStoryDelta && on.onStoryDelta(s.value);
@@ -1188,21 +1212,62 @@ async function falCall(endpoint, body){
   return data.images?.[0]?.url || null;
 }
 
-async function atlasImageCall(prompt){
+function imageCastNames(raw){
+  return String(raw || "")
+    .split("|")
+    .map(x => x.trim())
+    .filter(x => x && x.toUpperCase() !== "NONE")
+    .slice(0, 2);
+}
+function castKey(name){ return String(name || "").trim().toLowerCase(); }
+function castPairKey(names){ return names.map(castKey).sort().join("|"); }
+function referenceForImageCast(raw){
+  if (!game) return null;
+  const names = imageCastNames(raw);
+  if (!names.length) return null;
+  const pair = game.pairRefs?.[castPairKey(names)];
+  if (pair) return pair;
+  for (const name of names){
+    const ref = game.characterRefs?.[castKey(name)];
+    if (ref) return ref;
+  }
+  return names.some(name => name.toUpperCase() === "HERO") ? (game.refImg || null) : null;
+}
+function rememberCharacterReference(raw, url){
+  if (!game || !url) return;
+  const names = imageCastNames(raw);
+  if (!names.length) return;
+  game.characterRefs = game.characterRefs || {};
+  game.pairRefs = game.pairRefs || {};
+  const pairKey = castPairKey(names);
+  if (!game.pairRefs[pairKey]) game.pairRefs[pairKey] = url;
+  names.forEach(name => {
+    const key = castKey(name);
+    if (!game.characterRefs[key]) game.characterRefs[key] = url;
+  });
+  if (names.some(name => name.toUpperCase() === "HERO") && !game.refImg) game.refImg = url;
+}
+
+async function atlasImageCall(prompt, referenceImage = null){
   if (!keys.atlas) throw new Error("AtlasCloud key is missing.");
   const headers = { "Authorization": "Bearer " + keys.atlas, "Content-Type": "application/json" };
+  const body = {
+    model: ATLAS_IMAGE_MODEL,
+    prompt,
+    size: "1024*768",
+    num_images: 1,
+    loras: [],
+    enable_sync_mode: true,
+    enable_base64_output: false
+  };
+  if (referenceImage){
+    body.image = referenceImage;
+    body.strength = 0.72;
+  }
   const res = await fetch(ATLAS_IMAGE_URL, {
     method: "POST",
     headers,
-    body: JSON.stringify({
-      model: ATLAS_IMAGE_MODEL,
-      prompt,
-      size: "1024*768",
-      num_images: 1,
-      loras: [],
-      enable_sync_mode: true,
-      enable_base64_output: false
-    })
+    body: JSON.stringify(body)
   });
   if (!res.ok) throw new Error("atlas image " + res.status);
   let data = await res.json();
@@ -1225,14 +1290,18 @@ async function atlasImageCall(prompt){
   return null;
 }
 
-async function paintScene(prompt, token){
+async function paintScene(prompt, token, imageCast = "NONE"){
   if (DEMO) return null;
   const hero = /^\[HERO\]\s*/.test(prompt);
   const clean = prompt.replace(/^\[HERO\]\s*/, "");
   if (prefs.mature){
     if (!keys.atlas) return null;
     try{
-      return await atlasImageCall(clean + IMG_STYLE);
+      const referenceImage = referenceForImageCast(imageCast);
+      const identityDirection = referenceImage
+        ? ", use the reference image only to preserve the established characters' faces, coloring, build, hair, and distinguishing features; completely restage their pose, framing, clothing state, lighting, and setting for this new scene"
+        : "";
+      return await atlasImageCall(clean + identityDirection + IMG_STYLE, referenceImage);
     }catch(e){
       console.warn("Atlas painter failed:", e);
       if (token.first) toast("Adult-mode scene images are unavailable right now — continuing with title cards.");
@@ -1452,15 +1521,18 @@ async function runTurn(userText){
 
     let paintP = null;
     let storyStarted = false;
+    let turnImageCast = "NONE";
     const handlers = {
       onSceneTitle: (title) => {
         $("sceneTitle").textContent = title;
         $("fallbackTitle").textContent = title;
       },
       onLook: (look) => { if (game && look) game.look = look; },
+      onCastSheet: (sheet) => { if (game && sheet) game.castSheet = sheet; },
+      onImageCast: (cast) => { turnImageCast = cast || "NONE"; },
       onImagePrompt: (prompt) => {
         // the painting starts while the story is still being written
-        paintP = paintScene(prompt, firstPaintFail);
+        paintP = paintScene(prompt, firstPaintFail, turnImageCast);
         $("imgSpin").classList.add("on");
       },
       onStoryDelta: (textSoFar) => {
@@ -1475,9 +1547,12 @@ async function runTurn(userText){
 
     const t = DEMO ? await demoBrain() : await callBrainStream(game.messages, handlers);
 
-    game.messages.push({ role: "assistant", content: JSON.stringify(t) });
     game.title = t.world_title || game.title;
     game.look = t.protagonist_look || game.look || "";
+    game.castSheet = t.cast_sheet || game.castSheet || "";
+    t.cast_sheet = game.castSheet;
+    t.image_cast = t.image_cast || turnImageCast || "NONE";
+    game.messages.push({ role: "assistant", content: JSON.stringify(t) });
     game.turn = (game.turn || 0) + 1;
     if (t.memory) game.chronicle.push((t.scene_title ? t.scene_title + ": " : "") + t.memory);
     ensureRef(); // Master brush: build the hero's reference portrait in the background
@@ -1504,7 +1579,7 @@ async function runTurn(userText){
 
     if (!paintP && !DEMO && t.image_prompt){
       // safety net if the prompt field never surfaced mid-stream
-      paintP = paintScene(t.image_prompt, firstPaintFail);
+      paintP = paintScene(t.image_prompt, firstPaintFail, t.image_cast);
       $("imgSpin").classList.add("on");
     }
     if (paintP){
@@ -1513,6 +1588,7 @@ async function runTurn(userText){
       firstPaintFail.first = false;
       if (url){
         t.image_url = url;
+        rememberCharacterReference(t.image_cast, url);
         crossfadeTo(url);
         // never resurrect a finished story's save, and never touch state after game over cleared it
         if (game && !t.game_over){
@@ -1544,7 +1620,8 @@ function trimHistory(){
   if (M.length <= 36) return;
   const kept = M.slice(-24);
   const recap = "(( Recap of the story so far. Protagonist appearance (frozen, repeat verbatim): " +
-    (game.look || "as established") + ". Chronicle of key events: " +
+    (game.look || "as established") + ". Supporting cast sheet (existing entries are frozen): " +
+    (game.castSheet || "none yet") + ". Chronicle of key events: " +
     (game.chronicle.slice(-20).join(" | ") || "the adventure began") +
     ". Continue seamlessly from the latest scene. ))";
   game.messages = [{ role: "user", content: recap }, ...kept];
@@ -1593,7 +1670,8 @@ function rollDice(chance, done){
 /* ---------- flows ---------- */
 function startNewStory(desc){
   game = { id: "s" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
-           worldDesc: desc, title: "", look: "", refImg: null, messages: [], chronicle: [], last: null, turn: 0 };
+           worldDesc: desc, title: "", look: "", castSheet: "", refImg: null,
+           characterRefs: {}, pairRefs: {}, messages: [], chronicle: [], last: null, turn: 0 };
   // reset scene
   $("imgA").classList.remove("show"); $("imgB").classList.remove("show");
   $("imgA").removeAttribute("src"); $("imgB").removeAttribute("src");
@@ -1608,6 +1686,9 @@ function continueStory(id){
   const s = loadLib().find(x => x.id === id);
   if (!s || !s.last){ toast("That story could not be found."); renderLibrary(); return; }
   game = s;
+  game.castSheet = game.castSheet || game.last.cast_sheet || "";
+  game.characterRefs = game.characterRefs || {};
+  game.pairRefs = game.pairRefs || {};
   show("game");
   $("imgA").classList.remove("show"); $("imgB").classList.remove("show");
   $("imgA").removeAttribute("src"); $("imgB").removeAttribute("src");
@@ -1631,6 +1712,7 @@ function renderLibrary(){
     art.innerHTML = icon("flame", 22);
     if (s.last.image_url){
       const im = document.createElement("img");
+      im.referrerPolicy = "no-referrer";
       im.src = s.last.image_url;
       im.onerror = () => im.remove();
       art.appendChild(im);
