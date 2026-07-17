@@ -289,6 +289,8 @@
     </div>
 
     <div class="menu-foot">
+      <button id="btnImport">Import story code</button>
+      <span style="color:var(--text-faint);font-family:var(--sans);font-size:13px"> · </span>
       <button id="btnMenuSettings">Settings · Keys</button>
     </div>
   </div>
@@ -374,11 +376,35 @@
     <div class="panel">
       <h3>Story</h3>
       <button class="btn ghost" id="btnLibrary">📚 Back to the library — story is saved</button>
-      <button class="btn ghost mt" id="btnAbandon">🕯️ Abandon current story (deletes it)</button>
+      <button class="btn ghost mt" id="btnCode">📦 Copy story code — carry it to another device</button>
+      <button class="btn ghost mt" id="btnAbandon">🕯️ Abandon current story (wipes it)</button>
       <button class="btn danger-ghost mt" id="btnWipe">Erase everything on this device</button>
     </div>
 
     <button class="btn primary mt" id="btnCloseSettings">Done</button>
+  </div>
+</div>
+
+<!-- ═══ CONFIRM ═══ -->
+<div class="overlay" id="confirmOverlay" style="z-index:80">
+  <div class="go-card" style="max-width:380px">
+    <div class="orn">✦</div>
+    <h2 id="cfTitle">Are you sure?</h2>
+    <p id="cfText"></p>
+    <button class="btn primary" id="cfYes">Confirm</button>
+    <button class="btn ghost mt" id="cfNo">Keep it</button>
+  </div>
+</div>
+
+<!-- ═══ STORY CODE ═══ -->
+<div class="sheet" id="codeSheet" style="z-index:75">
+  <div class="sheet-card">
+    <div class="sheet-grab"></div>
+    <h2 id="codeTitle">Story code</h2>
+    <p class="sub" id="codeHint"></p>
+    <textarea id="codeText" style="min-height:130px;padding:12px;font-family:var(--sans);font-size:12px;word-break:break-all" spellcheck="false"></textarea>
+    <button class="btn primary mt" id="codeAction">Copy</button>
+    <button class="btn ghost mt" id="btnCloseCode">Close</button>
   </div>
 </div>
 
@@ -435,6 +461,39 @@ function show(name){
   $("screen-" + name).classList.add("active");
   window.scrollTo(0, 0);
 }
+/* in-app confirmation (never the ugly browser popup) */
+let cfResolve = null;
+function confirmBox(title, text, yesLabel){
+  return new Promise(res => {
+    cfResolve = res;
+    $("cfTitle").textContent = title;
+    $("cfText").textContent = text;
+    $("cfYes").textContent = yesLabel || "Confirm";
+    $("confirmOverlay").classList.add("on");
+  });
+}
+
+/* story codes — free device-to-device transfer, no server involved */
+async function encodeStory(obj){
+  const str = JSON.stringify(obj);
+  if (!("CompressionStream" in window)) return "EQ0." + btoa(unescape(encodeURIComponent(str)));
+  const stream = new Blob([new TextEncoder().encode(str)]).stream().pipeThrough(new CompressionStream("gzip"));
+  const buf = new Uint8Array(await new Response(stream).arrayBuffer());
+  let bin = "";
+  for (let i = 0; i < buf.length; i += 8192) bin += String.fromCharCode.apply(null, buf.subarray(i, i + 8192));
+  return "EQ1." + btoa(bin);
+}
+async function decodeStory(code){
+  code = code.trim().replace(/\s+/g, "");
+  if (code.startsWith("EQ0.")) return JSON.parse(decodeURIComponent(escape(atob(code.slice(4)))));
+  if (!code.startsWith("EQ1.")) throw new Error("That doesn't look like an Emberquill story code.");
+  const bin = atob(code.slice(4));
+  const u = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
+  const stream = new Blob([u]).stream().pipeThrough(new DecompressionStream("gzip"));
+  return JSON.parse(await new Response(stream).text());
+}
+
 let toastT = null;
 function toast(msg, ms = 3200){
   const t = $("toast"); t.textContent = msg; t.classList.add("on");
@@ -1117,11 +1176,17 @@ function renderLibrary(){
     const del = document.createElement("button");
     del.className = "cc-del";
     del.textContent = "🗑";
-    del.onclick = (e) => {
+    del.onclick = async (e) => {
       e.stopPropagation();
-      if (confirm('Delete "' + (s.title || "this story") + '" forever?')){
+      const ok = await confirmBox(
+        'Delete "' + (s.title || "this tale") + '"?',
+        "The entire story will be wiped from this device — every scene, the character sheet, its chronicle of memories, and its story code. This cannot be undone.",
+        "Delete forever");
+      if (ok){
         deleteStory(s.id);
+        if (game && game.id === s.id) game = null;
         renderLibrary();
+        toast("The tale has been wiped from this device.");
       }
     };
     card.onclick = () => continueStory(s.id);
@@ -1248,6 +1313,65 @@ $("btnSaveKeys").onclick = () => {
   saveKeys();
   toast("Keys saved on this device. 🔒");
 };
+/* confirm + story code sheet wiring */
+$("cfYes").onclick = () => { $("confirmOverlay").classList.remove("on"); if (cfResolve){ cfResolve(true); cfResolve = null; } };
+$("cfNo").onclick = () => { $("confirmOverlay").classList.remove("on"); if (cfResolve){ cfResolve(false); cfResolve = null; } };
+
+let codeMode = "export";
+function openCodeSheet(mode){
+  codeMode = mode;
+  $("codeTitle").textContent = mode === "export" ? "Your story code" : "Import a story";
+  $("codeHint").textContent = mode === "export"
+    ? "Send this code to yourself (AirDrop, Notes, email) and paste it into Emberquill on any other device via 'Import story code'. The whole tale travels with it."
+    : "Paste a story code from another device below.";
+  $("codeAction").textContent = mode === "export" ? "Copy code" : "Add to my library";
+  $("codeText").value = "";
+  $("codeText").placeholder = mode === "export" ? "" : "EQ1.…";
+  $("codeSheet").classList.add("on");
+}
+$("btnCloseCode").onclick = () => $("codeSheet").classList.remove("on");
+$("codeSheet").addEventListener("click", e => { if (e.target === $("codeSheet")) $("codeSheet").classList.remove("on"); });
+
+$("btnCode").onclick = async () => {
+  if (!game){ toast("Open a story first, then copy its code."); return; }
+  persist();
+  $("settingsSheet").classList.remove("on");
+  openCodeSheet("export");
+  $("codeText").value = "Weaving the code…";
+  try{ $("codeText").value = await encodeStory(game); }
+  catch(e){ $("codeText").value = ""; toast("Could not create the story code."); }
+};
+$("btnImport").onclick = () => openCodeSheet("import");
+
+$("codeAction").onclick = async () => {
+  if (codeMode === "export"){
+    const code = $("codeText").value;
+    if (!code || code.startsWith("Weaving")) return;
+    try{
+      await navigator.clipboard.writeText(code);
+      toast("Story code copied. 📦 Paste it on your other device.");
+    }catch(e){
+      $("codeText").select();
+      document.execCommand("copy");
+      toast("Code selected — copy it manually if needed.");
+    }
+  } else {
+    try{
+      const obj = await decodeStory($("codeText").value);
+      if (!obj || !obj.last || !Array.isArray(obj.messages)) throw new Error("bad");
+      const lib = loadLib();
+      if (lib.some(s => s.id === obj.id)) obj.id = obj.id + "x" + Math.random().toString(36).slice(2, 5);
+      lib.unshift(obj);
+      saveLib(lib);
+      renderLibrary();
+      $("codeSheet").classList.remove("on");
+      toast('"' + (obj.title || "Story") + '" added to your shelf. 🔥');
+    }catch(e){
+      toast("That code couldn't be read — check you pasted the whole thing.");
+    }
+  }
+};
+
 $("btnLibrary").onclick = () => {
   if (game) persist();
   game = null;
@@ -1255,17 +1379,25 @@ $("btnLibrary").onclick = () => {
   renderLibrary();
   show("menu");
 };
-$("btnAbandon").onclick = () => {
+$("btnAbandon").onclick = async () => {
   if (!game){ toast("No story is open right now."); return; }
-  if (!confirm("Abandon this story? Its save will be erased forever.")) return;
+  const ok = await confirmBox(
+    "Abandon this story?",
+    "It will be wiped completely from this device — scenes, character sheet, memories, everything. This cannot be undone.",
+    "Abandon & wipe");
+  if (!ok) return;
   clearSave();
   $("settingsSheet").classList.remove("on");
   demoStep = 0;
   renderLibrary();
   show("menu");
 };
-$("btnWipe").onclick = () => {
-  if (!confirm("Erase your keys AND every saved story from this device?")) return;
+$("btnWipe").onclick = async () => {
+  const ok = await confirmBox(
+    "Erase everything?",
+    "Your keys AND every saved story will be wiped from this device.",
+    "Erase it all");
+  if (!ok) return;
   localStorage.removeItem(LS_KEYS); localStorage.removeItem(LS_SAVE);
   localStorage.removeItem(LS_LIB); localStorage.removeItem(LS_PREFS);
   keys = { anthropic: "", fal: "" }; prefs = { brush: "master" }; game = null;
