@@ -106,6 +106,11 @@
     background:linear-gradient(135deg,var(--card-2),var(--raised));border:1px solid rgba(217,164,65,.28);
     border-radius:18px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.35);transition:transform .12s}
   .continue-card:active{transform:scale(.98)}
+  .continue-card{cursor:pointer}
+  #storyList .continue-card + .continue-card{margin-top:10px}
+  .continue-card .cc-art{flex:0 0 46px;width:46px;height:46px;border-radius:12px;overflow:hidden;display:grid;place-items:center;background:var(--raised);font-size:22px}
+  .continue-card .cc-art img{width:100%;height:100%;object-fit:cover;display:block}
+  .continue-card .cc-del{flex:0 0 auto;padding:8px;font-size:15px;opacity:.5}
   .continue-card .flame{font-size:28px;filter:drop-shadow(0 0 12px rgba(224,138,66,.6))}
   .continue-card .cc-title{font-size:18px;font-weight:600;color:var(--text)}
   .continue-card .cc-sub{font-family:var(--sans);font-size:13px;color:var(--text-dim);margin-top:2px}
@@ -269,14 +274,7 @@
       <p>describe a world. live inside it.</p>
     </div>
 
-    <button class="continue-card mt" id="btnContinue" style="display:none">
-      <span class="flame">🔥</span>
-      <span style="flex:1;min-width:0">
-        <span class="cc-title" id="ccTitle">Continue your story</span>
-        <span class="cc-sub" id="ccSub" style="display:block"></span>
-      </span>
-      <span style="color:var(--gold)">›</span>
-    </button>
+    <div id="storyList" class="mt"></div>
 
     <div class="panel mt">
       <h3>Begin a new story</h3>
@@ -375,7 +373,8 @@
 
     <div class="panel">
       <h3>Story</h3>
-      <button class="btn ghost" id="btnAbandon">🕯️ Abandon current story</button>
+      <button class="btn ghost" id="btnLibrary">📚 Back to the library — story is saved</button>
+      <button class="btn ghost mt" id="btnAbandon">🕯️ Abandon current story (deletes it)</button>
       <button class="btn danger-ghost mt" id="btnWipe">Erase everything on this device</button>
     </div>
 
@@ -395,6 +394,7 @@ const VAULT = {"salt":"ajDVlK5SjjbJonp+yigKgA==","iv":"Mndzbztv7gpBQn4u","data":
 const LS_KEYS = "eq_keys_v1";
 const LS_SAVE = "eq_save_v1";
 const LS_PREFS = "eq_prefs_v1";
+const LS_LIB = "eq_library_v1";
 const ANTHROPIC_MODEL = "claude-haiku-4-5";
 const IMG_STYLE = ", cinematic digital painting, atmospheric lighting, highly detailed, no text, no words";
 
@@ -413,9 +413,21 @@ function loadKeys(){ try{ keys = Object.assign(keys, JSON.parse(localStorage.get
 function saveKeys(){ localStorage.setItem(LS_KEYS, JSON.stringify(keys)); }
 function loadPrefs(){ try{ prefs = Object.assign(prefs, JSON.parse(localStorage.getItem(LS_PREFS) || "{}")); }catch(e){} }
 function savePrefs(){ localStorage.setItem(LS_PREFS, JSON.stringify(prefs)); }
-function loadSave(){ try{ return JSON.parse(localStorage.getItem(LS_SAVE) || "null"); }catch(e){ return null; } }
-function persist(){ if(game) localStorage.setItem(LS_SAVE, JSON.stringify(game)); }
-function clearSave(){ localStorage.removeItem(LS_SAVE); game = null; }
+function loadLib(){ try{ return JSON.parse(localStorage.getItem(LS_LIB) || "[]"); }catch(e){ return []; } }
+function saveLib(lib){
+  try{ localStorage.setItem(LS_LIB, JSON.stringify(lib)); }
+  catch(e){ toast("Device storage is full — delete an older story from the menu."); }
+}
+function persist(){
+  if (!game) return;
+  game.updatedAt = Date.now();
+  const lib = loadLib();
+  const i = lib.findIndex(s => s.id === game.id);
+  if (i >= 0) lib[i] = game; else lib.unshift(game);
+  saveLib(lib);
+}
+function deleteStory(id){ saveLib(loadLib().filter(s => s.id !== id)); }
+function clearSave(){ if (game) deleteStory(game.id); game = null; }
 
 /* ---------- ui helpers ---------- */
 function show(name){
@@ -1049,7 +1061,8 @@ function rollDice(chance, done){
 
 /* ---------- flows ---------- */
 function startNewStory(desc){
-  game = { worldDesc: desc, title: "", look: "", refImg: null, messages: [], chronicle: [], last: null, turn: 0 };
+  game = { id: "s" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+           worldDesc: desc, title: "", look: "", refImg: null, messages: [], chronicle: [], last: null, turn: 0 };
   // reset scene
   $("imgA").classList.remove("show"); $("imgB").classList.remove("show");
   $("imgA").removeAttribute("src"); $("imgB").removeAttribute("src");
@@ -1060,17 +1073,61 @@ function startNewStory(desc){
   show("game");
   runTurn("Create my world and its opening scene. My world: " + desc);
 }
-function continueStory(){
-  const s = loadSave();
-  if (!s || !s.last){ toast("No saved story found."); return; }
+function continueStory(id){
+  const s = loadLib().find(x => x.id === id);
+  if (!s || !s.last){ toast("That story could not be found."); renderLibrary(); return; }
   game = s;
   show("game");
-  if (game.last.image_url){
-    $("imgA").classList.remove("show"); $("imgB").classList.remove("show");
-    curImg = "A";
-    crossfadeTo(game.last.image_url);
-  }
+  $("imgA").classList.remove("show"); $("imgB").classList.remove("show");
+  $("imgA").removeAttribute("src"); $("imgB").removeAttribute("src");
+  $("scene").classList.add("noimg");
+  curImg = "A";
+  if (game.last.image_url) crossfadeTo(game.last.image_url);
   renderTurn(game.last, { instant: true });
+}
+
+function renderLibrary(){
+  const list = $("storyList");
+  if (!list) return;
+  list.innerHTML = "";
+  const lib = loadLib().filter(s => s && s.last);
+  lib.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+  lib.forEach(s => {
+    const card = document.createElement("div");
+    card.className = "continue-card";
+    const art = document.createElement("span");
+    art.className = "cc-art";
+    art.textContent = "🔥";
+    if (s.last.image_url){
+      const im = document.createElement("img");
+      im.src = s.last.image_url;
+      im.onerror = () => im.remove();
+      art.appendChild(im);
+    }
+    const mid = document.createElement("span");
+    mid.style.cssText = "flex:1;min-width:0";
+    const t1 = document.createElement("span");
+    t1.className = "cc-title";
+    t1.textContent = s.title || "Untitled tale";
+    const t2 = document.createElement("span");
+    t2.className = "cc-sub";
+    t2.style.display = "block";
+    t2.textContent = "Scene " + (s.turn || 1) + " · " + (s.last.scene_title || "your tale awaits");
+    mid.appendChild(t1); mid.appendChild(t2);
+    const del = document.createElement("button");
+    del.className = "cc-del";
+    del.textContent = "🗑";
+    del.onclick = (e) => {
+      e.stopPropagation();
+      if (confirm('Delete "' + (s.title || "this story") + '" forever?')){
+        deleteStory(s.id);
+        renderLibrary();
+      }
+    };
+    card.onclick = () => continueStory(s.id);
+    card.appendChild(art); card.appendChild(mid); card.appendChild(del);
+    list.appendChild(card);
+  });
 }
 
 /* ---------- demo brain ---------- */
@@ -1091,12 +1148,17 @@ function boot(){
   if (DEMO) $("demoBand").classList.add("on");
   if (VAULT) $("vaultPanel").style.display = "block";
 
-  const save = loadSave();
-  if (save && save.last){
-    $("btnContinue").style.display = "flex";
-    $("ccTitle").textContent = save.title || "Continue your story";
-    $("ccSub").textContent = "Scene " + (save.turn || 1) + " · your tale awaits";
-  }
+  // migrate the old single-slot save into the story library, then render the shelf
+  try{
+    const old = JSON.parse(localStorage.getItem(LS_SAVE) || "null");
+    if (old && old.last){
+      old.id = old.id || "legacy-" + (old.turn || 1);
+      const lib = loadLib();
+      if (!lib.some(s => s.id === old.id)){ lib.unshift(old); saveLib(lib); }
+    }
+    localStorage.removeItem(LS_SAVE);
+  }catch(e){}
+  renderLibrary();
 
   if (!keys.anthropic && !DEMO) show("setup");
   else show("menu");
@@ -1148,19 +1210,18 @@ document.querySelectorAll(".seed").forEach(b => {
 $("btnBegin").onclick = () => {
   const desc = $("worldInput").value.trim();
   if (!desc){ toast("Describe your world first — a single sentence is enough."); return; }
-  if (loadSave()?.last && !confirm("Beginning a new story will replace your saved one. Continue?")) return;
-  clearSave();
+  if (loadLib().length >= 12){ toast("Your story shelf is full (12 tales) — delete an old one first."); return; }
+  $("worldInput").value = "";
   startNewStory(desc);
 };
 
-$("btnContinue").onclick = continueStory;
 $("btnFree").onclick = freeAction;
 $("freeInput").addEventListener("keydown", e => { if (e.key === "Enter") freeAction(); });
 
 $("btnNewStory").onclick = () => {
   $("goOverlay").classList.remove("on");
   demoStep = 0;
-  $("btnContinue").style.display = "none";
+  renderLibrary();
   show("menu");
 };
 
@@ -1187,20 +1248,29 @@ $("btnSaveKeys").onclick = () => {
   saveKeys();
   toast("Keys saved on this device. 🔒");
 };
+$("btnLibrary").onclick = () => {
+  if (game) persist();
+  game = null;
+  $("settingsSheet").classList.remove("on");
+  renderLibrary();
+  show("menu");
+};
 $("btnAbandon").onclick = () => {
-  if (!confirm("Abandon this story? Its save will be erased.")) return;
+  if (!game){ toast("No story is open right now."); return; }
+  if (!confirm("Abandon this story? Its save will be erased forever.")) return;
   clearSave();
   $("settingsSheet").classList.remove("on");
-  $("btnContinue").style.display = "none";
   demoStep = 0;
+  renderLibrary();
   show("menu");
 };
 $("btnWipe").onclick = () => {
-  if (!confirm("Erase your keys AND saved story from this device?")) return;
+  if (!confirm("Erase your keys AND every saved story from this device?")) return;
   localStorage.removeItem(LS_KEYS); localStorage.removeItem(LS_SAVE);
-  keys = { anthropic: "", fal: "" }; game = null;
+  localStorage.removeItem(LS_LIB); localStorage.removeItem(LS_PREFS);
+  keys = { anthropic: "", fal: "" }; prefs = { brush: "master" }; game = null;
   $("settingsSheet").classList.remove("on");
-  $("btnContinue").style.display = "none";
+  renderLibrary();
   show("setup");
 };
 
