@@ -231,6 +231,14 @@
       <p>stories written in fire</p>
     </div>
 
+    <div class="panel mt" id="vaultPanel" style="display:none">
+      <h3>Master Code</h3>
+      <label class="field" for="vaultCode">One code unlocks your keys on any device</label>
+      <input class="key" id="vaultCode" type="password" placeholder="Enter your master code" autocomplete="off" enterkeyhint="go">
+      <button class="btn primary mt" id="btnUnlock">Unlock ✦</button>
+      <p class="hint">Your keys are stored encrypted inside the game. The master code decrypts them on this device — nothing is sent anywhere. Prefer manual entry? Use the fields below.</p>
+    </div>
+
     <div class="panel mt">
       <h3>The Storyteller's Key</h3>
       <label class="field" for="keyAnthropic">Anthropic API key · required</label>
@@ -374,6 +382,8 @@
 /* ═══════════════════ Emberquill ═══════════════════ */
 
 const DEMO = new URLSearchParams(location.search).has("demo");
+/* Encrypted key vault (AES-256-GCM, PBKDF2 600k) — safe to publish; useless without the master code. */
+const VAULT = {"salt":"ajDVlK5SjjbJonp+yigKgA==","iv":"Mndzbztv7gpBQn4u","data":"uwSgS+kYZd10oqbTlAKSiMkKUmItLOtb2k6jPB+dUOy7VVx2YkKQbvIqHDOPkG0Nf6jYyU85OzRKTbhAVbx/hgrBtKQSR11Bo90GWMKlLAFUcC7qIwkzw5Yvjr+3wx6hQbNv/2Unyi2alFPR5n3dy2J331GTw7boTvLqjnoPzoMUDDSSms+AJFSD99D3B+GKj6zChTyWG9xQys4l2qgP3ZOMe1H4RgqrNlf7jCxOM7VJW9z/Y/vYa9aNuGdkpUcterxKyKkXEi22vgdOrTL7ZDdXhPGEYCYia2A="}; /*__VAULT__*/
 const LS_KEYS = "eq_keys_v1";
 const LS_SAVE = "eq_save_v1";
 const ANTHROPIC_MODEL = "claude-haiku-4-5";
@@ -792,6 +802,7 @@ function demoBrain(){
 function boot(){
   loadKeys();
   if (DEMO) $("demoBand").classList.add("on");
+  if (VAULT) $("vaultPanel").style.display = "block";
 
   const save = loadSave();
   if (save && save.last){
@@ -803,6 +814,35 @@ function boot(){
   if (!keys.anthropic && !DEMO) show("setup");
   else show("menu");
 }
+
+/* master code vault */
+const b64d = (s) => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+async function unlockVault(code){
+  const enc = new TextEncoder();
+  const base = await crypto.subtle.importKey("raw", enc.encode(code), "PBKDF2", false, ["deriveKey"]);
+  const key = await crypto.subtle.deriveKey(
+    { name: "PBKDF2", salt: b64d(VAULT.salt), iterations: 600000, hash: "SHA-256" },
+    base, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
+  const plain = await crypto.subtle.decrypt({ name: "AES-GCM", iv: b64d(VAULT.iv) }, key, b64d(VAULT.data));
+  return JSON.parse(new TextDecoder().decode(plain));
+}
+$("btnUnlock").onclick = async () => {
+  const code = $("vaultCode").value.trim();
+  if (!code) { toast("Enter your master code first."); return; }
+  $("btnUnlock").disabled = true; $("btnUnlock").textContent = "Unlocking…";
+  try {
+    const k = await unlockVault(code);
+    keys.anthropic = k.anthropic || keys.anthropic;
+    keys.fal = k.fal || keys.fal;
+    saveKeys();
+    toast("Vault unlocked — keys saved on this device. 🔓");
+    show("menu");
+  } catch (e) {
+    toast("That code didn't open the vault. Check it and try again.");
+  }
+  $("btnUnlock").disabled = false; $("btnUnlock").textContent = "Unlock ✦";
+};
+$("vaultCode").addEventListener("keydown", e => { if (e.key === "Enter") $("btnUnlock").click(); });
 
 $("btnSetupDone").onclick = () => {
   const a = $("keyAnthropic").value.trim();
