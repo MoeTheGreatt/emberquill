@@ -1,0 +1,12 @@
+{
+  "name": "Emberquill",
+  "short_name": "Emberquill",
+  "description": "An AI story RPG — describe any world, live inside it.",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#171210",
+  "theme_color": "#171210",
+  "icons": [
+    { "src": "icon.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
