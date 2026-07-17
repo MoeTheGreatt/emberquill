@@ -90,6 +90,7 @@
     box-shadow:0 6px 22px rgba(224,138,66,.35), inset 0 1px 0 rgba(255,255,255,.25)}
   .btn.primary:disabled{filter:grayscale(.6) brightness(.7);pointer-events:none}
   .btn.ghost{background:var(--raised);border:1px solid var(--line-strong);color:var(--text)}
+  .btn.ghost.sel{border-color:rgba(224,138,66,.6);background:var(--amber-soft);color:var(--amber-bright)}
   .btn.danger-ghost{background:transparent;border:1px solid rgba(207,97,70,.4);color:var(--danger);font-size:15px;padding:13px}
   .mt{margin-top:16px}
   .privacy{display:flex;gap:9px;align-items:flex-start;margin-top:16px;padding:12px 14px;border-radius:12px;
@@ -366,6 +367,13 @@
     </div>
 
     <div class="panel">
+      <h3>Painting</h3>
+      <button class="btn ghost" id="brushMaster">🎨 Master brush — your hero, identical in every scene</button>
+      <button class="btn ghost mt" id="brushSwift">⚡ Swift brush — fastest & cheapest</button>
+      <p class="hint">Master paints each scene from your hero's reference portrait (Seedream, ~20s, ~3¢/scene) — the painting arrives as you finish reading. Swift paints from words alone (Z-Image, ~2s, ~0.5¢/scene) — still consistent, just not identical.</p>
+    </div>
+
+    <div class="panel">
       <h3>Story</h3>
       <button class="btn ghost" id="btnAbandon">🕯️ Abandon current story</button>
       <button class="btn danger-ghost mt" id="btnWipe">Erase everything on this device</button>
@@ -386,6 +394,7 @@ const DEMO = new URLSearchParams(location.search).has("demo");
 const VAULT = {"salt":"ajDVlK5SjjbJonp+yigKgA==","iv":"Mndzbztv7gpBQn4u","data":"uwSgS+kYZd10oqbTlAKSiMkKUmItLOtb2k6jPB+dUOy7VVx2YkKQbvIqHDOPkG0Nf6jYyU85OzRKTbhAVbx/hgrBtKQSR11Bo90GWMKlLAFUcC7qIwkzw5Yvjr+3wx6hQbNv/2Unyi2alFPR5n3dy2J331GTw7boTvLqjnoPzoMUDDSSms+AJFSD99D3B+GKj6zChTyWG9xQys4l2qgP3ZOMe1H4RgqrNlf7jCxOM7VJW9z/Y/vYa9aNuGdkpUcterxKyKkXEi22vgdOrTL7ZDdXhPGEYCYia2A="}; /*__VAULT__*/
 const LS_KEYS = "eq_keys_v1";
 const LS_SAVE = "eq_save_v1";
+const LS_PREFS = "eq_prefs_v1";
 const ANTHROPIC_MODEL = "claude-haiku-4-5";
 const IMG_STYLE = ", cinematic digital painting, atmospheric lighting, highly detailed, no text, no words";
 
@@ -393,6 +402,7 @@ const $ = (id) => document.getElementById(id);
 
 /* ---------- state ---------- */
 let keys = { anthropic: "", fal: "" };
+let prefs = { brush: "master" };
 let game = null; // {worldDesc, title, messages[], chronicle[], last:{...}, turn}
 let busy = false;
 let typeTimer = null;
@@ -401,6 +411,8 @@ let curImg = "A"; // which scene img layer is showing
 /* ---------- storage ---------- */
 function loadKeys(){ try{ keys = Object.assign(keys, JSON.parse(localStorage.getItem(LS_KEYS) || "{}")); }catch(e){} }
 function saveKeys(){ localStorage.setItem(LS_KEYS, JSON.stringify(keys)); }
+function loadPrefs(){ try{ prefs = Object.assign(prefs, JSON.parse(localStorage.getItem(LS_PREFS) || "{}")); }catch(e){} }
+function savePrefs(){ localStorage.setItem(LS_PREFS, JSON.stringify(prefs)); }
 function loadSave(){ try{ return JSON.parse(localStorage.getItem(LS_SAVE) || "null"); }catch(e){ return null; } }
 function persist(){ if(game) localStorage.setItem(LS_SAVE, JSON.stringify(game)); }
 function clearSave(){ localStorage.removeItem(LS_SAVE); game = null; }
@@ -455,6 +467,7 @@ The player describes their world in a sentence or a paragraph. From it, build ge
 - Open in motion. Not "you wake up" — open with the day the trouble arrives, a decision already pressing, a stranger already at the door.
 - Establish within the first two scenes: who the player is, what they want or fear, what threatens that, and one vivid supporting character.
 - Invent exactly 4 stats tailored to the genre (see STAT DESIGN).
+- Invent protagonist_look: one fixed visual identity for the player character — species or build, coloring, face and hair or features, signature clothing, one distinguishing mark. 15–25 words, concrete and paintable. This is FROZEN at creation: repeat it character-for-character every turn for the rest of the story.
 
 ════════ STAT DESIGN ════════
 - Stat 1 is always a health-like survival resource: Vitality, Hull, Sanity, Blood, Battery — named for the genre. max 100, start 100. When it reaches 0, the story ends in defeat.
@@ -508,9 +521,10 @@ The game rolls physical dice on the player's screen. When the player's message r
 
 ════════ IMAGE PROMPTS (art direction) ════════
 image_prompt paints the scene the player is looking at RIGHT NOW:
-- 15–25 words. Concrete: setting, key figures, action or mood, lighting, era. One clear focal subject.
+- 15–30 words. Concrete: setting, key figures, action or mood, lighting, era. One clear focal subject.
+- If the protagonist is visible in the scene, image_prompt MUST begin with the exact tag "[HERO] " followed by the protagonist_look descriptors woven in verbatim — this is how the painting engine locks the character's identity. If the protagonist is not visible (a landscape, another character, a discovered object), no tag.
 - ALWAYS end with the world's fixed art style and palette, decided at world creation and repeated verbatim every turn (e.g. "painterly dark fantasy, warm torchlight and deep shadow" or "neon-noir digital art, rain-slick teal and magenta"). This one repeated phrase is what makes the whole story look painted by a single artist.
-- Keep recurring characters and places visually consistent: same cloak, same scar, same skyline.
+- Keep recurring supporting characters and places visually consistent too: same cloak, same scar, same skyline, described with the same words each time they appear.
 - Never request written text, letters, numbers, UI, or captions in the image.
 
 ════════ MEMORY LINE ════════
@@ -549,14 +563,15 @@ Items are story gravity — track them with care:
 - When the chronicle of past events is provided in a recap, honor it as absolute truth and build forward from it seamlessly — never contradict established facts, names, or debts.
 
 ════════ OUTPUT CONTRACT ════════
-Return every field, every turn, in this exact order: world_title (unchanged after creation), scene_title (2–4 evocative words, fresh each scene), image_prompt, stats (the FULL list of all 4, updated), story, choices, game_over, game_over_text ("" unless ending), memory.
-Field discipline: world_title never drifts; stats keep their names, icons, and maxes for the whole story; choices array is empty only when game_over is true.`;
+Return every field, every turn, in this exact order: world_title (unchanged after creation), scene_title (2–4 evocative words, fresh each scene), protagonist_look (frozen at creation, repeated verbatim forever), image_prompt, stats (the FULL list of all 4, updated), story, choices, game_over, game_over_text ("" unless ending), memory.
+Field discipline: world_title and protagonist_look never drift; stats keep their names, icons, and maxes for the whole story; choices array is empty only when game_over is true.`;
 
 const TURN_SCHEMA = {
   type: "object",
   properties: {
     world_title: { type: "string" },
     scene_title: { type: "string" },
+    protagonist_look: { type: "string" },
     image_prompt: { type: "string" },
     stats: {
       type: "array",
@@ -590,7 +605,7 @@ const TURN_SCHEMA = {
     game_over_text: { type: "string" },
     memory: { type: "string" }
   },
-  required: ["world_title","scene_title","image_prompt","stats","story","choices","game_over","game_over_text","memory"],
+  required: ["world_title","scene_title","protagonist_look","image_prompt","stats","story","choices","game_over","game_over_text","memory"],
   additionalProperties: false
 };
 
@@ -666,7 +681,7 @@ async function callBrainStream(messages, on){
     const reader = res.body.getReader();
     const dec = new TextDecoder();
     let buf = "", raw = "";
-    let gotTitle = false, gotImage = false;
+    let gotTitle = false, gotImage = false, gotLook = false;
 
     while (true){
       const { done, value } = await reader.read();
@@ -685,6 +700,10 @@ async function callBrainStream(messages, on){
               const f = jsonField(raw, "scene_title");
               if (f.complete){ gotTitle = true; on.onSceneTitle && on.onSceneTitle(f.value); }
             }
+            if (!gotLook){
+              const f = jsonField(raw, "protagonist_look");
+              if (f.complete){ gotLook = true; on.onLook && on.onLook(f.value); }
+            }
             if (!gotImage){
               const f = jsonField(raw, "image_prompt");
               if (f.complete){ gotImage = true; on.onImagePrompt && on.onImagePrompt(f.value); }
@@ -701,24 +720,41 @@ async function callBrainStream(messages, on){
   }
 }
 
-/* ---------- the painter (FLUX schnell via fal.ai) ---------- */
+/* ---------- the painter (Z-Image Turbo + Seedream identity lock via fal.ai) ---------- */
+async function falCall(endpoint, body){
+  const res = await fetch("https://fal.run/" + endpoint, {
+    method: "POST",
+    headers: { "Authorization": "Key " + keys.fal, "Content-Type": "application/json" },
+    body: JSON.stringify(body)
+  });
+  if (!res.ok) throw new Error("img " + res.status);
+  const data = await res.json();
+  return data.images?.[0]?.url || null;
+}
+
 async function paintScene(prompt, token){
   if (DEMO || !keys.fal) return null;
+  const hero = /^\[HERO\]\s*/.test(prompt);
+  const clean = prompt.replace(/^\[HERO\]\s*/, "");
   try{
-    const res = await fetch("https://fal.run/fal-ai/flux/schnell", {
-      method: "POST",
-      headers: { "Authorization": "Key " + keys.fal, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        prompt: prompt + IMG_STYLE,
-        image_size: "landscape_4_3",
-        num_inference_steps: 4,
-        num_images: 1,
-        enable_safety_checker: true
-      })
+    // Master brush: paint hero scenes FROM the reference portrait — same face, same body, every scene
+    if (hero && prefs.brush === "master" && game?.refImg){
+      try{
+        const url = await falCall("fal-ai/bytedance/seedream/v4/edit", {
+          prompt: "the exact same character as in the reference image, now: " + clean + IMG_STYLE,
+          image_urls: [game.refImg],
+          image_size: "landscape_4_3"
+        });
+        if (url) return url;
+      }catch(e){
+        console.warn("Identity painter failed, falling back:", e);
+        if (game) { game.refImg = null; } // reference may have expired — rebuild it next turn
+      }
+    }
+    return await falCall("fal-ai/z-image/turbo", {
+      prompt: clean + IMG_STYLE,
+      image_size: "landscape_4_3"
     });
-    if (!res.ok) throw new Error("img " + res.status);
-    const data = await res.json();
-    return data.images?.[0]?.url || null;
   }catch(e){
     console.warn("Painter failed:", e);
     if (token.first) toast("Scene images unavailable right now — continuing with title cards.");
@@ -726,6 +762,22 @@ async function paintScene(prompt, token){
   }
 }
 let firstPaintFail = { first: true };
+
+/* Generate the hero's reference portrait once per story (Master brush only). */
+let refBusy = false;
+async function ensureRef(){
+  if (DEMO || !keys.fal || prefs.brush !== "master") return;
+  if (!game || game.refImg || !game.look || refBusy) return;
+  refBusy = true;
+  try{
+    const url = await falCall("fal-ai/z-image/turbo", {
+      prompt: "full body character reference of " + game.look + ", clear view of face and outfit, simple background" + IMG_STYLE,
+      image_size: "landscape_4_3"
+    });
+    if (url && game){ game.refImg = url; persist(); }
+  }catch(e){ console.warn("Reference portrait failed:", e); }
+  refBusy = false;
+}
 
 /* ---------- scene rendering ---------- */
 function crossfadeTo(url){
@@ -863,6 +915,7 @@ async function runTurn(userText){
         $("sceneTitle").textContent = title;
         $("fallbackTitle").textContent = title;
       },
+      onLook: (look) => { if (game && look) game.look = look; },
       onImagePrompt: (prompt) => {
         // the painting starts while the story is still being written
         paintP = paintScene(prompt, firstPaintFail);
@@ -882,8 +935,10 @@ async function runTurn(userText){
 
     game.messages.push({ role: "assistant", content: JSON.stringify(t) });
     game.title = t.world_title || game.title;
+    game.look = t.protagonist_look || game.look || "";
     game.turn = (game.turn || 0) + 1;
     if (t.memory) game.chronicle.push((t.scene_title ? t.scene_title + ": " : "") + t.memory);
+    ensureRef(); // Master brush: build the hero's reference portrait in the background
 
     setBusy(false);
     if (liveCursor) liveCursor.remove();
@@ -945,7 +1000,8 @@ function trimHistory(){
   const M = game.messages;
   if (M.length <= 36) return;
   const kept = M.slice(-24);
-  const recap = "(( Recap of the story so far — chronicle of key events: " +
+  const recap = "(( Recap of the story so far. Protagonist appearance (frozen, repeat verbatim): " +
+    (game.look || "as established") + ". Chronicle of key events: " +
     (game.chronicle.slice(-20).join(" | ") || "the adventure began") +
     ". Continue seamlessly from the latest scene. ))";
   game.messages = [{ role: "user", content: recap }, ...kept];
@@ -993,7 +1049,7 @@ function rollDice(chance, done){
 
 /* ---------- flows ---------- */
 function startNewStory(desc){
-  game = { worldDesc: desc, title: "", messages: [], chronicle: [], last: null, turn: 0 };
+  game = { worldDesc: desc, title: "", look: "", refImg: null, messages: [], chronicle: [], last: null, turn: 0 };
   // reset scene
   $("imgA").classList.remove("show"); $("imgB").classList.remove("show");
   $("imgA").removeAttribute("src"); $("imgB").removeAttribute("src");
@@ -1031,6 +1087,7 @@ function demoBrain(){
 /* ---------- boot & wiring ---------- */
 function boot(){
   loadKeys();
+  loadPrefs();
   if (DEMO) $("demoBand").classList.add("on");
   if (VAULT) $("vaultPanel").style.display = "block";
 
@@ -1108,9 +1165,16 @@ $("btnNewStory").onclick = () => {
 };
 
 /* settings */
+function reflectBrush(){
+  $("brushMaster").classList.toggle("sel", prefs.brush === "master");
+  $("brushSwift").classList.toggle("sel", prefs.brush !== "master");
+}
+$("brushMaster").onclick = () => { prefs.brush = "master"; savePrefs(); reflectBrush(); ensureRef(); };
+$("brushSwift").onclick = () => { prefs.brush = "swift"; savePrefs(); reflectBrush(); };
 function openSettings(){
   $("setKeyAnthropic").value = keys.anthropic;
   $("setKeyFal").value = keys.fal;
+  reflectBrush();
   $("settingsSheet").classList.add("on");
 }
 $("btnGear").onclick = openSettings;
