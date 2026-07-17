@@ -183,8 +183,14 @@
   .thinking .embers i:nth-child(3){animation-delay:.4s}
   @keyframes flicker{0%,100%{opacity:.25;transform:translateY(0)}50%{opacity:1;transform:translateY(-3px)}}
   .ic{vertical-align:-3px}
-  .seed .ic{margin-right:5px;vertical-align:-2px;color:var(--amber)}
-  .btn .ic{margin-right:6px;vertical-align:-3px}
+  .seed .ic{margin-inline-end:5px;vertical-align:-2px;color:var(--amber)}
+  .btn .ic{margin-inline-end:6px;vertical-align:-3px}
+  .lang-pill{position:fixed;top:calc(var(--sat) + 12px);inset-inline-end:14px;z-index:45;
+    font-family:var(--sans);font-size:13.5px;font-weight:700;letter-spacing:.02em;padding:8px 13px;
+    border-radius:99px;background:var(--raised);border:1px solid var(--line-strong);color:var(--gold);
+    box-shadow:0 4px 14px rgba(0,0,0,.35)}
+  [dir="rtl"] .story{font-size:18.5px;line-height:1.9}
+  [dir="rtl"] .brand h1,[dir="rtl"] .gamebar .world-title{letter-spacing:0}
   .s-top .ic{color:var(--amber);flex:0 0 auto}
   .cc-art{color:var(--amber)}
   .risk .ic{vertical-align:-2px}
@@ -236,6 +242,7 @@
 <body>
 
 <div class="demo-band" id="demoBand">Demo mode — no keys needed</div>
+<button class="lang-pill lang-btn" id="langPill" aria-label="Language">ع</button>
 
 <!-- ═══ SETUP ═══ -->
 <section class="screen" id="screen-setup">
@@ -243,34 +250,34 @@
     <div class="brand">
       <div class="mark"><img src="icon.png" alt=""></div>
       <h1>Emberquill</h1>
-      <p>stories written in fire</p>
+      <p data-i18n="tag1">stories written in fire</p>
     </div>
 
     <div class="panel mt" id="vaultPanel" style="display:none">
-      <h3>Master Code</h3>
-      <label class="field" for="vaultCode">One code unlocks your keys on any device</label>
-      <input class="key" id="vaultCode" type="password" placeholder="Enter your master code" autocomplete="off" enterkeyhint="go">
-      <button class="btn primary mt" id="btnUnlock">Unlock ✦</button>
-      <p class="hint">Your keys are stored encrypted inside the game. The master code decrypts them on this device — nothing is sent anywhere. Prefer manual entry? Use the fields below.</p>
+      <h3 data-i18n="mc">Master Code</h3>
+      <label class="field" for="vaultCode" data-i18n="mcLabel">One code unlocks your keys on any device</label>
+      <input class="key" id="vaultCode" type="password" placeholder="••••••••" autocomplete="off" enterkeyhint="go">
+      <button class="btn primary mt" id="btnUnlock" data-i18n="unlock">Unlock ✦</button>
+      <p class="hint" data-i18n="mcHint">Your keys are stored encrypted inside the game. The master code decrypts them on this device — nothing is sent anywhere. Prefer manual entry? Use the fields below.</p>
     </div>
 
     <div class="panel mt">
-      <h3>The Storyteller's Key</h3>
-      <label class="field" for="keyAnthropic">Anthropic API key · required</label>
+      <h3 data-i18n="keyStory">The Storyteller's Key</h3>
+      <label class="field" for="keyAnthropic" data-i18n="anthLabel">Anthropic API key · required</label>
       <input class="key" id="keyAnthropic" type="password" placeholder="sk-ant-..." autocomplete="off">
-      <p class="hint">Powers the story. Create one at <a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a> → API Keys. A few dollars of credit lasts a very long time (≈25¢ per hour of play).</p>
+      <p class="hint" data-i18n="anthHint">Powers the story. Create one at <a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a> → API Keys. A few dollars of credit lasts a very long time (≈25¢ per hour of play).</p>
     </div>
 
     <div class="panel">
-      <h3>The Painter's Key</h3>
-      <label class="field" for="keyFal">fal.ai API key · optional</label>
-      <input class="key" id="keyFal" type="password" placeholder="Paste key, or leave empty" autocomplete="off">
-      <p class="hint">Paints each scene live (~1–2s, ≈0.3¢ per image). Get one at <a href="https://fal.ai/dashboard/keys" target="_blank" rel="noopener">fal.ai/dashboard/keys</a>. Without it, scenes appear as elegant title cards — you can add it later in Settings.</p>
+      <h3 data-i18n="keyPainter">The Painter's Key</h3>
+      <label class="field" for="keyFal" data-i18n="falLabel">fal.ai API key · optional</label>
+      <input class="key" id="keyFal" type="password" placeholder="…" autocomplete="off">
+      <p class="hint" data-i18n="falHint">Paints each scene live (~1–2s, ≈0.3¢ per image). Get one at <a href="https://fal.ai/dashboard/keys" target="_blank" rel="noopener">fal.ai/dashboard/keys</a>. Without it, scenes appear as elegant title cards — you can add it later in Settings.</p>
     </div>
 
-    <div class="privacy"><span data-ic="lock" data-icsize="17" style="color:var(--amber);flex:0 0 auto;margin-top:1px"></span><span>Your keys are stored only on this device and sent only to Anthropic / fal.ai. Never share this page's saved data with anyone.</span></div>
+    <div class="privacy"><span data-ic="lock" data-icsize="17" style="color:var(--amber);flex:0 0 auto;margin-top:1px"></span><span data-i18n="privacy">Your keys are stored only on this device and sent only to Anthropic / fal.ai. Never share this page's saved data with anyone.</span></div>
 
-    <button class="btn primary mt" id="btnSetupDone">Enter the story ✦</button>
+    <button class="btn primary mt" id="btnSetupDone" data-i18n="enter">Enter the story ✦</button>
   </div>
 </section>
 
@@ -280,27 +287,27 @@
     <div class="brand">
       <div class="mark"><img src="icon.png" alt=""></div>
       <h1>Emberquill</h1>
-      <p>describe a world. live inside it.</p>
+      <p data-i18n="tag2">describe a world. live inside it.</p>
     </div>
 
     <div id="storyList" class="mt"></div>
 
     <div class="panel mt">
-      <h3>Begin a new story</h3>
-      <textarea id="worldInput" placeholder="Describe any world… who are you, where are you, what trouble is brewing? A sentence is enough — the story does the rest."></textarea>
+      <h3 data-i18n="beginNew">Begin a new story</h3>
+      <textarea id="worldInput" data-i18n-ph="worldPh" placeholder="Describe any world… who are you, where are you, what trouble is brewing? A sentence is enough — the story does the rest."></textarea>
       <div class="seeds">
-        <button class="seed" data-seed="I'm a disgraced knight in a cursed medieval kingdom, seeking redemption while an ancient evil stirs beneath the capital."><span data-ic="sword" data-icsize="13"></span>Dark fantasy</button>
-        <button class="seed" data-seed="I'm a private detective in a neon-soaked cyberpunk megacity, hired to find a missing scientist who knew too much."><span data-ic="bolt" data-icsize="13"></span>Cyberpunk noir</button>
-        <button class="seed" data-seed="I'm a pirate captain in uncharted seas, chasing a legendary treasure while my crew whispers of mutiny."><span data-ic="compass" data-icsize="13"></span>Pirate seas</button>
-        <button class="seed" data-seed="I'm a lone survivor crossing a post-apocalyptic wasteland, carrying something that every faction wants."><span data-ic="skull" data-icsize="13"></span>Wasteland</button>
+        <button class="seed" data-seed="I'm a disgraced knight in a cursed medieval kingdom, seeking redemption while an ancient evil stirs beneath the capital."><span data-ic="sword" data-icsize="13"></span><span data-i18n="sFantasy">Dark fantasy</span></button>
+        <button class="seed" data-seed="I'm a private detective in a neon-soaked cyberpunk megacity, hired to find a missing scientist who knew too much."><span data-ic="bolt" data-icsize="13"></span><span data-i18n="sCyber">Cyberpunk noir</span></button>
+        <button class="seed" data-seed="I'm a pirate captain in uncharted seas, chasing a legendary treasure while my crew whispers of mutiny."><span data-ic="compass" data-icsize="13"></span><span data-i18n="sPirate">Pirate seas</span></button>
+        <button class="seed" data-seed="I'm a lone survivor crossing a post-apocalyptic wasteland, carrying something that every faction wants."><span data-ic="skull" data-icsize="13"></span><span data-i18n="sWaste">Wasteland</span></button>
       </div>
-      <button class="btn primary mt" id="btnBegin">Begin ✦</button>
+      <button class="btn primary mt" id="btnBegin" data-i18n="begin">Begin ✦</button>
     </div>
 
     <div class="menu-foot">
-      <button id="btnImport">Import story code</button>
+      <button id="btnImport" data-i18n="importCode">Import story code</button>
       <span style="color:var(--text-faint);font-family:var(--sans);font-size:13px"> · </span>
-      <button id="btnMenuSettings">Settings · Keys</button>
+      <button id="btnMenuSettings" data-i18n="settingsKeys">Settings · Keys</button>
     </div>
   </div>
 </section>
@@ -310,7 +317,8 @@
   <div class="shell">
     <div class="gamebar">
       <div class="world-title" id="worldTitle">—</div>
-      <span style="display:flex;gap:2px">
+      <span style="display:flex;gap:2px;align-items:center">
+        <button class="gear lang-btn" id="btnLangGame" aria-label="Language" style="font-family:var(--sans);font-weight:700;font-size:13px;color:var(--gold)">ع</button>
         <button class="gear" id="btnSpeak" data-ic="sound" data-icsize="19" aria-label="Read aloud"></button>
         <button class="gear" id="btnGear" data-ic="gear" data-icsize="19" aria-label="Settings"></button>
       </span>
@@ -319,7 +327,7 @@
     <div class="scene noimg" id="scene">
       <div class="fallback" id="sceneFallback">
         <div class="orn">✦ ✦ ✦</div>
-        <div class="ft" id="fallbackTitle">The story begins…</div>
+        <div class="ft" id="fallbackTitle" data-i18n="storyBegins">The story begins…</div>
       </div>
       <img id="imgA" alt="">
       <img id="imgB" alt="">
@@ -332,12 +340,12 @@
 
     <div class="story" id="storyBox"></div>
 
-    <div class="thinking" id="thinking"><span class="embers"><i></i><i></i><i></i></span> The story unfolds…</div>
+    <div class="thinking" id="thinking"><span class="embers"><i></i><i></i><i></i></span> <span data-i18n="unfolds">The story unfolds…</span></div>
 
     <div class="choices" id="choicesBox"></div>
 
     <div class="freeact" id="freeAct">
-      <input id="freeInput" type="text" placeholder="Or write your own action…" enterkeyhint="go">
+      <input id="freeInput" type="text" data-i18n-ph="freePh" placeholder="Or write your own action…" enterkeyhint="go">
       <button id="btnFree" aria-label="Do it" data-ic="arrow" data-icsize="18"></button>
     </div>
   </div>
@@ -358,7 +366,7 @@
     <div class="orn">✦ ✦ ✦</div>
     <h2 id="goTitle">The story ends</h2>
     <p id="goText"></p>
-    <button class="btn primary" id="btnNewStory">Begin a new story</button>
+    <button class="btn primary" id="btnNewStory" data-i18n="newStory">Begin a new story</button>
   </div>
 </div>
 
@@ -366,43 +374,43 @@
 <div class="sheet" id="settingsSheet">
   <div class="sheet-card">
     <div class="sheet-grab"></div>
-    <h2>Settings</h2>
-    <p class="sub">Emberquill · Claude Haiku 4.5 storyteller · Z-Image & Seedream painters</p>
+    <h2 data-i18n="settings">Settings</h2>
+    <p class="sub" data-i18n="settingsSub">Emberquill · Claude Haiku 4.5 storyteller · Z-Image & Seedream painters</p>
 
     <div class="panel">
-      <h3>Keys</h3>
-      <label class="field" for="setKeyAnthropic">Anthropic API key</label>
+      <h3 data-i18n="keysH">Keys</h3>
+      <label class="field" for="setKeyAnthropic" data-i18n="anthLabel2">Anthropic API key</label>
       <input class="key" id="setKeyAnthropic" type="password" placeholder="sk-ant-..." autocomplete="off">
-      <label class="field" for="setKeyFal">fal.ai API key (images)</label>
-      <input class="key" id="setKeyFal" type="password" placeholder="Empty = title cards instead of images" autocomplete="off">
-      <button class="btn ghost mt" id="btnSaveKeys">Save keys</button>
+      <label class="field" for="setKeyFal" data-i18n="falLabel2">fal.ai API key (images)</label>
+      <input class="key" id="setKeyFal" type="password" data-i18n-ph="falPh2" placeholder="Empty = title cards instead of images" autocomplete="off">
+      <button class="btn ghost mt" id="btnSaveKeys" data-i18n="saveKeys">Save keys</button>
     </div>
 
     <div class="panel">
-      <h3>Focus & Reading</h3>
-      <button class="btn ghost" id="paceBrisk"><span data-ic="bolt" data-icsize="16"></span>Brisk scenes — short, punchy, fast</button>
-      <button class="btn ghost mt" id="paceRich"><span data-ic="book" data-icsize="16"></span>Rich scenes — fuller storybook prose</button>
-      <button class="btn ghost mt" id="tglVoice"><span data-ic="sound" data-icsize="16"></span>Read scenes aloud</button>
-      <button class="btn ghost mt" id="tglBionic"><span data-ic="eye" data-icsize="16"></span>Focus lettering — bolds word starts</button>
-      <p class="hint">Made for reading comfort: brisk scenes keep turns tight, narration lets you listen instead of read, and focus lettering guides the eye through each line.</p>
+      <h3 data-i18n="focusH">Focus & Reading</h3>
+      <button class="btn ghost" id="paceBrisk"><span data-ic="bolt" data-icsize="16"></span><span data-i18n="paceBrisk">Brisk scenes — short, punchy, fast</span></button>
+      <button class="btn ghost mt" id="paceRich"><span data-ic="book" data-icsize="16"></span><span data-i18n="paceRich">Rich scenes — fuller storybook prose</span></button>
+      <button class="btn ghost mt" id="tglVoice"><span data-ic="sound" data-icsize="16"></span><span data-i18n="tglVoice">Read scenes aloud</span></button>
+      <button class="btn ghost mt" id="tglBionic"><span data-ic="eye" data-icsize="16"></span><span data-i18n="tglBionic">Focus lettering — bolds word starts</span></button>
+      <p class="hint" data-i18n="focusHint">Made for reading comfort: brisk scenes keep turns tight, narration lets you listen instead of read, and focus lettering guides the eye through each line.</p>
     </div>
 
     <div class="panel">
-      <h3>Painting</h3>
-      <button class="btn ghost" id="brushMaster"><span data-ic="brush" data-icsize="16"></span>Master brush — your hero, identical in every scene</button>
-      <button class="btn ghost mt" id="brushSwift"><span data-ic="bolt" data-icsize="16"></span>Swift brush — fastest & cheapest</button>
-      <p class="hint">Master paints each scene from your hero's reference portrait (Seedream, ~20s, ~3¢/scene) — the painting arrives as you finish reading. Swift paints from words alone (Z-Image, ~2s, ~0.5¢/scene) — still consistent, just not identical.</p>
+      <h3 data-i18n="paintingH">Painting</h3>
+      <button class="btn ghost" id="brushMaster"><span data-ic="brush" data-icsize="16"></span><span data-i18n="brushMaster">Master brush — your hero, identical in every scene</span></button>
+      <button class="btn ghost mt" id="brushSwift"><span data-ic="bolt" data-icsize="16"></span><span data-i18n="brushSwift">Swift brush — fastest & cheapest</span></button>
+      <p class="hint" data-i18n="paintHint">Master paints each scene from your hero's reference portrait (Seedream, ~20s, ~3¢/scene) — the painting arrives as you finish reading. Swift paints from words alone (Z-Image, ~2s, ~0.5¢/scene) — still consistent, just not identical.</p>
     </div>
 
     <div class="panel">
-      <h3>Story</h3>
-      <button class="btn ghost" id="btnLibrary"><span data-ic="books" data-icsize="16"></span>Back to the library — story is saved</button>
-      <button class="btn ghost mt" id="btnCode"><span data-ic="box" data-icsize="16"></span>Copy story code — carry it to another device</button>
-      <button class="btn ghost mt" id="btnAbandon"><span data-ic="candle" data-icsize="16"></span>Abandon current story (wipes it)</button>
-      <button class="btn danger-ghost mt" id="btnWipe">Erase everything on this device</button>
+      <h3 data-i18n="storyH">Story</h3>
+      <button class="btn ghost" id="btnLibrary"><span data-ic="books" data-icsize="16"></span><span data-i18n="setLibrary">Back to the library — story is saved</span></button>
+      <button class="btn ghost mt" id="btnCode"><span data-ic="box" data-icsize="16"></span><span data-i18n="setCode">Copy story code — carry it to another device</span></button>
+      <button class="btn ghost mt" id="btnAbandon"><span data-ic="candle" data-icsize="16"></span><span data-i18n="setAbandon">Abandon current story (wipes it)</span></button>
+      <button class="btn danger-ghost mt" id="btnWipe" data-i18n="wipeAll">Erase everything on this device</button>
     </div>
 
-    <button class="btn primary mt" id="btnCloseSettings">Done</button>
+    <button class="btn primary mt" id="btnCloseSettings" data-i18n="done">Done</button>
   </div>
 </div>
 
@@ -425,7 +433,7 @@
     <p class="sub" id="codeHint"></p>
     <textarea id="codeText" style="min-height:130px;padding:12px;font-family:var(--sans);font-size:12px;word-break:break-all" spellcheck="false"></textarea>
     <button class="btn primary mt" id="codeAction">Copy</button>
-    <button class="btn ghost mt" id="btnCloseCode">Close</button>
+    <button class="btn ghost mt" id="btnCloseCode" data-i18n="close">Close</button>
   </div>
 </div>
 
@@ -494,7 +502,7 @@ function hydrateIcons(){
 
 /* ---------- state ---------- */
 let keys = { anthropic: "", fal: "" };
-let prefs = { brush: "master", pace: "brisk", voice: true, bionic: false };
+let prefs = { brush: "master", pace: "brisk", voice: true, bionic: false, lang: "en" };
 let game = null; // {worldDesc, title, messages[], chronicle[], last:{...}, turn}
 let busy = false;
 let typeTimer = null;
@@ -505,6 +513,174 @@ function loadKeys(){ try{ keys = Object.assign(keys, JSON.parse(localStorage.get
 function saveKeys(){ localStorage.setItem(LS_KEYS, JSON.stringify(keys)); }
 function loadPrefs(){ try{ prefs = Object.assign(prefs, JSON.parse(localStorage.getItem(LS_PREFS) || "{}")); }catch(e){} }
 function savePrefs(){ localStorage.setItem(LS_PREFS, JSON.stringify(prefs)); }
+
+/* ── Language: English / العربية ─────────────────────────── */
+const I18N = {
+  en: {
+    tag1: "stories written in fire",
+    tag2: "describe a world. live inside it.",
+    mc: "Master Code", mcLabel: "One code unlocks your keys on any device", unlock: "Unlock ✦",
+    mcHint: "Your keys are stored encrypted inside the game. The master code decrypts them on this device — nothing is sent anywhere. Prefer manual entry? Use the fields below.",
+    keyStory: "The Storyteller's Key", anthLabel: "Anthropic API key · required",
+    anthHint: 'Powers the story. Create one at <a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a> → API Keys. A few dollars of credit lasts a very long time (≈25¢ per hour of play).',
+    keyPainter: "The Painter's Key", falLabel: "fal.ai API key · optional",
+    falHint: 'Paints each scene live (~1–2s, ≈0.3¢ per image). Get one at <a href="https://fal.ai/dashboard/keys" target="_blank" rel="noopener">fal.ai/dashboard/keys</a>. Without it, scenes appear as elegant title cards — you can add it later in Settings.',
+    privacy: "Your keys are stored only on this device and sent only to Anthropic / fal.ai. Never share this page's saved data with anyone.",
+    enter: "Enter the story ✦",
+    beginNew: "Begin a new story",
+    worldPh: "Describe any world… who are you, where are you, what trouble is brewing? A sentence is enough — the story does the rest.",
+    sFantasy: "Dark fantasy", sCyber: "Cyberpunk noir", sPirate: "Pirate seas", sWaste: "Wasteland",
+    begin: "Begin ✦", importCode: "Import story code", settingsKeys: "Settings · Keys",
+    storyBegins: "The story begins…", unfolds: "The story unfolds…", freePh: "Or write your own action…",
+    needRoll: "Need {n} or less", rolling: "The dice are rolling…", fortune: "Fortune favors you.", fates: "The fates turn away…",
+    storyEnds: "The story ends", endedDefault: "Your tale has reached its close.", newStory: "Begin a new story",
+    settings: "Settings", settingsSub: "Emberquill · Claude Haiku 4.5 storyteller · Z-Image & Seedream painters",
+    keysH: "Keys", anthLabel2: "Anthropic API key", falLabel2: "fal.ai API key (images)",
+    falPh2: "Empty = title cards instead of images", saveKeys: "Save keys",
+    focusH: "Focus & Reading", paceBrisk: "Brisk scenes — short, punchy, fast", paceRich: "Rich scenes — fuller storybook prose",
+    tglVoice: "Read scenes aloud", tglBionic: "Focus lettering — bolds word starts",
+    focusHint: "Made for reading comfort: brisk scenes keep turns tight, narration lets you listen instead of read, and focus lettering guides the eye through each line.",
+    paintingH: "Painting", brushMaster: "Master brush — your hero, identical in every scene", brushSwift: "Swift brush — fastest & cheapest",
+    paintHint: "Master paints each scene from your hero's reference portrait (Seedream, ~20s, ~3¢/scene) — the painting arrives as you finish reading. Swift paints from words alone (Z-Image, ~2s, ~0.5¢/scene) — still consistent, just not identical.",
+    storyH: "Story", setLibrary: "Back to the library — story is saved", setCode: "Copy story code — carry it to another device",
+    setAbandon: "Abandon current story (wipes it)", wipeAll: "Erase everything on this device", done: "Done",
+    codeTitleEx: "Your story code", codeTitleIm: "Import a story",
+    codeHintEx: "Send this code to yourself (AirDrop, Notes, email) and paste it into Emberquill on any other device via 'Import story code'. The whole tale travels with it.",
+    codeHintIm: "Paste a story code from another device below.",
+    copyCode: "Copy code", addLib: "Add to my library", close: "Close", weaving: "Weaving the code…",
+    sceneN: "Scene {n}", awaits: "your tale awaits", untitled: "Untitled tale",
+    delTitle: 'Delete "{t}"?',
+    delText: "The entire story will be wiped from this device — every scene, the character sheet, its chronicle of memories, and its story code. This cannot be undone.",
+    delYes: "Delete forever", keepIt: "Keep it",
+    abTitle: "Abandon this story?", abText: "It will be wiped completely from this device — scenes, character sheet, memories, everything. This cannot be undone.", abYes: "Abandon & wipe",
+    erTitle: "Erase everything?", erText: "Your keys AND every saved story will be wiped from this device.", erYes: "Erase it all",
+    langBtn: "ع"
+  },
+  ar: {
+    tag1: "حكايات تُكتب بالنار",
+    tag2: "صِف عالماً… وعِش بداخله.",
+    mc: "الرمز الرئيسي", mcLabel: "رمز واحد يفتح مفاتيحك على أي جهاز", unlock: "افتح ✦",
+    mcHint: "مفاتيحك مخزّنة مشفّرة داخل اللعبة. الرمز الرئيسي يفكّ تشفيرها على هذا الجهاز فقط — لا يُرسل أي شيء إلى أي مكان. تفضّل الإدخال اليدوي؟ استخدم الحقول أدناه.",
+    keyStory: "مفتاح الراوي", anthLabel: "مفتاح Anthropic · مطلوب",
+    anthHint: 'يشغّل القصة. أنشئ مفتاحاً من <a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a> ← API Keys. بضعة دولارات تكفي وقتاً طويلاً (نحو ٢٥ سنتاً لساعة لعب).',
+    keyPainter: "مفتاح الرسّام", falLabel: "مفتاح fal.ai · اختياري",
+    falHint: 'يرسم كل مشهد مباشرة (نحو ثانيتين، ~٠٫٣ سنت للصورة). احصل عليه من <a href="https://fal.ai/dashboard/keys" target="_blank" rel="noopener">fal.ai/dashboard/keys</a>. بدونه تظهر المشاهد كبطاقات أنيقة — ويمكنك إضافته لاحقاً من الإعدادات.',
+    privacy: "مفاتيحك تُخزَّن على هذا الجهاز فقط وتُرسَل إلى Anthropic / fal.ai حصراً. لا تشارك بيانات هذه الصفحة مع أحد.",
+    enter: "ادخل القصة ✦",
+    beginNew: "ابدأ قصة جديدة",
+    worldPh: "صِف أي عالم… من أنت؟ أين أنت؟ وأي متاعب تختمر؟ جملة واحدة تكفي — والقصة تتكفّل بالباقي.",
+    sFantasy: "فانتازيا مظلمة", sCyber: "سايبربانك نوار", sPirate: "بحار القراصنة", sWaste: "الأرض الخراب",
+    begin: "ابدأ ✦", importCode: "استيراد رمز قصة", settingsKeys: "الإعدادات · المفاتيح",
+    storyBegins: "تبدأ الحكاية…", unfolds: "تتكشّف الحكاية…", freePh: "أو اكتب فعلك الخاص…",
+    needRoll: "المطلوب {n} أو أقل", rolling: "النرد يتدحرج…", fortune: "الحظ حليفك.", fates: "أشاحت الأقدار بوجهها…",
+    storyEnds: "نهاية الحكاية", endedDefault: "بلغت حكايتك خاتمتها.", newStory: "ابدأ قصة جديدة",
+    settings: "الإعدادات", settingsSub: "إمبركويل · راوي Claude Haiku 4.5 · رسّامان Z-Image و Seedream",
+    keysH: "المفاتيح", anthLabel2: "مفتاح Anthropic", falLabel2: "مفتاح fal.ai (الصور)",
+    falPh2: "فارغ = بطاقات عناوين بدل الصور", saveKeys: "احفظ المفاتيح",
+    focusH: "التركيز والقراءة", paceBrisk: "مشاهد خاطفة — قصيرة وسريعة", paceRich: "مشاهد غنية — سرد حكائي أوفى",
+    tglVoice: "قراءة المشاهد بصوت عالٍ", tglBionic: "أحرف التركيز — تغميق بدايات الكلمات",
+    focusHint: "صُمم لراحة القراءة: المشاهد الخاطفة تُبقي الأدوار قصيرة، والسرد الصوتي يتيح لك الاستماع بدل القراءة، وأحرف التركيز تقود العين عبر السطور.",
+    paintingH: "الرسم", brushMaster: "الفرشاة الكبرى — بطلك مطابق في كل مشهد", brushSwift: "الفرشاة السريعة — الأسرع والأوفر",
+    paintHint: "الفرشاة الكبرى ترسم كل مشهد من صورة مرجعية لبطلك (Seedream، نحو ٢٠ ثانية، ~٣ سنتات للمشهد) — تصل اللوحة مع انتهائك من القراءة. السريعة ترسم من الكلمات وحدها (Z-Image، نحو ثانيتين، ~٠٫٥ سنت) — متّسقة لكن غير مطابقة تماماً.",
+    storyH: "القصة", setLibrary: "عودة إلى المكتبة — القصة محفوظة", setCode: "انسخ رمز القصة — لتحملها إلى جهاز آخر",
+    setAbandon: "اهجر القصة الحالية (تُمحى نهائياً)", wipeAll: "امسح كل شيء على هذا الجهاز", done: "تم",
+    codeTitleEx: "رمز قصتك", codeTitleIm: "استيراد قصة",
+    codeHintEx: "أرسل هذا الرمز لنفسك (AirDrop، الملاحظات، البريد) وألصقه في إمبركويل على أي جهاز آخر عبر «استيراد رمز قصة». الحكاية كلها تنتقل معه.",
+    codeHintIm: "ألصق أدناه رمز قصة من جهاز آخر.",
+    copyCode: "انسخ الرمز", addLib: "أضف إلى مكتبتي", close: "إغلاق", weaving: "يُنسَج الرمز…",
+    sceneN: "المشهد {n}", awaits: "حكايتك بانتظارك", untitled: "حكاية بلا عنوان",
+    delTitle: "أتحذف «{t}»؟",
+    delText: "ستُمحى القصة بأكملها من هذا الجهاز — كل مشهد، وورقة الشخصية، وسجل الذكريات، ورمز القصة. لا يمكن التراجع.",
+    delYes: "احذف نهائياً", keepIt: "أبقِها",
+    abTitle: "أتهجر هذه القصة؟", abText: "ستُمحى كلياً من هذا الجهاز — المشاهد وورقة الشخصية والذكريات، كل شيء. لا يمكن التراجع.", abYes: "اهجر وامسح",
+    erTitle: "أتمسح كل شيء؟", erText: "ستُمحى مفاتيحك وكل قصة محفوظة من هذا الجهاز.", erYes: "امسح الكل",
+    langBtn: "EN"
+  }
+};
+const TOAST_AR = {
+  "Keys saved on this device.": "حُفظت المفاتيح على هذا الجهاز.",
+  "Vault unlocked — keys saved on this device.": "فُتح القبو — حُفظت المفاتيح على هذا الجهاز.",
+  "That code didn't open the vault. Check it and try again.": "هذا الرمز لم يفتح القبو. تحقق منه وحاول مجدداً.",
+  "Enter your master code first.": "أدخل الرمز الرئيسي أولاً.",
+  "Story code copied. Paste it on your other device.": "نُسخ رمز القصة. ألصقه على جهازك الآخر.",
+  "That code couldn't be read — check you pasted the whole thing.": "تعذّرت قراءة الرمز — تأكد من لصقه كاملاً.",
+  "The tale has been wiped from this device.": "مُحيت الحكاية من هذا الجهاز.",
+  "Describe your world first — a single sentence is enough.": "صِف عالمك أولاً — جملة واحدة تكفي.",
+  "Your story shelf is full (12 tales) — delete an old one first.": "رفّ قصصك ممتلئ (١٢ حكاية) — احذف واحدة قديمة أولاً.",
+  "That story could not be found.": "تعذّر العثور على القصة.",
+  "The Storyteller's key (Anthropic) is required to play.": "مفتاح الراوي (Anthropic) مطلوب للعب.",
+  "No story is open right now.": "لا توجد قصة مفتوحة الآن.",
+  "Open a story first, then copy its code.": "افتح قصة أولاً ثم انسخ رمزها.",
+  "Scene images unavailable right now — continuing with title cards.": "صور المشاهد غير متاحة حالياً — نتابع ببطاقات العناوين.",
+  "Your Anthropic key was rejected. Check it in Settings.": "مفتاح Anthropic مرفوض. تحقق منه في الإعدادات.",
+  "The storyteller needs a breath (rate limit). Try again in a moment.": "الراوي يلتقط أنفاسه. حاول بعد لحظات.",
+  "The storyteller is overloaded right now. Try again in a moment.": "الراوي مثقَل الآن. حاول بعد لحظات.",
+  "Something broke the spell. Try again.": "انكسرت التعويذة. حاول مجدداً.",
+  "Device storage is full — delete an older story from the menu.": "ذاكرة الجهاز ممتلئة — احذف قصة قديمة من القائمة.",
+  "Could not create the story code.": "تعذّر إنشاء رمز القصة."
+};
+function t(k){ const L = I18N[prefs.lang] || I18N.en; return L[k] !== undefined ? L[k] : I18N.en[k] || k; }
+function applyLang(){
+  const ar = prefs.lang === "ar";
+  document.documentElement.lang = ar ? "ar" : "en";
+  document.documentElement.dir = ar ? "rtl" : "ltr";
+  document.querySelectorAll("[data-i18n]").forEach(el => { el.innerHTML = t(el.dataset.i18n); });
+  document.querySelectorAll("[data-i18n-ph]").forEach(el => { el.placeholder = t(el.dataset.i18nPh); });
+  document.querySelectorAll(".lang-btn").forEach(el => { el.textContent = t("langBtn"); });
+  renderLibrary();
+}
+const LANG_ADDON = () => prefs.lang === "ar"
+  ? "\n\n════════ LANGUAGE: ARABIC ════════\nWrite every player-facing field in Modern Standard Arabic with a natural literary storytelling voice: world_title, scene_title, story, stats names, choices text and their stat references, game_over_text, memory. EXCEPTIONS that must stay in English: protagonist_look, image_prompt (the painting engine reads English only), stats icon names (fixed icon list), and the [HERO] tag prefix. Use Western digits (1 2 3). If earlier turns were written in English, continue the same story seamlessly in Arabic, translating recurring names and stat names consistently."
+  : "\n\n════════ LANGUAGE: ENGLISH ════════\nWrite all player-facing text in English. If earlier turns were written in another language, continue the same story seamlessly in English, keeping recurring names consistent.";
+
+async function translateScene(){
+  if (!game?.last || DEMO || !keys.anthropic) return;
+  $("thinking").classList.add("on");
+  try{
+    const src = Object.assign({}, game.last);
+    const imgUrl = src.image_url || null;
+    delete src.image_url;
+    const target = prefs.lang === "ar" ? "Modern Standard Arabic" : "English";
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-api-key": keys.anthropic,
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true"
+      },
+      body: JSON.stringify({
+        model: ANTHROPIC_MODEL, max_tokens: 2048,
+        system: [{ type: "text", text: "You translate RPG game turns. Translate every player-facing text field (world_title, scene_title, story, stats[].name, choices[].text, choices[].stat, game_over_text, memory) into " + target + ", faithfully preserving meaning, tone, and names. Keep protagonist_look and image_prompt EXACTLY unchanged. Keep stats[].icon values, all numbers, chance values, and booleans unchanged. Return the full turn." }],
+        messages: [{ role: "user", content: JSON.stringify(src) }],
+        output_config: { format: { type: "json_schema", schema: TURN_SCHEMA } }
+      })
+    });
+    if (!res.ok) throw new Error("translate " + res.status);
+    const data = await res.json();
+    const tr = JSON.parse((data.content || []).find(b => b.type === "text")?.text || "");
+    tr.image_url = imgUrl;
+    game.last = tr;
+    game.title = tr.world_title || game.title;
+    renderTurn(tr, { instant: true });
+    persist();
+  }catch(e){
+    toast(prefs.lang === "ar" ? "تعذّرت ترجمة المشهد — الدور القادم سيكون بالعربية." : "Couldn't translate this scene — the next turn will switch language.");
+  }
+  $("thinking").classList.remove("on");
+}
+
+let langBusy = false;
+async function toggleLang(){
+  if (langBusy) return;
+  langBusy = true;
+  prefs.lang = prefs.lang === "ar" ? "en" : "ar";
+  savePrefs();
+  stopSpeak();
+  applyLang();
+  if (game && game.last && $("screen-game").classList.contains("active")) await translateScene();
+  langBusy = false;
+}
 function loadLib(){ try{ return JSON.parse(localStorage.getItem(LS_LIB) || "[]"); }catch(e){ return []; } }
 function saveLib(lib){
   try{ localStorage.setItem(LS_LIB, JSON.stringify(lib)); }
@@ -525,6 +701,7 @@ function clearSave(){ if (game) deleteStory(game.id); game = null; }
 function show(name){
   document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
   $("screen-" + name).classList.add("active");
+  $("langPill").style.display = name === "game" ? "none" : "block";
   window.scrollTo(0, 0);
 }
 /* in-app confirmation (never the ugly browser popup) */
@@ -535,6 +712,7 @@ function confirmBox(title, text, yesLabel){
     $("cfTitle").textContent = title;
     $("cfText").textContent = text;
     $("cfYes").textContent = yesLabel || "Confirm";
+    $("cfNo").textContent = t("keepIt");
     $("confirmOverlay").classList.add("on");
   });
 }
@@ -562,8 +740,9 @@ async function decodeStory(code){
 
 let toastT = null;
 function toast(msg, ms = 3200){
-  const t = $("toast"); t.textContent = msg; t.classList.add("on");
-  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("on"), ms);
+  if (prefs.lang === "ar" && TOAST_AR[msg]) msg = TOAST_AR[msg];
+  const el = $("toast"); el.textContent = msg; el.classList.add("on");
+  clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove("on"), ms);
 }
 function setBusy(b){
   busy = b;
@@ -800,7 +979,7 @@ async function callBrainStream(messages, on){
         max_tokens: 2048,
         stream: true,
         cache_control: { type: "ephemeral" },
-        system: [{ type: "text", text: SYSTEM_PROMPT + (prefs.pace === "rich" ? "" : BRISK_ADDON) }],
+        system: [{ type: "text", text: SYSTEM_PROMPT + (prefs.pace === "rich" ? "" : BRISK_ADDON) + LANG_ADDON() }],
         messages,
         output_config: { format: { type: "json_schema", schema: TURN_SCHEMA } }
       })
@@ -1023,9 +1202,9 @@ function renderChoices(choices){
   });
 }
 
-function showGameOver(t){
-  $("goTitle").textContent = t.scene_title || "The story ends";
-  $("goText").textContent = t.game_over_text || "Your tale has reached its close.";
+function showGameOver(turn){
+  $("goTitle").textContent = turn.scene_title || t("storyEnds");
+  $("goText").textContent = turn.game_over_text || t("endedDefault");
   $("goOverlay").classList.add("on");
   clearSave();
 }
@@ -1200,8 +1379,8 @@ function freeAction(){
 
 function rollDice(chance, done){
   const ov = $("diceOverlay"), num = $("diceNum"), verdict = $("diceVerdict");
-  $("diceNeed").textContent = "Need " + chance + " or less";
-  num.className = "num"; verdict.textContent = "The dice are rolling…";
+  $("diceNeed").textContent = t("needRoll").replace("{n}", chance);
+  num.className = "num"; verdict.textContent = t("rolling");
   ov.classList.add("on");
   const roll = 1 + Math.floor(Math.random() * 100);
   const success = roll <= chance;
@@ -1212,7 +1391,7 @@ function rollDice(chance, done){
       clearInterval(spin);
       num.textContent = roll;
       num.classList.add(success ? "win" : "lose");
-      verdict.textContent = success ? "Fortune favors you." : "The fates turn away…";
+      verdict.textContent = success ? t("fortune") : t("fates");
       if (navigator.vibrate) navigator.vibrate(success ? 30 : [40, 60, 40]);
       setTimeout(() => { ov.classList.remove("on"); done(roll, success); }, 1100);
     }
@@ -1268,11 +1447,11 @@ function renderLibrary(){
     mid.style.cssText = "flex:1;min-width:0";
     const t1 = document.createElement("span");
     t1.className = "cc-title";
-    t1.textContent = s.title || "Untitled tale";
+    t1.textContent = s.title || t("untitled");
     const t2 = document.createElement("span");
     t2.className = "cc-sub";
     t2.style.display = "block";
-    t2.textContent = "Scene " + (s.turn || 1) + " · " + (s.last.scene_title || "your tale awaits");
+    t2.textContent = t("sceneN").replace("{n}", s.turn || 1) + " · " + (s.last.scene_title || t("awaits"));
     mid.appendChild(t1); mid.appendChild(t2);
     const del = document.createElement("button");
     del.className = "cc-del";
@@ -1280,9 +1459,9 @@ function renderLibrary(){
     del.onclick = async (e) => {
       e.stopPropagation();
       const ok = await confirmBox(
-        'Delete "' + (s.title || "this tale") + '"?',
-        "The entire story will be wiped from this device — every scene, the character sheet, its chronicle of memories, and its story code. This cannot be undone.",
-        "Delete forever");
+        t("delTitle").replace("{t}", s.title || t("untitled")),
+        t("delText"),
+        t("delYes"));
       if (ok){
         deleteStory(s.id);
         if (game && game.id === s.id) game = null;
@@ -1308,10 +1487,14 @@ function demoBrain(){
 }
 
 /* ---------- boot & wiring ---------- */
+$("langPill").onclick = toggleLang;
+$("btnLangGame").onclick = toggleLang;
+
 function boot(){
   hydrateIcons();
   loadKeys();
   loadPrefs();
+  applyLang();
   if (DEMO) $("demoBand").classList.add("on");
   if (VAULT) $("vaultPanel").style.display = "block";
 
@@ -1356,7 +1539,7 @@ $("btnUnlock").onclick = async () => {
   } catch (e) {
     toast("That code didn't open the vault. Check it and try again.");
   }
-  $("btnUnlock").disabled = false; $("btnUnlock").textContent = "Unlock ✦";
+  $("btnUnlock").disabled = false; $("btnUnlock").textContent = t("unlock");
 };
 $("vaultCode").addEventListener("keydown", e => { if (e.key === "Enter") $("btnUnlock").click(); });
 
@@ -1448,11 +1631,9 @@ $("cfNo").onclick = () => { $("confirmOverlay").classList.remove("on"); if (cfRe
 let codeMode = "export";
 function openCodeSheet(mode){
   codeMode = mode;
-  $("codeTitle").textContent = mode === "export" ? "Your story code" : "Import a story";
-  $("codeHint").textContent = mode === "export"
-    ? "Send this code to yourself (AirDrop, Notes, email) and paste it into Emberquill on any other device via 'Import story code'. The whole tale travels with it."
-    : "Paste a story code from another device below.";
-  $("codeAction").textContent = mode === "export" ? "Copy code" : "Add to my library";
+  $("codeTitle").textContent = mode === "export" ? t("codeTitleEx") : t("codeTitleIm");
+  $("codeHint").textContent = mode === "export" ? t("codeHintEx") : t("codeHintIm");
+  $("codeAction").textContent = mode === "export" ? t("copyCode") : t("addLib");
   $("codeText").value = "";
   $("codeText").placeholder = mode === "export" ? "" : "EQ1.…";
   $("codeSheet").classList.add("on");
@@ -1465,7 +1646,7 @@ $("btnCode").onclick = async () => {
   persist();
   $("settingsSheet").classList.remove("on");
   openCodeSheet("export");
-  $("codeText").value = "Weaving the code…";
+  $("codeText").value = t("weaving");
   try{ $("codeText").value = await encodeStory(game); }
   catch(e){ $("codeText").value = ""; toast("Could not create the story code."); }
 };
@@ -1474,7 +1655,7 @@ $("btnImport").onclick = () => openCodeSheet("import");
 $("codeAction").onclick = async () => {
   if (codeMode === "export"){
     const code = $("codeText").value;
-    if (!code || code.startsWith("Weaving")) return;
+    if (!code || !code.startsWith("EQ")) return;
     try{
       await navigator.clipboard.writeText(code);
       toast("Story code copied. Paste it on your other device.");
@@ -1510,10 +1691,7 @@ $("btnLibrary").onclick = () => {
 };
 $("btnAbandon").onclick = async () => {
   if (!game){ toast("No story is open right now."); return; }
-  const ok = await confirmBox(
-    "Abandon this story?",
-    "It will be wiped completely from this device — scenes, character sheet, memories, everything. This cannot be undone.",
-    "Abandon & wipe");
+  const ok = await confirmBox(t("abTitle"), t("abText"), t("abYes"));
   if (!ok) return;
   clearSave();
   $("settingsSheet").classList.remove("on");
@@ -1522,10 +1700,7 @@ $("btnAbandon").onclick = async () => {
   show("menu");
 };
 $("btnWipe").onclick = async () => {
-  const ok = await confirmBox(
-    "Erase everything?",
-    "Your keys AND every saved story will be wiped from this device.",
-    "Erase it all");
+  const ok = await confirmBox(t("erTitle"), t("erText"), t("erYes"));
   if (!ok) return;
   localStorage.removeItem(LS_KEYS); localStorage.removeItem(LS_SAVE);
   localStorage.removeItem(LS_LIB); localStorage.removeItem(LS_PREFS);
