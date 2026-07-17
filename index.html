@@ -154,6 +154,7 @@
 
   .story{padding:16px 22px 6px;font-size:17.5px;line-height:1.72;color:var(--text);min-height:90px}
   .story p+p{margin-top:.85em}
+  .story b{font-weight:700;color:var(--text)}
   .story .cursor{display:inline-block;width:2px;height:1.05em;background:var(--amber-bright);vertical-align:-.15em;animation:blink 1s steps(2) infinite;margin-left:1px}
   @keyframes blink{50%{opacity:0}}
 
@@ -309,7 +310,10 @@
   <div class="shell">
     <div class="gamebar">
       <div class="world-title" id="worldTitle">—</div>
-      <button class="gear" id="btnGear" data-ic="gear" data-icsize="19" aria-label="Settings"></button>
+      <span style="display:flex;gap:2px">
+        <button class="gear" id="btnSpeak" data-ic="sound" data-icsize="19" aria-label="Read aloud"></button>
+        <button class="gear" id="btnGear" data-ic="gear" data-icsize="19" aria-label="Settings"></button>
+      </span>
     </div>
 
     <div class="scene noimg" id="scene">
@@ -363,7 +367,7 @@
   <div class="sheet-card">
     <div class="sheet-grab"></div>
     <h2>Settings</h2>
-    <p class="sub">Emberquill · Claude Haiku 4.5 storyteller · FLUX schnell painter</p>
+    <p class="sub">Emberquill · Claude Haiku 4.5 storyteller · Z-Image & Seedream painters</p>
 
     <div class="panel">
       <h3>Keys</h3>
@@ -372,6 +376,15 @@
       <label class="field" for="setKeyFal">fal.ai API key (images)</label>
       <input class="key" id="setKeyFal" type="password" placeholder="Empty = title cards instead of images" autocomplete="off">
       <button class="btn ghost mt" id="btnSaveKeys">Save keys</button>
+    </div>
+
+    <div class="panel">
+      <h3>Focus & Reading</h3>
+      <button class="btn ghost" id="paceBrisk"><span data-ic="bolt" data-icsize="16"></span>Brisk scenes — short, punchy, fast</button>
+      <button class="btn ghost mt" id="paceRich"><span data-ic="book" data-icsize="16"></span>Rich scenes — fuller storybook prose</button>
+      <button class="btn ghost mt" id="tglVoice"><span data-ic="sound" data-icsize="16"></span>Read scenes aloud</button>
+      <button class="btn ghost mt" id="tglBionic"><span data-ic="eye" data-icsize="16"></span>Focus lettering — bolds word starts</button>
+      <p class="hint">Made for reading comfort: brisk scenes keep turns tight, narration lets you listen instead of read, and focus lettering guides the eye through each line.</p>
     </div>
 
     <div class="panel">
@@ -459,7 +472,8 @@ const ICONS = {
   box: '<rect x="4" y="8" width="16" height="12" rx="2"/><path d="M4 12.5h16"/><path d="M10 16h4"/><path d="M8 8V6.5A2.5 2.5 0 0 1 10.5 4h3A2.5 2.5 0 0 1 16 6.5V8"/>',
   candle: '<path d="M9.5 11h5v9.5h-5z"/><path d="M12 11V8.8"/><path d="M12 3c1 1.2 1.8 2.2 1.8 3.2a1.8 1.8 0 0 1-3.6 0C10.2 5.2 11 4.2 12 3z"/>',
   brush: '<path d="M20 4c-4 1-8.5 4.5-11 8l3 3c3.5-2.5 7-7 8-11z"/><path d="M8.5 13.5c-2 .5-3.2 1.5-3.7 3.4-.3 1.2-1 2-2 2.5 3.5 1.1 6.7.1 7.7-2.4.4-1 .3-2 0-2.5z"/>',
-  books: '<path d="M4.5 4.5H8v15H4.5zM9.5 4.5H13v15H9.5z"/><path d="M15 5.5l3.8.9-3.3 14-3.8-.9z"/>'
+  books: '<path d="M4.5 4.5H8v15H4.5zM9.5 4.5H13v15H9.5z"/><path d="M15 5.5l3.8.9-3.3 14-3.8-.9z"/>',
+  sound: '<path d="M4 9.5v5h3.5L12 19V5L7.5 9.5z"/><path d="M15.5 9a4.2 4.2 0 0 1 0 6M18 6.5a8 8 0 0 1 0 11"/>'
 };
 function icon(name, size = 16){
   const p = ICONS[name] || ICONS.star;
@@ -480,7 +494,7 @@ function hydrateIcons(){
 
 /* ---------- state ---------- */
 let keys = { anthropic: "", fal: "" };
-let prefs = { brush: "master" };
+let prefs = { brush: "master", pace: "brisk", voice: true, bionic: false };
 let game = null; // {worldDesc, title, messages[], chronicle[], last:{...}, turn}
 let busy = false;
 let typeTimer = null;
@@ -764,6 +778,11 @@ function jsonField(raw, key){
   return { found: true, complete, value: out };
 }
 
+const BRISK_ADDON = `
+
+════════ BRISK MODE (active) ════════
+This player reads best in short bursts. Override the scene-length rule: story text is 40–70 words total — one tight paragraph, or two tiny ones. Short sentences. One sharp sensory detail, not three. Dialogue snappy, single lines. Never pad. Everything else (hooks, consequences, choices, tone) stays at full quality — you are writing espresso, not decaf.`;
+
 /* Streaming brain call: story words appear as they are written.
    Callbacks: onSceneTitle(t), onImagePrompt(p), onStoryDelta(textSoFar). */
 async function callBrainStream(messages, on){
@@ -781,7 +800,7 @@ async function callBrainStream(messages, on){
         max_tokens: 2048,
         stream: true,
         cache_control: { type: "ephemeral" },
-        system: [{ type: "text", text: SYSTEM_PROMPT }],
+        system: [{ type: "text", text: SYSTEM_PROMPT + (prefs.pace === "rich" ? "" : BRISK_ADDON) }],
         messages,
         output_config: { format: { type: "json_schema", schema: TURN_SCHEMA } }
       })
@@ -937,6 +956,31 @@ function renderStats(stats){
 function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
 
 function cleanProse(s){ return String(s || "").replace(/[*_#`]+/g, ""); }
+
+/* prose renderer — optional focus lettering (bolds the first part of each word) */
+function proseHTML(p){
+  const esc = escapeHtml(p);
+  if (!prefs.bionic) return esc;
+  return esc.split(" ").map(w => {
+    const m = w.match(/^([A-Za-zÀ-ÿ''-]+)([\s\S]*)$/);
+    if (!m || m[1].length < 3) return w;
+    const h = Math.ceil(m[1].length * 0.45);
+    return "<b>" + m[1].slice(0, h) + "</b>" + m[1].slice(h) + m[2];
+  }).join(" ");
+}
+
+/* narration — the device's own voice reads scenes aloud (free, on-device) */
+function speak(text){
+  try{
+    const ss = window.speechSynthesis;
+    if (!ss) return;
+    ss.cancel();
+    const u = new SpeechSynthesisUtterance(cleanProse(text));
+    u.rate = 1.02;
+    ss.speak(u);
+  }catch(e){}
+}
+function stopSpeak(){ try{ window.speechSynthesis && window.speechSynthesis.cancel(); }catch(e){} }
 function typeStory(text, done){
   text = cleanProse(text);
   clearInterval(typeTimer);
@@ -995,7 +1039,7 @@ function renderTurn(t, opts = {}){
     const box = $("storyBox");
     box.innerHTML = "";
     cleanProse(t.story).split(/\n\n+/).forEach(p => {
-      const el = document.createElement("p"); el.textContent = p.trim(); box.appendChild(el);
+      const el = document.createElement("p"); el.innerHTML = proseHTML(p.trim()); box.appendChild(el);
     });
     if (t.game_over) setTimeout(() => showGameOver(t), 600);
     else renderChoices(t.choices);
@@ -1018,7 +1062,7 @@ function renderStoryLive(box, text){
   while (box.children.length < paras.length) box.appendChild(document.createElement("p"));
   while (box.children.length > paras.length) box.removeChild(box.lastChild);
   for (let i = 0; i < paras.length; i++){
-    if (box.children[i].textContent !== paras[i]) box.children[i].textContent = paras[i];
+    if (box.children[i].textContent !== paras[i]) box.children[i].innerHTML = proseHTML(paras[i]);
   }
   if (!liveCursor){ liveCursor = document.createElement("span"); liveCursor.className = "cursor"; }
   if (box.lastChild) box.lastChild.appendChild(liveCursor);
@@ -1027,6 +1071,7 @@ function renderStoryLive(box, text){
 async function runTurn(userText){
   if (busy) return;
   setBusy(true);
+  stopSpeak();
   $("choicesBox").innerHTML = "";
   const sb = $("storyBox");
   try{
@@ -1083,6 +1128,7 @@ async function runTurn(userText){
       if (t.game_over) setTimeout(() => showGameOver(t), 900);
       else renderChoices(t.choices);
     }
+    if (prefs.voice && !DEMO) speak(t.story + (t.game_over ? " " + t.game_over_text : ""));
     persist();
 
     if (!paintP && !DEMO && t.image_prompt){
@@ -1115,7 +1161,7 @@ async function runTurn(userText){
     if (game?.last){
       sb.innerHTML = "";
       cleanProse(game.last.story).split(/\n\n+/).forEach(p => {
-        const el = document.createElement("p"); el.textContent = p.trim(); sb.appendChild(el);
+        const el = document.createElement("p"); el.innerHTML = proseHTML(p.trim()); sb.appendChild(el);
       });
       renderChoices(game.last.choices);
     }
@@ -1350,9 +1396,35 @@ $("btnNewStory").onclick = () => {
 function reflectBrush(){
   $("brushMaster").classList.toggle("sel", prefs.brush === "master");
   $("brushSwift").classList.toggle("sel", prefs.brush !== "master");
+  $("paceBrisk").classList.toggle("sel", prefs.pace !== "rich");
+  $("paceRich").classList.toggle("sel", prefs.pace === "rich");
+  $("tglVoice").classList.toggle("sel", !!prefs.voice);
+  $("tglBionic").classList.toggle("sel", !!prefs.bionic);
 }
 $("brushMaster").onclick = () => { prefs.brush = "master"; savePrefs(); reflectBrush(); ensureRef(); };
 $("brushSwift").onclick = () => { prefs.brush = "swift"; savePrefs(); reflectBrush(); };
+$("paceBrisk").onclick = () => { prefs.pace = "brisk"; savePrefs(); reflectBrush(); };
+$("paceRich").onclick = () => { prefs.pace = "rich"; savePrefs(); reflectBrush(); };
+$("tglVoice").onclick = () => {
+  prefs.voice = !prefs.voice; savePrefs(); reflectBrush();
+  if (!prefs.voice) stopSpeak();
+  else if (game?.last) speak(game.last.story);
+};
+$("tglBionic").onclick = () => {
+  prefs.bionic = !prefs.bionic; savePrefs(); reflectBrush();
+  if (game?.last){ // re-render the current scene in the new lettering
+    const sb = $("storyBox");
+    sb.innerHTML = "";
+    cleanProse(game.last.story).split(/\n\n+/).forEach(p => {
+      const el = document.createElement("p"); el.innerHTML = proseHTML(p.trim()); sb.appendChild(el);
+    });
+  }
+};
+$("btnSpeak").onclick = () => {
+  if (!game?.last){ return; }
+  if (window.speechSynthesis && window.speechSynthesis.speaking){ stopSpeak(); }
+  else speak(game.last.story);
+};
 function openSettings(){
   $("setKeyAnthropic").value = keys.anthropic;
   $("setKeyFal").value = keys.fal;
@@ -1431,6 +1503,7 @@ $("codeAction").onclick = async () => {
 $("btnLibrary").onclick = () => {
   if (game) persist();
   game = null;
+  stopSpeak();
   $("settingsSheet").classList.remove("on");
   renderLibrary();
   show("menu");
