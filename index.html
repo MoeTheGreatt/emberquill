@@ -392,6 +392,7 @@
       <button class="btn ghost mt" id="paceRich"><span data-ic="book" data-icsize="16"></span><span data-i18n="paceRich">Rich scenes — fuller storybook prose</span></button>
       <button class="btn ghost mt" id="tglVoice"><span data-ic="sound" data-icsize="16"></span><span data-i18n="tglVoice">Read scenes aloud</span></button>
       <button class="btn ghost mt" id="tglBionic"><span data-ic="eye" data-icsize="16"></span><span data-i18n="tglBionic">Focus lettering — bolds word starts</span></button>
+      <button class="btn ghost mt" id="tglMature"><span data-ic="flame" data-icsize="16"></span><span data-i18n="tglMature">Mature themes (18+) — darker, sensual, fade-to-black</span></button>
       <p class="hint" data-i18n="focusHint">Made for reading comfort: brisk scenes keep turns tight, narration lets you listen instead of read, and focus lettering guides the eye through each line.</p>
     </div>
 
@@ -502,7 +503,7 @@ function hydrateIcons(){
 
 /* ---------- state ---------- */
 let keys = { anthropic: "", fal: "" };
-let prefs = { brush: "master", pace: "brisk", voice: true, bionic: false, lang: "en" };
+let prefs = { brush: "master", pace: "brisk", voice: true, bionic: false, lang: "en", mature: false };
 let game = null; // {worldDesc, title, messages[], chronicle[], last:{...}, turn}
 let busy = false;
 let typeTimer = null;
@@ -539,6 +540,7 @@ const I18N = {
     falPh2: "Empty = title cards instead of images", saveKeys: "Save keys",
     focusH: "Focus & Reading", paceBrisk: "Brisk scenes — short, punchy, fast", paceRich: "Rich scenes — fuller storybook prose",
     tglVoice: "Read scenes aloud", tglBionic: "Focus lettering — bolds word starts",
+    tglMature: "Mature themes (18+) — darker, sensual, fade-to-black",
     focusHint: "Made for reading comfort: brisk scenes keep turns tight, narration lets you listen instead of read, and focus lettering guides the eye through each line.",
     paintingH: "Painting", brushMaster: "Master brush — your hero, identical in every scene", brushSwift: "Swift brush — fastest & cheapest",
     paintHint: "Master paints each scene from your hero's reference portrait (Seedream, ~20s, ~3¢/scene) — the painting arrives as you finish reading. Swift paints from words alone (Z-Image, ~2s, ~0.5¢/scene) — still consistent, just not identical.",
@@ -579,6 +581,7 @@ const I18N = {
     falPh2: "فارغ = بطاقات عناوين بدل الصور", saveKeys: "احفظ المفاتيح",
     focusH: "التركيز والقراءة", paceBrisk: "مشاهد خاطفة — قصيرة وسريعة", paceRich: "مشاهد غنية — سرد حكائي أوفى",
     tglVoice: "قراءة المشاهد بصوت عالٍ", tglBionic: "أحرف التركيز — تغميق بدايات الكلمات",
+    tglMature: "أجواء ناضجة (+18) — أقتم وأكثر حسّية، والمشاهد الصريحة خلف الستار",
     focusHint: "صُمم لراحة القراءة: المشاهد الخاطفة تُبقي الأدوار قصيرة، والسرد الصوتي يتيح لك الاستماع بدل القراءة، وأحرف التركيز تقود العين عبر السطور.",
     paintingH: "الرسم", brushMaster: "الفرشاة الكبرى — بطلك مطابق في كل مشهد", brushSwift: "الفرشاة السريعة — الأسرع والأوفر",
     paintHint: "الفرشاة الكبرى ترسم كل مشهد من صورة مرجعية لبطلك (Seedream، نحو ٢٠ ثانية، ~٣ سنتات للمشهد) — تصل اللوحة مع انتهائك من القراءة. السريعة ترسم من الكلمات وحدها (Z-Image، نحو ثانيتين، ~٠٫٥ سنت) — متّسقة لكن غير مطابقة تماماً.",
@@ -977,6 +980,16 @@ const BRISK_ADDON = `
 ════════ BRISK MODE (active) ════════
 This player reads best in short bursts. Override the scene-length rule: story text is 40–70 words total — one tight paragraph, or two tiny ones. Short sentences. One sharp sensory detail, not three. Dialogue snappy, single lines. Never pad. Everything else (hooks, consequences, choices, tone) stays at full quality — you are writing espresso, not decaf.`;
 
+const MATURE_ADDON = `
+
+════════ MATURE MODE (active — adult player, 18+) ════════
+The player is an adult who opted into mature storytelling. Raise the rating from PG-13 to a hard R, in the register of prestige television:
+- Violence lands with true weight, pain, and consequence; wounds change people.
+- Moral darkness is in bounds: vice, corruption, addiction, betrayal, cruelty with a cost.
+- Romance and desire may be genuinely charged: attraction, seduction, tension, intimacy — written with heat and sophistication. Explicit sexual description stays off-page: build the moment, then cut the scene like a great show-runner would; what happens behind the door is felt in the next scene, not narrated.
+- Profanity is allowed where it belongs in a character's mouth.
+- Absolute lines that never move: no sexual content involving minors, no sexualized violence.`;
+
 /* Streaming brain call: story words appear as they are written.
    Callbacks: onSceneTitle(t), onImagePrompt(p), onStoryDelta(textSoFar). */
 async function callBrainStream(messages, on){
@@ -994,7 +1007,7 @@ async function callBrainStream(messages, on){
         max_tokens: 2048,
         stream: true,
         cache_control: { type: "ephemeral" },
-        system: [{ type: "text", text: SYSTEM_PROMPT + (prefs.pace === "rich" ? "" : BRISK_ADDON) + LANG_ADDON() }],
+        system: [{ type: "text", text: SYSTEM_PROMPT + (prefs.pace === "rich" ? "" : BRISK_ADDON) + (prefs.mature ? MATURE_ADDON : "") + LANG_ADDON() }],
         messages,
         output_config: { format: { type: "json_schema", schema: TURN_SCHEMA } }
       })
@@ -1598,6 +1611,7 @@ function reflectBrush(){
   $("paceRich").classList.toggle("sel", prefs.pace === "rich");
   $("tglVoice").classList.toggle("sel", !!prefs.voice);
   $("tglBionic").classList.toggle("sel", !!prefs.bionic);
+  $("tglMature").classList.toggle("sel", !!prefs.mature);
 }
 $("brushMaster").onclick = () => { prefs.brush = "master"; savePrefs(); reflectBrush(); ensureRef(); };
 $("brushSwift").onclick = () => { prefs.brush = "swift"; savePrefs(); reflectBrush(); };
@@ -1618,6 +1632,7 @@ $("tglBionic").onclick = () => {
     });
   }
 };
+$("tglMature").onclick = () => { prefs.mature = !prefs.mature; savePrefs(); reflectBrush(); };
 $("btnSpeak").onclick = () => {
   if (!game?.last){ return; }
   if (window.speechSynthesis && window.speechSynthesis.speaking){ stopSpeak(); }
