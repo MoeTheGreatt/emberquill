@@ -386,9 +386,13 @@ def cmd_translate(args: argparse.Namespace) -> int:
                                    encoding="utf-8")
                 print(f"  {name}: widths patched ({', '.join(arrays)})")
 
-    # An optional gameplay change, independent of the translation.
+    # Optional engine changes, independent of the translation.
     if args.shared_exp:
         print("shared EXP: " + "; ".join(decomp.enable_shared_exp(repo)))
+
+    if args.scroll_options:
+        print("scrolling options: "
+              + "; ".join(decomp.enable_scrolling_options(repo)))
 
     # Optionally teach the engine to draw right-to-left, so the typewriter
     # reveals Arabic from the right and lines right-align.
@@ -638,6 +642,9 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--rtl", action="store_true",
                    help="patch the engine for right-to-left printing and emit "
                         "mirrored strings (typewriter reveals Arabic correctly)")
+    p.add_argument("--scroll-options", action="store_true",
+                   help="make the options list scroll, so it can hold more "
+                        "rows than the window shows")
     p.add_argument("--shared-exp", action="store_true",
                    help="every party member AND every boxed Pokemon gains the "
                         "full EXP from each battle (eggs excluded)")

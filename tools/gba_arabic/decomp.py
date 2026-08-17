@@ -598,6 +598,152 @@ def enable_shared_exp(repo: str | Path) -> list[str]:
     return done
 
 
+def enable_scrolling_options(repo: str | Path, visible_rows: int = 7) -> list[str]:
+    """Make the options list scroll, so it can hold more rows than it shows.
+
+    The list window is 96px tall and rows sit 13px apart, so row 7 ends at 94px
+    -- the seven vanilla rows fill it exactly and an eighth would draw outside.
+    Every position in the menu is derived from the item's index, so the fix is
+    to derive them from its *screen row* (index - scrollOffset) instead, in all
+    three places that draw: the labels, the values, and the hardware highlight
+    band. The cursor then drags a scroll offset behind it.
+
+    Row wrapping moves from MENUITEM_CANCEL to MENUITEM_COUNT - 1 so that rows
+    appended after CANCEL are reachable.
+
+    Idempotent: raises RtlPatchError if anchors are missing, skips if applied.
+    """
+    repo = Path(repo)
+    done: list[str] = []
+    src = repo / "src" / "option_menu.c"
+    text = src.read_text(encoding="utf-8")
+
+    if "OPTIONS_VISIBLE_ROWS" in text:
+        return ["already patched"]
+
+    # A scroll offset, and the row budget the window can actually show.
+    _edit(src, "    /*0x0E*/ u16 cursorPos;",
+          "    /*0x0E*/ u16 cursorPos;\n"
+          "             u16 scrollOffset;")
+    _edit(src, "// Menu items\nenum\n{",
+          f"// The list window is 96px tall with rows 13px apart, so this many\n"
+          f"// rows fit; anything beyond scrolls.\n"
+          f"#define OPTIONS_VISIBLE_ROWS {visible_rows}\n\n"
+          "// Menu items\nenum\n{")
+    _edit(src, "static void UpdateSettingSelectionDisplay(u16 selection);",
+          "static void UpdateSettingSelectionDisplay(u16 selection);\n"
+          "static bool8 OptionsScrollToCursor(void);")
+    done.append("option_menu.c: scroll offset + row budget")
+
+    # Labels: draw the visible window of the list, not the whole list.
+    _edit(src,
+          "    FillWindowPixelBuffer(1, PIXEL_FILL(1));\n"
+          "    for (i = 0; i < MENUITEM_COUNT; i++)\n"
+          "    {\n"
+          "        AddTextPrinterParameterized(WIN_OPTIONS, FONT_NORMAL, sOptionMenuItemsNames[i], 8, (u8)((i * (GetFontAttribute(FONT_NORMAL, FONTATTR_MAX_LETTER_HEIGHT))) + 2) - i, TEXT_SKIP_DRAW, NULL);    \n"
+          "    }",
+          "    FillWindowPixelBuffer(1, PIXEL_FILL(1));\n"
+          "    for (i = 0; i < OPTIONS_VISIBLE_ROWS; i++)\n"
+          "    {\n"
+          "        u8 item = sOptionMenuPtr->scrollOffset + i;\n"
+          "\n"
+          "        if (item >= MENUITEM_COUNT)\n"
+          "            break;\n"
+          "        AddTextPrinterParameterized(WIN_OPTIONS, FONT_NORMAL, sOptionMenuItemsNames[item], 8, (u8)((i * (GetFontAttribute(FONT_NORMAL, FONTATTR_MAX_LETTER_HEIGHT))) + 2) - i, TEXT_SKIP_DRAW, NULL);\n"
+          "    }")
+    done.append("option_menu.c: labels follow the scroll offset")
+
+    # Values: same, and skip entirely when the row is off screen -- otherwise
+    # the erase rect would blank a row that belongs to a different item.
+    _edit(src,
+          "    memcpy(dst, sOptionMenuTextColor, 3);\n"
+          "    x = 0x82;\n"
+          "    y = ((GetFontAttribute(FONT_NORMAL, FONTATTR_MAX_LETTER_HEIGHT) - 1) * selection) + 2;",
+          "    u8 row;\n"
+          "\n"
+          "    if (selection < sOptionMenuPtr->scrollOffset\n"
+          "     || selection >= sOptionMenuPtr->scrollOffset + OPTIONS_VISIBLE_ROWS)\n"
+          "        return;\n"
+          "    row = selection - sOptionMenuPtr->scrollOffset;\n"
+          "    memcpy(dst, sOptionMenuTextColor, 3);\n"
+          "    x = 0x82;\n"
+          "    y = ((GetFontAttribute(FONT_NORMAL, FONTATTR_MAX_LETTER_HEIGHT) - 1) * row) + 2;")
+    done.append("option_menu.c: values follow the scroll offset")
+
+    # The highlight band is a hardware window, positioned the same way.
+    _edit(src, "    y = selection * (maxLetterHeight - 1) + 0x3A;",
+          "    y = (selection - sOptionMenuPtr->scrollOffset) * (maxLetterHeight - 1) + 0x3A;")
+    done.append("option_menu.c: highlight follows the scroll offset")
+
+    # Cursor movement wraps over the whole list and drags the offset with it.
+    # A scroll needs every row repainted, so it reports a distinct code.
+    _edit(src,
+          "        if (sOptionMenuPtr->cursorPos == MENUITEM_TEXTSPEED)\n"
+          "            sOptionMenuPtr->cursorPos = MENUITEM_CANCEL;\n"
+          "        else\n"
+          "            sOptionMenuPtr->cursorPos = sOptionMenuPtr->cursorPos - 1;\n"
+          "        return 3;        ",
+          "        if (sOptionMenuPtr->cursorPos == 0)\n"
+          "            sOptionMenuPtr->cursorPos = MENUITEM_COUNT - 1;\n"
+          "        else\n"
+          "            sOptionMenuPtr->cursorPos = sOptionMenuPtr->cursorPos - 1;\n"
+          "        return OptionsScrollToCursor() ? 5 : 3;")
+    _edit(src,
+          "        if (sOptionMenuPtr->cursorPos == MENUITEM_CANCEL)\n"
+          "            sOptionMenuPtr->cursorPos = MENUITEM_TEXTSPEED;\n"
+          "        else\n"
+          "            sOptionMenuPtr->cursorPos = sOptionMenuPtr->cursorPos + 1;\n"
+          "        return 3;",
+          "        if (sOptionMenuPtr->cursorPos == MENUITEM_COUNT - 1)\n"
+          "            sOptionMenuPtr->cursorPos = 0;\n"
+          "        else\n"
+          "            sOptionMenuPtr->cursorPos = sOptionMenuPtr->cursorPos + 1;\n"
+          "        return OptionsScrollToCursor() ? 5 : 3;")
+    done.append("option_menu.c: cursor drags the scroll offset")
+
+    _edit(src, "static u8 OptionMenu_ProcessInput(void)\n{ ",
+          "// Keeps the cursor inside the visible window. TRUE when the list\n"
+          "// actually scrolled, which means every row must be repainted rather\n"
+          "// than just the highlight moved.\n"
+          "static bool8 OptionsScrollToCursor(void)\n"
+          "{\n"
+          "    u16 first = sOptionMenuPtr->scrollOffset;\n"
+          "\n"
+          "    if (sOptionMenuPtr->cursorPos < first)\n"
+          "        sOptionMenuPtr->scrollOffset = sOptionMenuPtr->cursorPos;\n"
+          "    else if (sOptionMenuPtr->cursorPos >= first + OPTIONS_VISIBLE_ROWS)\n"
+          "        sOptionMenuPtr->scrollOffset =\n"
+          "            sOptionMenuPtr->cursorPos - (OPTIONS_VISIBLE_ROWS - 1);\n"
+          "    return sOptionMenuPtr->scrollOffset != first;\n"
+          "}\n\n"
+          "static u8 OptionMenu_ProcessInput(void)\n{ ")
+    done.append("option_menu.c: OptionsScrollToCursor")
+
+    # Repaint the whole list when it scrolls.
+    _edit(src,
+          "        case 4:\n"
+          "            BufferOptionMenuString(sOptionMenuPtr->cursorPos);\n"
+          "            break;\n"
+          "        }",
+          "        case 4:\n"
+          "            BufferOptionMenuString(sOptionMenuPtr->cursorPos);\n"
+          "            break;\n"
+          "        case 5:\n"
+          "            {\n"
+          "                u8 i;\n"
+          "\n"
+          "                LoadOptionMenuItemNames();\n"
+          "                for (i = 0; i < MENUITEM_COUNT; i++)\n"
+          "                    BufferOptionMenuString(i);\n"
+          "                UpdateSettingSelectionDisplay(sOptionMenuPtr->cursorPos);\n"
+          "            }\n"
+          "            break;\n"
+          "        }")
+    done.append("option_menu.c: repaint on scroll")
+
+    return done
+
+
 def set_default_text_speed(repo: str | Path, speed: str = "FAST") -> str | None:
     """Make new games start on the given text speed (default the fastest).
 
