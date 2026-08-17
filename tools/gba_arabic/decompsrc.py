@@ -134,6 +134,15 @@ _APPEND_RE = re.compile(
     r"\bStringAppend(?:N)?\s*\(\s*[^,]+,\s*([A-Za-z_]\w*)")
 _COPY_TO_VAR_RE = re.compile(
     r"\bStringCopy(?:N)?\s*\(\s*(?:gStringVar[123]|textBuff)\s*,\s*([A-Za-z_]\w*)")
+# `txtPtr = StringCopy(buffer, gText_X);` -- StringCopy returns a pointer to the
+# terminator it just wrote, so CAPTURING that return value is precisely the
+# "and now I will write more here" idiom. Whatever follows (a player name, an
+# ID, a money amount) is drawn as part of the same line, so gText_X is a prefix
+# fragment no matter what the destination buffer is called. This is what made
+# the trainer card print the player name backwards: "NAME: " carried the code,
+# so the Latin name appended after it drew right-to-left as "eoM".
+_COPY_PREFIX_RE = re.compile(
+    r"=\s*StringCopy(?:N)?\s*\(\s*[^,;]+,\s*([A-Za-z_]\w*)\s*\)")
 # Same two destinations, but indexing a pointer table: StringAppend(dst,
 # tbl[i]) / StringCopy(gStringVar2, tbl[i]). Every member of such a table is
 # a fragment (stat names, etc.).
@@ -188,7 +197,19 @@ _FIXED_COLUMN_TABLES = (
 #   * gText_PickSwitchCancel -- positioned as `0xE4 - GetStringWidth(...)`, so
 #     it already right-aligns itself; {RTL} would apply that a second time and
 #     throw it to the opposite edge.
-_FIXED_COLUMN_SYMBOLS = ("gText_FrameType", "gText_PickSwitchCancel")
+_FIXED_COLUMN_SYMBOLS = (
+    "gText_FrameType", "gText_PickSwitchCancel",
+    # The trainer card is a fixed-position card layout: every field is drawn at
+    # a hard-coded x/y taken from a position table, some of them right-aligned
+    # by subtracting their own measured width. {RTL} mirrors those x values, so
+    # the ID line moved off the top-right and landed on top of the card's
+    # "TRAINER CARD" artwork. Left-anchored, the card matches vanilla again.
+    "gText_TrainerCardName", "gText_TrainerCardIDNo", "gText_TrainerCardMoney",
+    "gText_TrainerCardYen", "gText_TrainerCardPokedex", "gText_TrainerCardTime",
+    "gText_HallOfFameDebut", "gText_WinLossRatio", "gText_PokemonTrades",
+    "gText_BerryCrushes", "gText_UnionRoomTradesBattles", "gText_LinkBattles",
+    "gText_LinkCableBattles", "gText_Var1sTrainerCard", "gText_Colon2",
+)
 
 
 def buffer_source_symbols(repo: str | Path) -> set[str]:
@@ -212,6 +233,7 @@ def buffer_source_symbols(repo: str | Path) -> set[str]:
     for txt in texts.values():
         symbols.update(_APPEND_RE.findall(txt))
         symbols.update(_COPY_TO_VAR_RE.findall(txt))
+        symbols.update(_COPY_PREFIX_RE.findall(txt))
         fragment_tables.update(_APPEND_TABLE_RE.findall(txt))
         fragment_tables.update(_COPY_TABLE_RE.findall(txt))
         for rhs in _INLINE_COPY_RE.findall(txt):
