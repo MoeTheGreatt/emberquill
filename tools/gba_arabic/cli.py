@@ -38,6 +38,28 @@ def _ranges(args: argparse.Namespace) -> tuple[tuple[int, int], ...]:
     return profiles.get(args.profile).free_ranges
 
 
+def _fitted_render(order, font_path: str, spec, label: str = ""):
+    """Autofit the size to the engine's glyph box, then rasterise.
+
+    Returns (glyphs, fitted spec). Everything downstream -- widths, sheets,
+    previews -- must use the fitted spec, or baselines drift.
+    """
+    from . import fontgen
+
+    fitted, info = fontgen.autofit(order, font_path, spec)
+    prefix = f"  {label}: " if label else ""
+    line = (f"{prefix}autofit {info['size']}pt, baseline {info['baseline']} "
+            f"(ascent {info['ascent']} + descent {info['descent']} in a "
+            f"{info['box']}-row box)")
+    if not info["fit"]:
+        line += (f" -- NO SIZE FITS this face: {info['clipped_rows']} row(s) "
+                 f"will clip (tallest {chr(info['tallest'])}, deepest "
+                 f"{chr(info['deepest'])}). Use a flatter or smaller face: DejaVu "
+                 f"Sans fits a 14-row box at 11pt, Noto Naskh only at 9pt.")
+    print(line, file=sys.stderr)
+    return fontgen.render(order, font_path, fitted), fitted
+
+
 def _load_alloc(path: str) -> gl.Allocation:
     data = json.loads(Path(path).read_text(encoding="utf-8"))
     alloc = gl.Allocation(slots_total=data.get("slots_total", 0))
@@ -93,8 +115,7 @@ def cmd_alloc(args: argparse.Namespace) -> int:
             print("--dedupe needs --font to compare rendered pixels", file=sys.stderr)
             return 2
         wanted = sorted(gl.collect(entries.values()))
-        spec = profiles.get(args.profile).font
-        rendered = fontgen.render(wanted, args.font, spec)
+        rendered, _ = _fitted_render(wanted, args.font, profiles.get(args.profile).font)
         equivalent = fontgen.bitmap_equivalence(rendered)
 
     alloc = gl.allocate(
@@ -159,7 +180,7 @@ def cmd_font(args: argparse.Namespace) -> int:
             print("need --font TTF, or --edit SHEET.png to import hand-pixelled glyphs",
                   file=sys.stderr)
             return 2
-        rendered = fontgen.render(order, args.font, spec)
+        rendered, spec = _fitted_render(order, args.font, spec)
         blanks = [cp for cp, img in rendered.items() if fontgen.is_blank(img)]
         if blanks:
             print(f"warning: {len(blanks)} glyph(s) rendered blank -- this font lacks "
@@ -192,8 +213,10 @@ def cmd_preview(args: argparse.Namespace) -> int:
     alloc = _load_alloc(args.map)
     spec = profiles.get(args.profile).font
     order = [g for g, _ in sorted(alloc.glyph_to_byte.items(), key=lambda kv: kv[1])]
-    rendered = (fontgen.load_sheet(args.edit, order, spec) if args.edit
-                else fontgen.render(order, args.font, spec))
+    if args.edit:
+        rendered = fontgen.load_sheet(args.edit, order, spec)
+    else:
+        rendered, spec = _fitted_render(order, args.font, spec)
 
     data = pipeline.encode(args.text, _table(args), alloc, terminate=False)
     img = fontgen.preview(data, rendered, alloc.glyph_to_byte, spec, scale=args.scale)
@@ -245,9 +268,14 @@ def cmd_decomp(args: argparse.Namespace) -> int:
                 print("  refusing to write; pass --force to override", file=sys.stderr)
                 continue
 
-        # Glyphs must be rasterised at this sheet's cell size.
-        rendered = (fontgen.load_sheet(args.edit, order, sheet.spec) if args.edit
-                    else fontgen.render(order, args.font, sheet.spec))
+        # Glyphs must be rasterised at this sheet's cell size, then autofit to
+        # the engine's 14-row glyph box so no tail is cut off in game.
+        if args.edit:
+            rendered = fontgen.load_sheet(args.edit, order, sheet.spec)
+        else:
+            rendered, sheet_spec = _fitted_render(order, args.font, sheet.spec,
+                                                  label=name)
+            sheet.spec = sheet_spec
 
         written, skipped = decomp.install(sheet, rendered, alloc.glyph_to_byte)
         if args.dry_run:

@@ -67,9 +67,15 @@ PROFILES: dict[str, Profile] = {
         free_ranges=FIRERED_FREE,
         placeholders=FIRERED_PLACEHOLDERS,
         # 16x16 glyph cells, 16 per row, indexed directly by byte value --
-        # measured from latin_normal.png (256x512). The engine draws 14 rows
-        # of it (gGlyphInfo.height = 14 in src/text.c).
-        font=FontSpec(cell_w=16, cell_h=16, columns=16, size=15, baseline=13),
+        # measured from latin_normal.png (256x512). The engine draws only 14
+        # rows of each cell (gGlyphInfo.height = 14 in src/text.c), so ink
+        # below row 13 vanishes in game: size and baseline here are measured
+        # so the full Arabic form set fits that box in DejaVu Sans (ascent 11
+        # + descent 3 at 11pt), with the baseline on row 11 -- the same row
+        # Latin sits on, so mixed lines align. The CLI re-derives both via
+        # autofit for whatever face it is given (Noto Naskh, for example,
+        # only fits the box at 9pt).
+        font=FontSpec(cell_w=16, cell_h=16, columns=16, size=11, baseline=11),
         decomp="pokefirered",
         notes="Verified against BPRE rev 1 and pokefirered. 117 free glyph "
               "slots in 0x01-0x77 with Latin kept, which fits full Arabic. "

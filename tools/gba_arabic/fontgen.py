@@ -44,8 +44,8 @@ class FontSpec:
     cell_w: int = 16
     cell_h: int = 16
     columns: int = 16
-    size: int = 15          # point size to rasterise at
-    baseline: int = 13      # pixels from cell top to the text baseline
+    size: int = 11          # point size to rasterise at (autofit re-derives this)
+    baseline: int = 11      # pixels from cell top to the text baseline
     levels: int = 3         # palette entries used: 0 transparent, 1 fill, 2 edge
     fill_at: int = 160      # coverage >= this becomes index 1
     edge_at: int = 64       # coverage >= this becomes index 2
@@ -58,6 +58,14 @@ def _require_pil() -> None:
             "Pillow is required for font work: pip install pillow "
             "(the shaping, reordering and encoding stages do not need it)"
         )
+
+
+# Gen 3 sheet convention, read off pokefirered's latin_normal.png:
+#   0 = transparent, 1 = glyph ink, 2 = shadow, 3 = the background box drawn
+#   behind the glyph, spanning (advance width) x (BOX_HEIGHT) pixels.
+BG, INK, SHADOW, BOX = 0, 1, 2, 3
+INK_INDICES = frozenset({INK, SHADOW})
+BOX_HEIGHT = 14         # gGlyphInfo.height in src/text.c
 
 
 def render(
@@ -75,16 +83,22 @@ def render(
     _require_pil()
     font = ImageFont.truetype(font_path, spec.size)
     out: dict[int, Image.Image] = {}
+    # The strip is deliberately much taller than the cell, with the pen
+    # baseline far from either edge: rasterising straight into a cell-sized
+    # image hard-clips deep descenders -- the tails of ع ى و were being cut
+    # off at the strip boundary before they ever reached the cell.
+    strip_h = spec.cell_h * 3
+    y0 = spec.cell_h * 2
     for cp in codepoints:
         # Draw onto an oversized strip first, then slide the ink flush against
         # the cell's left edge. Glyphs are drawn left-to-right by the engine
         # over pre-reversed text, exactly like Latin ones, and it advances by
-        # the width table -- so ink must start at x=0 with no side bearing.
+        # the width table -- so ink must start at x=0 plus the form's bearing.
         # Drawing straight into the cell would clip forms whose outline starts
         # left of the pen position, which several Arabic finals do.
-        strip = Image.new("L", (spec.cell_w * 3, spec.cell_h), 0)
+        strip = Image.new("L", (spec.cell_w * 3, strip_h), 0)
         ImageDraw.Draw(strip).text(
-            (spec.cell_w, spec.baseline), chr(cp), fill=255, font=font, anchor="ls"
+            (spec.cell_w, y0), chr(cp), fill=255, font=font, anchor="ls"
         )
         # Threshold before measuring, not after: a column of antialiasing too
         # faint to survive quantisation would otherwise set the crop origin and
@@ -98,9 +112,95 @@ def render(
             # column so narrow letters (alef!) are not swallowed by neighbours.
             lb = visual_bearings(cp)[0]
             right = min(bbox[2], bbox[0] + spec.cell_w - lb)
-            cell.paste(quantised.crop((bbox[0], 0, right, spec.cell_h)), (lb, 0))
+            # Vertical: strip row (y0 + d) lands on cell row (baseline + d),
+            # so the baseline position in the cell is spec.baseline exactly.
+            top = y0 - spec.baseline
+            cell.paste(quantised.crop((bbox[0], top, right, top + spec.cell_h)),
+                       (lb, 0))
         out[cp] = cell
     return out
+
+
+def measure_extents(
+    codepoints: Sequence[int],
+    font_path: str,
+    spec: FontSpec = FontSpec(),
+) -> tuple[int, int, int | None, int | None]:
+    """(ascent, descent, tallest glyph, deepest glyph) after quantisation.
+
+    Ascent counts rows above the baseline, descent rows at and below it.
+    Measured on the thresholded bitmap, because that is what actually lands in
+    the cell -- outline metrics overstate what survives quantisation.
+    """
+    _require_pil()
+    font = ImageFont.truetype(font_path, spec.size)
+    strip_h = spec.cell_h * 3
+    y0 = spec.cell_h * 2
+    ascent = descent = 0
+    tallest = deepest = None
+    for cp in codepoints:
+        strip = Image.new("L", (spec.cell_w * 3, strip_h), 0)
+        ImageDraw.Draw(strip).text(
+            (spec.cell_w, y0), chr(cp), fill=255, font=font, anchor="ls"
+        )
+        bbox = ink_bbox(_quantise(strip, spec))
+        if bbox is None:
+            continue
+        a, d = y0 - bbox[1], bbox[3] - y0
+        if a > ascent:
+            ascent, tallest = a, cp
+        if d > descent:
+            descent, deepest = d, cp
+    return ascent, descent, tallest, deepest
+
+
+def autofit(
+    codepoints: Sequence[int],
+    font_path: str,
+    spec: FontSpec = FontSpec(),
+    box_h: int = BOX_HEIGHT,
+    min_size: int = 8,
+) -> tuple[FontSpec, dict]:
+    """Pick the largest size whose glyphs fit the engine's glyph box.
+
+    The engine draws only ``box_h`` rows of each cell (gGlyphInfo.height = 14
+    in FireRed), so ink outside rows 0..box_h-1 silently vanishes in game.
+    This walks sizes downward until ascent + descent fits, then bottom-aligns:
+    ``baseline = box_h - descent`` puts the deepest tail on the box's last row,
+    which is where Latin descenders sit too, so mixed Arabic/Latin lines share
+    a baseline.
+
+    Not every face fits at a comfortable size -- DejaVu Sans fits FireRed's
+    box at 11pt, Noto Naskh Arabic only at 9pt -- and if nothing fits by
+    ``min_size`` the least-clipping size is returned with ``fit: False`` so
+    the caller can warn.
+    """
+    from dataclasses import replace
+
+    best: tuple[int, int, int, int | None, int | None] | None = None
+    # Scan from well above the profile's size: the spec is a starting point,
+    # not a cap, and a compact face may fit the box at a larger size.
+    for size in range(max(spec.size, 16), min_size - 1, -1):
+        trial = replace(spec, size=size)
+        asc, desc, tallest, deepest = measure_extents(codepoints, font_path, trial)
+        if asc + desc <= box_h:
+            fitted = replace(trial, baseline=box_h - desc)
+            return fitted, {
+                "fit": True, "size": size, "baseline": fitted.baseline,
+                "ascent": asc, "descent": desc,
+                "tallest": tallest, "deepest": deepest, "box": box_h,
+            }
+        if best is None or asc + desc < best[1] + best[2]:
+            best = (size, asc, desc, tallest, deepest)
+
+    size, asc, desc, tallest, deepest = best      # type: ignore[misc]
+    fallback = replace(spec, size=size, baseline=max(0, box_h - desc))
+    return fallback, {
+        "fit": False, "size": size, "baseline": fallback.baseline,
+        "ascent": asc, "descent": desc,
+        "tallest": tallest, "deepest": deepest, "box": box_h,
+        "clipped_rows": asc + desc - box_h,
+    }
 
 
 def _quantise(img: "Image.Image", spec: FontSpec) -> "Image.Image":
@@ -190,14 +290,6 @@ def to_4bpp(img: "Image.Image") -> bytes:
                     hi = px[tx + x + 1, ty + y] & 0xF
                     out.append(lo | (hi << 4))
     return bytes(out)
-
-
-# Gen 3 sheet convention, read off pokefirered's latin_normal.png:
-#   0 = transparent, 1 = glyph ink, 2 = shadow, 3 = the background box drawn
-#   behind the glyph, spanning (advance width) x (BOX_HEIGHT) pixels.
-BG, INK, SHADOW, BOX = 0, 1, 2, 3
-INK_INDICES = frozenset({INK, SHADOW})
-BOX_HEIGHT = 14         # gGlyphInfo.height in src/text.c
 
 
 def ink_bbox(img: "Image.Image",

@@ -471,6 +471,62 @@ def test_joining_edges_stay_flush(font_path):
 
 
 @pil
+def test_descenders_survive_rendering(font_path):
+    # The old strip was cell-height tall with the baseline near its bottom, so
+    # the tails of ع ى و were hard-clipped before ever reaching the cell.
+    # Rendered at a baseline that leaves room, a deep-tailed final must keep
+    # ink BELOW the baseline.
+    spec = fontgen.FontSpec(size=12, baseline=8)
+    deep = [0xFECA, 0xFEEF, 0xFEEE]          # ain final, alef maksura, waw final
+    glyphs = fontgen.render(deep, font_path, spec)
+    for cp in deep:
+        bbox = fontgen.ink_bbox(glyphs[cp])
+        assert bbox is not None
+        assert bbox[3] - 1 > spec.baseline, \
+            f"U+{cp:04X} lost its tail: ink ends at row {bbox[3] - 1}"
+
+
+@pil
+def test_baseline_parameter_positions_the_ink(font_path):
+    # Same glyph, two baselines: the ink must move with the baseline, proving
+    # the strip->cell mapping honours spec.baseline rather than clipping.
+    glyphs_hi = fontgen.render([ALEF], font_path, fontgen.FontSpec(size=11, baseline=11))
+    glyphs_lo = fontgen.render([ALEF], font_path, fontgen.FontSpec(size=11, baseline=13))
+    top_hi = fontgen.ink_bbox(glyphs_hi[ALEF])[1]
+    top_lo = fontgen.ink_bbox(glyphs_lo[ALEF])[1]
+    assert top_lo - top_hi == 2
+
+
+@pil
+def test_autofit_fits_the_glyph_box(font_path):
+    # A subset without the extreme hamza-alef ascender, so any Arabic-capable
+    # face can fit it at some size.
+    cps = [0xFE8D, 0xFECA, 0xFEEE, 0xFE91, 0xFEE4]
+    spec, info = fontgen.autofit(cps, font_path, fontgen.FontSpec())
+    assert info["fit"], f"autofit failed even on an easy subset: {info}"
+    assert info["ascent"] + info["descent"] <= fontgen.BOX_HEIGHT
+    # Bottom-aligned: baseline leaves exactly the measured descent below.
+    assert spec.baseline == fontgen.BOX_HEIGHT - info["descent"]
+    # And the rendered result honours the promise: every glyph's ink lives in
+    # rows 0..BOX_HEIGHT-1, the only rows the engine draws.
+    glyphs = fontgen.render(cps, font_path, spec)
+    for cp in cps:
+        bbox = fontgen.ink_bbox(glyphs[cp])
+        assert bbox[1] >= 0 and bbox[3] <= fontgen.BOX_HEIGHT, \
+            f"U+{cp:04X} ink at rows {bbox[1]}..{bbox[3] - 1} leaves the box"
+
+
+@pil
+def test_autofit_reports_an_impossible_box(font_path):
+    # No face fits a 4-row box; the fallback must say so rather than lie.
+    cps = [0xFE8D, 0xFECA]
+    spec, info = fontgen.autofit(cps, font_path, fontgen.FontSpec(), box_h=4)
+    assert not info["fit"]
+    assert info["clipped_rows"] > 0
+    assert spec.size >= 8
+
+
+@pil
 def test_final_form_joins_right_but_not_left(font_path):
     # Final alef joins the preceding letter, drawn to its right: ink must end
     # exactly at the advance (right edge flush) but start one column in.
