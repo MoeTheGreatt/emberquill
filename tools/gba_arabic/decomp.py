@@ -31,11 +31,16 @@ except ImportError:  # pragma: no cover
 # font you skipped.
 LATIN_SHEETS = ("latin_normal", "latin_small", "latin_male", "latin_female")
 
+# latin_normal drives TWO width arrays: FONT_NORMAL_COPY_1 has its own table
+# (used by the quest log and several battle panels) that reads the same
+# glyph sheet -- leaving it unpatched drew Arabic with the old accented-Latin
+# widths, scattering glyphs across those screens.
 WIDTH_ARRAYS = {
-    "latin_normal": "sFontNormalLatinGlyphWidths",
-    "latin_small": "sFontSmallLatinGlyphWidths",
-    "latin_male": "sFontMaleLatinGlyphWidths",
-    "latin_female": "sFontFemaleLatinGlyphWidths",
+    "latin_normal": ("sFontNormalLatinGlyphWidths",
+                     "sFontNormalCopy1LatinGlyphWidths"),
+    "latin_small": ("sFontSmallLatinGlyphWidths",),
+    "latin_male": ("sFontMaleLatinGlyphWidths",),
+    "latin_female": ("sFontFemaleLatinGlyphWidths",),
 }
 
 

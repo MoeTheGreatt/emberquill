@@ -377,13 +377,14 @@ def cmd_translate(args: argparse.Namespace) -> int:
             written, _ = decomp.install(sheet, rendered, alloc.glyph_to_byte)
             decomp.save(sheet)
             print(f"  {name}: {written} glyph(s) installed")
-            array = decomp.WIDTH_ARRAYS.get(name)
+            arrays = decomp.WIDTH_ARRAYS.get(name, ())
             src = repo / "src" / "text.c"
-            if array and src.exists():
+            if arrays and src.exists():
                 widths = fontgen.width_table(rendered, alloc.glyph_to_byte, sheet.spec)
-                src.write_text(decomp.patch_width_table(src, array, widths),
-                               encoding="utf-8")
-                print(f"  {name}: {array} widths patched")
+                for array in arrays:
+                    src.write_text(decomp.patch_width_table(src, array, widths),
+                                   encoding="utf-8")
+                print(f"  {name}: widths patched ({', '.join(arrays)})")
 
     # Optionally teach the engine to draw right-to-left, so the typewriter
     # reveals Arabic from the right and lines right-align.
