@@ -39,6 +39,23 @@ Everything else — NPC dialogue, item/move/species names, Pokédex entries —
 remains English. Add entries to `firered_ar.json` (key = decomp symbol) and
 re-run; the tool reports any symbol it cannot find.
 
+## How this was verified
+
+The patched tree builds cleanly with `make modern` (arm-none-eabi-gcc), and
+the resulting `pokefirered_modern.gba` was verified at the byte level:
+
+1. Each macro-free translated string was independently re-encoded
+   (shape → reorder → bytes) and located verbatim inside the built ROM.
+2. The compiled font (`latin_normal.fwlatfont`, 32 KB, 2 bpp glyph-major) was
+   found byte-identical in the ROM, as was the patched 512-entry width table.
+3. Dialogue lines were then rendered **using only bytes extracted from the
+   built ROM** — its font glyphs, its width table, its string data — and read
+   as correct, connected, right-to-left Arabic.
+
+What this does not cover: actually booting the game. The modern build is the
+decomp project's supported configuration and is expected to be playable, but
+byte-level verification is not a play-test — check the intro in an emulator.
+
 ## Translation conventions
 
 - Modern Standard Arabic, concise, no diacritics (the engine cannot stack
