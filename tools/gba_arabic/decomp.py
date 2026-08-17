@@ -431,6 +431,173 @@ def enable_rtl_printer(repo: str | Path) -> list[str]:
     return done
 
 
+_BOX_EXP_FN = '''
+// Every boxed Pokemon shares the battle's EXP.
+//
+// A boxed Pokemon stores no level and no stats: its level is DERIVED from EXP
+// on every read (GetLevelFromBoxMonExp), and BoxMonToMon recomputes stats and
+// full HP through CalculateMonStats when it is withdrawn. So adding EXP is the
+// whole job -- it comes out of the box at the right level with right stats.
+//
+// The skips are all load-bearing:
+//   * Eggs -- an egg's "friendship" field IS its hatch counter, and
+//     CreatedHatchedMon copies an egg's moves into the hatched Pokemon, so an
+//     egg that gained levels would hatch with a scrambled timer and moves it
+//     must not have.
+//   * Empty slots -- writing EXP would leave a half-initialised entry.
+//   * Bad Eggs -- SetBoxMonData recomputes the checksum, which would launder
+//     a corrupt entry into one the game treats as real.
+void GiveExpToBoxedPokemon(u32 amount)
+{
+    u32 box, slot;
+
+    if (amount == 0)
+        return;
+
+    for (box = 0; box < TOTAL_BOXES_COUNT; box++)
+    {
+        for (slot = 0; slot < IN_BOX_COUNT; slot++)
+        {
+            struct BoxPokemon *boxMon = &gPokemonStoragePtr->boxes[box][slot];
+            u16 species = GetBoxMonData(boxMon, MON_DATA_SPECIES, NULL);
+            u32 exp, maxExp;
+            u8 oldLevel, newLevel;
+            s32 i;
+
+            if (species == SPECIES_NONE)
+                continue;
+            if (GetBoxMonData(boxMon, MON_DATA_IS_EGG, NULL))
+                continue;
+            if (GetBoxMonData(boxMon, MON_DATA_SANITY_IS_BAD_EGG, NULL))
+                continue;
+
+            oldLevel = GetLevelFromBoxMonExp(boxMon);
+            if (oldLevel >= MAX_LEVEL)
+                continue;
+
+            // Clamping is mandatory: unclamped EXP pins the level calculation
+            // at 100 forever and makes the gained-EXP numbers meaningless.
+            maxExp = gExperienceTables[gSpeciesInfo[species].growthRate][MAX_LEVEL];
+            exp = GetBoxMonData(boxMon, MON_DATA_EXP, NULL) + amount;
+            if (exp > maxExp)
+                exp = maxExp;
+            SetBoxMonData(boxMon, MON_DATA_EXP, &exp);
+
+            // Teach the level-up moves it passed, but only into FREE slots:
+            // GiveMoveToBoxMon fills an empty slot, reports a duplicate, and
+            // reports a full moveset WITHOUT overwriting -- so a moveset the
+            // player chose is never touched. Its delete-the-first-move sibling
+            // is deliberately not used here.
+            newLevel = GetLevelFromBoxMonExp(boxMon);
+            for (i = 0; gLevelUpLearnsets[species][i] != LEVEL_UP_END; i++)
+            {
+                u8 moveLevel = (gLevelUpLearnsets[species][i] & LEVEL_UP_MOVE_LV) >> 9;
+
+                if (moveLevel > oldLevel && moveLevel <= newLevel)
+                    GiveMoveToBoxMon(boxMon,
+                                     gLevelUpLearnsets[species][i] & LEVEL_UP_MOVE_ID);
+            }
+        }
+    }
+}
+
+'''
+
+
+def enable_shared_exp(repo: str | Path) -> list[str]:
+    """Share every battle's EXP with the whole party and every boxed Pokemon.
+
+    The engine already awards EXP to a non-participating party member if it
+    holds an Exp. Share, looping all six slots in ``Cmd_getexp``. This widens
+    that gate to every party member and gives the undivided amount, so the
+    existing state machine still drives level-ups, stat recalculation, move
+    learning, evolution and the level-up box -- nothing new to reimplement.
+
+    Boxed Pokemon have no such state machine, so the battle's total is banked
+    and applied once at battle end (not per faint: 420 slots of decrypt and
+    checksum inside a battle frame would hitch).
+
+    Eggs are excluded everywhere. ``Cmd_getexp`` has no egg guard of its own --
+    vanilla is safe only because an egg can hold no Exp. Share and is never
+    sent in, which is exactly the gate being widened here.
+
+    Idempotent: raises RtlPatchError if anchors are missing, skips if applied.
+    """
+    repo = Path(repo)
+    done: list[str] = []
+    pokemon_c = repo / "src" / "pokemon.c"
+    pokemon_h = repo / "include" / "pokemon.h"
+    battle_main = repo / "src" / "battle_main.c"
+    battle_cmds = repo / "src" / "battle_script_commands.c"
+
+    if "GiveExpToBoxedPokemon" in pokemon_c.read_text(encoding="utf-8"):
+        return ["already patched"]
+
+    # The box walker itself, plus the bank it draws on. Both live in pokemon.c,
+    # which already has the storage system, the experience tables, the level-up
+    # learnsets and the (static) GiveMoveToBoxMon.
+    _edit(pokemon_c, "u16 GiveMoveToMon(struct Pokemon *mon, u16 move)",
+          "u32 gSharedExpFromBattle;\n" + _BOX_EXP_FN
+          + "u16 GiveMoveToMon(struct Pokemon *mon, u16 move)")
+    done.append("pokemon.c: GiveExpToBoxedPokemon + EXP bank")
+
+    _edit(pokemon_h, "u16 GiveMoveToMon(struct Pokemon *mon, u16 move);",
+          "u16 GiveMoveToMon(struct Pokemon *mon, u16 move);\n"
+          "void GiveExpToBoxedPokemon(u32 amount);\n"
+          "extern u32 gSharedExpFromBattle;")
+    done.append("pokemon.h: declarations")
+
+    # Bank the undivided amount per faint, and hand every party member the
+    # full value instead of a share of it.
+    _edit(battle_cmds,
+          "            gBattleScripting.getexpState++;\n"
+          "            gBattleStruct->expGetterMonId = 0;\n"
+          "            gBattleStruct->sentInPokes = sentIn;",
+          "            // Shared EXP: the undivided amount for everyone, and\n"
+          "            // the same total banked for the boxes.\n"
+          "            *exp = calculatedExp;\n"
+          "            gExpShareExp = 0;\n"
+          "            gSharedExpFromBattle += calculatedExp;\n"
+          "            gBattleScripting.getexpState++;\n"
+          "            gBattleStruct->expGetterMonId = 0;\n"
+          "            gBattleStruct->sentInPokes = sentIn;")
+    done.append("battle_script_commands.c: bank the total, undivided share")
+
+    # Widen the participation gate to every party member -- except eggs, which
+    # this gate is the only thing currently keeping EXP away from.
+    _edit(battle_cmds,
+          "            if (holdEffect != HOLD_EFFECT_EXP_SHARE && !(gBattleStruct->sentInPokes & 1))",
+          "            if (GetMonData(&gPlayerParty[gBattleStruct->expGetterMonId], MON_DATA_IS_EGG))")
+    done.append("battle_script_commands.c: all party members, never eggs")
+
+    _edit(battle_cmds,
+          "                    if (gBattleStruct->sentInPokes & 1)\n"
+          "                        gBattleMoveDamage = *exp;\n"
+          "                    else\n"
+          "                        gBattleMoveDamage = 0;",
+          "                    gBattleMoveDamage = *exp;")
+    done.append("battle_script_commands.c: award regardless of participation")
+
+    # Reset the bank per battle, and spend it once the battle is won.
+    _edit(battle_main, "    gLeveledUpInBattle = 0;",
+          "    gLeveledUpInBattle = 0;\n    gSharedExpFromBattle = 0;")
+    done.append("battle_main.c: reset the bank")
+
+    _edit(battle_main,
+          "        ResetSpriteData();\n"
+          "        if (gLeveledUpInBattle == 0 || gBattleOutcome != B_OUTCOME_WON)",
+          "        ResetSpriteData();\n"
+          "        if (gBattleOutcome == B_OUTCOME_WON)\n"
+          "        {\n"
+          "            GiveExpToBoxedPokemon(gSharedExpFromBattle);\n"
+          "            gSharedExpFromBattle = 0;\n"
+          "        }\n"
+          "        if (gLeveledUpInBattle == 0 || gBattleOutcome != B_OUTCOME_WON)")
+    done.append("battle_main.c: spend the bank on the boxes at battle end")
+
+    return done
+
+
 def set_default_text_speed(repo: str | Path, speed: str = "FAST") -> str | None:
     """Make new games start on the given text speed (default the fastest).
 

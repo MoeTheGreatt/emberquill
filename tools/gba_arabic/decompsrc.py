@@ -163,11 +163,32 @@ _BUFFER_STORE_RE = re.compile(
 # below, it is a pure fragment table and every member is a fragment.
 _FRAGMENT_TABLE_MAX = 64
 # Fixed-grid column labels: drawn at a hard-coded x next to a value at
-# another hard-coded x (the level-up box: stat name at x=0, the +N change at
-# x=56 in a 10-tile/80px window). Right-aligning them with {RTL} would slide
-# the label into the value column, so every member of such a table stays
-# left-anchored in plain visual order -- exactly like the battle action menu.
-_FIXED_COLUMN_TABLES = ("sLevelUpWindowStatNames",)
+# another hard-coded x, often with a hard-coded FillWindowPixelRect erasing
+# one column before the redraw. {RTL} right-aligns to the window edge instead,
+# which puts the glyphs somewhere the layout maths never accounts for:
+#
+#   * level-up box -- stat name at x=0, the +N change at x=56 in a 10-tile
+#     (80px) window: right-aligning slides the name into the value column.
+#   * option menu -- labels at x=8 and values at x=130 in a 26-tile (208px)
+#     window, with the value's erase rect covering x=130..200. Right-aligned,
+#     the LABEL lands in that rect (so every value redraw rubs the label out)
+#     while the value itself draws near x=78, outside it -- so the old value is
+#     never erased and successive values pile up on each other.
+#
+# Every member of such a table stays left-anchored in plain visual order, which
+# restores the vanilla geometry exactly -- same treatment as the battle menu.
+_FIXED_COLUMN_TABLES = (
+    "sLevelUpWindowStatNames",
+    "sOptionMenuItemsNames", "sTextSpeedOptions", "sBattleSceneOptions",
+    "sBattleStyleOptions", "sSoundOptions", "sButtonTypeOptions",
+)
+# Individually fixed-column strings that are not table members:
+#   * gText_FrameType -- copied into a local buffer, then the frame number is
+#     appended, then drawn in the option menu's value column.
+#   * gText_PickSwitchCancel -- positioned as `0xE4 - GetStringWidth(...)`, so
+#     it already right-aligns itself; {RTL} would apply that a second time and
+#     throw it to the opposite edge.
+_FIXED_COLUMN_SYMBOLS = ("gText_FrameType", "gText_PickSwitchCancel")
 
 
 def buffer_source_symbols(repo: str | Path) -> set[str]:
@@ -184,7 +205,7 @@ def buffer_source_symbols(repo: str | Path) -> set[str]:
              for p in (repo / sub).rglob("*.c")]
     texts = {p: p.read_text(encoding="utf-8", errors="replace") for p in files}
 
-    symbols: set[str] = set()
+    symbols: set[str] = set(_FIXED_COLUMN_SYMBOLS)
     fragment_tables: set[str] = set()
     buffered_ids: set[str] = set()
     id_to_symbol: dict[str, str] = {}
