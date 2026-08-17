@@ -17,7 +17,7 @@ needed to apply it to a `pokefirered` checkout.
 git clone https://github.com/pret/pokefirered && cd pokefirered
 python -m tools.gba_arabic --profile firered translate . \
     -t tools/gba_arabic/translations/firered_ar.json \
-    -f /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
+    -f /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf --rtl
 make -j$(nproc) modern
 ```
 
@@ -70,11 +70,30 @@ byte-level verification is not a play-test — check the intro in an emulator.
   third-person register. Gender-neutral phrasing is used where it reads
   naturally.
 
+## The RTL printer
+
+The engine is patched with a right-to-left text printer, enabled per string by
+a previously-unused control code (`FC 19`, `{RTL}` in the charmap). When set,
+each glyph's x is decremented by its width before drawing, starting from the
+window's right edge — so the typewriter reveals Arabic in reading order, and
+every line is right-aligned. Strings printed this way are stored *mirrored*
+(reverse visual order); `translate --rtl` does both halves together.
+
+Two classes of string deliberately stay on the left-to-right printer:
+
+- **Strings with runtime placeholders** (`{B_BUFF1}`, `{PLAYER}`…): buffer
+  contents are inserted in logical byte order at print time and would render
+  mirrored under the RTL printer. Making expansion direction-aware is the next
+  engine milestone.
+- **Data-like strings** (`gNameChoice_*`, the TIME label): their bytes are
+  copied into buffers or share a window with values; a control code inside
+  them would corrupt the buffer or collide with the value. Controlled by
+  `--rtl-exclude`.
+
 ## Known limits
 
-- The typewriter effect reveals each line left-to-right, i.e. an Arabic line
-  appears end-first as it types. Setting text speed to FAST minimises it; the
-  real fix is an engine-side right-to-left printer, which is future work.
-- Text is left-aligned in boxes (the engine draws from the left edge).
+- Strings with runtime name placeholders still type left-to-right (see above).
 - Auto-rendered glyphs at 11pt are legible but not beautiful; hand-pixel the
   frequent forms via the sheet PNGs when polish matters.
+- `cover_ar.png` is an original fan cover for emulator libraries — modified
+  ROMs don't hash-match official box art databases, so assign it manually.

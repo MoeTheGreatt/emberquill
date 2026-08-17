@@ -235,6 +235,149 @@ def patch_width_table(
     return text[:m.start(2)] + body + text[m.end(2):]
 
 
+# -- right-to-left text printer --------------------------------------------
+
+# A previously-unused extended control code. 0x00-0x18 are taken by the
+# engine; GetStringWidth ignores unknown codes after consuming the code byte,
+# and GetExtCtrlCodeLength is extended below so string utilities skip it too.
+RTL_CTRL_CODE = 0x19
+
+
+class RtlPatchError(RuntimeError):
+    pass
+
+
+def _edit(path: Path, old: str, new: str, *, count: int = 1) -> None:
+    text = path.read_text(encoding="utf-8")
+    found = text.count(old)
+    if found != count:
+        raise RtlPatchError(
+            f"{path.name}: expected {count} match(es) for anchor, found {found} "
+            f"-- decomp code differs from what this patch expects:\n  {old[:80]!r}"
+        )
+    path.write_text(text.replace(old, new), encoding="utf-8")
+
+
+def enable_rtl_printer(repo: str | Path) -> list[str]:
+    """Teach the engine to draw right-to-left, one line at a time.
+
+    The typewriter effect prints byte-by-byte at increasing x, which reveals a
+    (pre-reversed) Arabic line end-first. The fix: a new control code, FC 19,
+    that flips the printer for the rest of the string -- each glyph's x is
+    DECREMENTED by its width before drawing, starting from the window's right
+    edge. Strings printed this way must be stored MIRRORED (reversed visual
+    order, i.e. logical order for pure Arabic), which ``decompsrc.convert``
+    emits when the string qualifies; everything without the code -- all the
+    untranslated English -- renders exactly as before. Right alignment falls
+    out for free.
+
+    Idempotent: raises RtlPatchError if anchors are missing, silently skips
+    files already patched.
+    """
+    repo = Path(repo)
+    done: list[str] = []
+    text_c = repo / "src" / "text.c"
+    text_h = repo / "include" / "text.h"
+    chars_h = repo / "include" / "characters.h"
+    strutil = repo / "src" / "string_util.c"
+    charmap = repo / "charmap.txt"
+
+    if "EXT_CTRL_CODE_RTL" in text_c.read_text(encoding="utf-8"):
+        return ["already patched"]
+
+    # The flag lives in three bits the engine defines but never reads.
+    _edit(text_h, "u8 font_type_5:3;", "u8 rtl:1;\n    u8 font_type_5:2;")
+    done.append("text.h: rtl flag bit")
+
+    _edit(chars_h,
+          "#define EXT_CTRL_CODE_RESUME_MUSIC",
+          "#define EXT_CTRL_CODE_RTL                    0x19\n"
+          "#define EXT_CTRL_CODE_RESUME_MUSIC")
+    done.append("characters.h: EXT_CTRL_CODE_RTL")
+
+    src = text_c.read_text(encoding="utf-8")
+
+    # Helper: the x where an RTL line begins (the window's right edge, with
+    # the same margin the left edge gets).
+    anchor = "u16 RenderText(struct TextPrinter *textPrinter)"
+    if anchor not in src:
+        raise RtlPatchError("text.c: RenderText signature not found")
+    helper = (
+        "static s32 RtlLineStartX(struct TextPrinter *textPrinter)\n"
+        "{\n"
+        "    return gWindows[textPrinter->printerTemplate.windowId].window.width * 8\n"
+        "         - textPrinter->printerTemplate.x;\n"
+        "}\n\n"
+    )
+    _edit(text_c, anchor, helper + anchor)
+    done.append("text.c: RtlLineStartX helper")
+
+    # The control code itself: set the flag, jump to the right edge. The
+    # anchor includes SHIFT_RIGHT's body line, which only RenderText's copy
+    # of the switch has -- GetStringWidth's fallthrough versions do not.
+    shift_right_in_render = (
+        "            case EXT_CTRL_CODE_SHIFT_RIGHT:\n"
+        "                textPrinter->printerTemplate.currentX = "
+        "textPrinter->printerTemplate.x + *textPrinter->printerTemplate.currentChar;"
+    )
+    _edit(text_c, shift_right_in_render,
+          "            case EXT_CTRL_CODE_RTL:\n"
+          "                subStruct->rtl = TRUE;\n"
+          "                textPrinter->printerTemplate.currentX = RtlLineStartX(textPrinter);\n"
+          "                return RENDER_REPEAT;\n" + shift_right_in_render)
+    done.append("text.c: control code handler")
+
+    # Every line start -- newline, box clear, scroll -- begins at the right
+    # edge when the flag is up. Each site is anchored by its preceding line.
+    reset = "textPrinter->printerTemplate.currentX = textPrinter->printerTemplate.x;"
+    rtl_reset = ("textPrinter->printerTemplate.currentX = textPrinter->subUnion.sub.rtl\n"
+                 "                ? RtlLineStartX(textPrinter) : textPrinter->printerTemplate.x;")
+    for lead in (
+        "        case CHAR_NEWLINE:\n            ",
+        "FillWindowPixelBuffer(textPrinter->printerTemplate.windowId, "
+        "PIXEL_FILL(textPrinter->printerTemplate.bgColor));\n            ",
+        "textPrinter->scrollDistance = gFonts[textPrinter->printerTemplate.fontId]"
+        ".maxLetterHeight + textPrinter->printerTemplate.lineSpacing;\n            ",
+    ):
+        _edit(text_c, lead + reset, lead + rtl_reset)
+    done.append("text.c: line starts at right edge (x3)")
+
+    # The draw step: step left by the glyph's width, then draw.
+    _edit(text_c,
+          "        CopyGlyphToWindow(textPrinter);\n\n"
+          "        if (textPrinter->minLetterSpacing)",
+          "        if (subStruct->rtl && !textPrinter->japanese)\n"
+          "        {\n"
+          "            textPrinter->printerTemplate.currentX -= gGlyphInfo.width;\n"
+          "            CopyGlyphToWindow(textPrinter);\n"
+          "            return RENDER_PRINT;\n"
+          "        }\n\n"
+          "        CopyGlyphToWindow(textPrinter);\n\n"
+          "        if (textPrinter->minLetterSpacing)")
+    done.append("text.c: RTL draw step")
+
+    # String utilities must know the code is one byte long.
+    st = strutil.read_text(encoding="utf-8")
+    m = re.search(r"(GetExtCtrlCodeLength.*?lengths\[\]\s*=\s*\{)(.*?)(\};)", st, re.S)
+    if not m:
+        raise RtlPatchError("string_util.c: lengths table not found")
+    entries = re.findall(r"\d+", m.group(2))
+    if len(entries) != RTL_CTRL_CODE:
+        raise RtlPatchError(
+            f"string_util.c: lengths table has {len(entries)} entries, "
+            f"expected {RTL_CTRL_CODE}")
+    st = st[:m.end(2)] + "    1,\n    " + st[m.end(2):]
+    strutil.write_text(st, encoding="utf-8")
+    done.append("string_util.c: code length = 1")
+
+    cm_text = charmap.read_text(encoding="utf-8")
+    if "RTL = FC 19" not in cm_text:
+        charmap.write_text(cm_text + "\nRTL = FC 19\n", encoding="utf-8")
+    done.append("charmap.txt: RTL = FC 19")
+
+    return done
+
+
 def verify_sheet_indexing(sheet: Sheet, table) -> list[str]:
     """Sanity-check that cell index really equals character byte.
 

@@ -352,8 +352,21 @@ def cmd_translate(args: argparse.Namespace) -> int:
                                encoding="utf-8")
                 print(f"  {name}: {array} widths patched")
 
+    # Optionally teach the engine to draw right-to-left, so the typewriter
+    # reveals Arabic from the right and lines right-align.
+    rtl_pred: object = False
+    if args.rtl:
+        import re as _re
+        done = decomp.enable_rtl_printer(repo)
+        print("RTL printer: " + "; ".join(done))
+        exclude = _re.compile(args.rtl_exclude) if args.rtl_exclude else None
+        # Data-like strings (name presets) must never carry the control code:
+        # their bytes are copied into buffers and reprinted elsewhere.
+        rtl_pred = (lambda sym: not (exclude and exclude.search(sym)))
+
     # Patch the string sources.
-    report = decompsrc.patch_tree(repo, translations, table, alloc, byte_chars)
+    report = decompsrc.patch_tree(repo, translations, table, alloc, byte_chars,
+                                  rtl=rtl_pred)
     print(f"\npatched {len(report.patched)} string(s) across "
           f"{len(report.files)} file(s)")
     for f in sorted(report.files):
@@ -543,6 +556,12 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("-f", "--font", help="TTF to rasterise (omit to skip fonts)")
     p.add_argument("-m", "--map", help="also write the glyph map here")
     p.add_argument("--free-ranges", help="override the profile's free byte ranges")
+    p.add_argument("--rtl", action="store_true",
+                   help="patch the engine for right-to-left printing and emit "
+                        "mirrored strings (typewriter reveals Arabic correctly)")
+    p.add_argument("--rtl-exclude", default=r"^gNameChoice_|^gText_MainMenuTime$",
+                   help="regex of symbols that must NOT use the RTL printer "
+                        "(data-like strings whose bytes get copied into buffers)")
     p.set_defaults(fn=cmd_translate)
 
     p = sub.add_parser("verify", help="diff a real charmap against the built-in table")

@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
+from typing import Callable
 from pathlib import Path
 
 from . import bidi
@@ -92,21 +93,46 @@ def tokenise(text: str) -> list[cm.Line]:
     return lines
 
 
+def rtl_eligible(text: str) -> bool:
+    """Whether a string can use the engine's RTL printer.
+
+    Runtime placeholders ({B_BUFF1}, {PLAYER}...) expand to buffer contents in
+    logical byte order at print time; drawn right-to-left they would come out
+    mirrored. Until expansion is direction-aware, only strings without them
+    can flip -- which in practice is most narrative dialogue.
+    """
+    return not any(
+        isinstance(tok, cm.Atom) and tok.width
+        for line in tokenise(text) for tok in line.tokens
+    )
+
+
 def convert(
     text: str,
     table: cm.Charmap,
     alloc: Allocation,
     byte_chars: dict[int, str],
+    *,
+    rtl: bool = False,
 ) -> str:
     """Arabic with decomp markup -> charmap-character string for the sources.
 
     Shape, reorder, resolve each character to its byte, then express the byte
     as a charmap character. Macros and separators come out exactly as they
     went in, in their reordered positions.
+
+    With ``rtl`` (requires the engine patch and an eligible string), the
+    output is prefixed with {RTL} and each line is MIRRORED -- the RTL printer
+    walks the bytes in order but draws right-to-left, so the byte stream must
+    be the reverse of the visual order. The typewriter then reveals Arabic
+    from the right, and lines right-align.
     """
-    out: list[str] = []
+    rtl = rtl and rtl_eligible(text)
+    out: list[str] = ["{RTL}"] if rtl else []
     for line in tokenise(text):
         visual = bidi.reorder(pipeline.shape_line(line.tokens))
+        if rtl:
+            visual = list(reversed(visual))
         for tok in visual:
             if isinstance(tok, bidi.Atom):
                 out.append("{" + tok.name + "}")
@@ -204,6 +230,7 @@ def patch_tree(
     byte_chars: dict[int, str],
     *,
     search: tuple[str, ...] = ("src", "data"),
+    rtl: "bool | Callable[[str], bool]" = False,
 ) -> PatchReport:
     """Convert every translation and splice it into the decomp sources."""
     repo = Path(repo)
@@ -226,7 +253,9 @@ def patch_tree(
             continue
         changed = False
         for symbol in hits:
-            converted = convert(remaining[symbol], table, alloc, byte_chars)
+            want_rtl = rtl(symbol) if callable(rtl) else rtl
+            converted = convert(remaining[symbol], table, alloc, byte_chars,
+                                rtl=want_rtl)
             patched = (patch_c_string(text, symbol, converted)
                        if path.suffix == ".c"
                        else patch_inc_string(text, symbol, converted))

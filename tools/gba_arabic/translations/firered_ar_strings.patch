@@ -1,11 +1,21 @@
+diff --git a/charmap.txt b/charmap.txt
+index b9d0ed9..5cf6c5a 100644
+--- a/charmap.txt
++++ b/charmap.txt
+@@ -910,3 +910,5 @@ EMOJI_BIGANGER = F9 FE
+ '\l' = FA @ scroll up window text
+ '\p' = FB @ new paragraph
+ '\n' = FE @ new line
++
++RTL = FC 19
 diff --git a/data/text/new_game_intro.inc b/data/text/new_game_intro.inc
-index e667b68..9f2dcf4 100644
+index e667b68..3ac79d3 100644
 --- a/data/text/new_game_intro.inc
 +++ b/data/text/new_game_intro.inc
 @@ -1,20 +1,20 @@
  gOtherText_NewName::
 -    .string "NEW NAME$"
-+    .string "ÎこÎぉ ÙÑÁ$"
++    .string "{RTL}ÁÑÙ ぉÎこÎ$"
  
  gNameChoice_Green::
      .string "GREEN$"
@@ -160,44 +170,44 @@ index e667b68..9f2dcf4 100644
  gControlsGuide_Text_Intro::
 -    .string "The various buttons will be explained in\n"
 -    .string "the order of their importance.$"
-+    .string "ÛàÓËôÌÂÁ ÚÁÚだ¿Á ノÈぼêÑ\n.ÀªËÇÌまÒ ぞßçÔ$"
++    .string "{RTL}ÑêぼÈノ Á¿だÚÁÚ ÁÂÌôËÓàÛ\nÔçßぞ ÒまÌÇËªÀ.$"
  
  gControlsGuide_Text_DPad::
 -    .string "Moves the main character.\n"
 -    .string "Also used to choose various data\n"
 -    .string "headings.$"
-+    .string ".ÛÇßÇ%ÈÂÁ ÛÇ;ôぼÂÁ ÍÈçこ\nÚÀÇËぁぇ À)こÒ ぅÎôËßこ\n.づÀìÀÇëÂÁ ゃÓËôÉ$"
++    .string "{RTL}こçÈÍ ÁÂぼô;ÇÛ ÁÂÈ%ÇßÇÛ.\nこßËôÎぅ Òこ)À ぇぁËÇÀÚ\nÉôËÓゃ ÁÂëÇÀìÀづ.$"
  
  gControlsGuide_Text_AButton::
 -    .string "Used to confirm a choice, check\n"
 -    .string "things, chat, and scroll text.$"
-+    .string "(çàÂÁね ÎÇŒぜËÓÂ ぅÎôËßこ\n.(êÂÁ ÈこÈÌÏね ÚÁÊçÂÁね$"
++    .string "{RTL}こßËôÎぅ ÂÓËぜŒÇÎ ねÁÂàç(\nねÁÂçÊÁÚ ねÏÌÈこÈ ÁÂê(.$"
  
  gControlsGuide_Text_BButton::
 -    .string "Used to exit, cancel a choice,\n"
 -    .string "and cancel a mode.$"
-+    .string "ウÀげÂぶね タねÈôÓÂ ぅÎôËßこ\n.ぎぱÊÂÁ ウÀげÂぶね ÚÀÇËぁぇÁ$"
++    .string "{RTL}こßËôÎぅ ÂÓôÈねタ ねぶÂげÀウ\nÁぇぁËÇÀÚ ねぶÂげÀウ ÁÂÊぱぎ.$"
  
  gControlsGuide_Text_StartButton::
 -    .string "Press this button to open the\n"
 -    .string "MENU.$"
-+    .string "どËàÂ ÚぴÂÁ Áじま テげぱÁ\n.ÛÌ%ÀわÂÁ$"
++    .string "{RTL}Áぱげテ まじÁ ÁÂぴÚ ÂàËど\nÁÂわÀ%ÌÛ.$"
  
  gControlsGuide_Text_SelectButton::
 -    .string "Used to shift items and to use\n"
 -    .string "a registered item.$"
-+    .string "づÁねぃ¿Á îわêÂ ぅÎôËßこ\n.ÛÓざßÉ ûÁぃÒ ぅÁÎôËÑぇね$"
++    .string "{RTL}こßËôÎぅ Âêわî Á¿ぃねÁづ\nねぇÑËôÎÁぅ ÒぃÁû ÉßざÓÛ.$"
  
  gControlsGuide_Text_LRButtons::
 -    .string "If you need help playing the\n"
 -    .string "game, or on how to do things,\n"
 -    .string "press the L or R Button.$"
-+    .string "ぞœÓÂÁ ùè ûÎòÀßÉ でざËïÁ áぶ\nびウÀÇべ¿Á îœè ÛÇàÇŒ ùè ねÒ\n.úこÚぴÂÁ úこじま テげぱÀè$"
++    .string "{RTL}ぶá ÁïËざで ÉßÀòÎû èù ÁÂÓœぞ\nÒね èù ŒÇàÇÛ èœî Á¿べÇÀウび\nèÀぱげテ まじこú ÁÂぴÚこú.$"
  
  gOakSpeech_Text_AskPlayerGender::
 -    .string "Now tell me. Are you a boy?\n"
 -    .string "Or are you a girl?$"
-+    .string "ぐ+Ëè でìÒ îま .áニÁ ùìÈëぁÒ\nぐûÀËè ぅÒ$"
++    .string "{RTL}ÒぁëÈìù Áニá. まî Òìで èË+ぐ\nÒぅ èËÀûぐ$"
  
  gPikachuIntro_Text_Page1::
 -    .string "In the world which you are about to\n"
@@ -208,7 +218,7 @@ index e667b68..9f2dcf4 100644
 -    .string "wherever you go, be it towns, roads,\n"
 -    .string "or caves. Gather information and\n"
 -    .string "hints from every source.$"
-+    .string "ºべね +Óò でìÒ ぢじÂÁ ÙÂÀœÂÁ ùè\n.っÈëŒ ûÈÉÀげÉ ùè ぺÓがêËÑ びóÂÊぁぃ$"
++    .string "{RTL}èù ÁÂœÀÂÙ ÁÂじぢ Òìで òÓ+ ねべº\nぃぁÊÂóび ÑËêがÓぺ èù ÉげÀÉÈû ŒëÈっ.$"
  
  gPikachuIntro_Text_Page2::
 -    .string "New paths will open to you by helping\n"
@@ -218,7 +228,7 @@ index e667b68..9f2dcf4 100644
 -    .string "At times, you will be challenged by\n"
 -    .string "others and attacked by wild creatures.\n"
 -    .string "Be brave and keep pushing on.$"
-+    .string "ûÎこÎぉ =ねÚぃ ºÉÀÉÒ どËàêËÑ\nだねÀざÏね úÇぉÀËçÌÂÁ ûÎòÀßÌÔ\n.だÀげÂ¿Á îïね づÀこÎçËÂÁ$"
++    .string "{RTL}ÑËêàËど ÒÉÀÉº ぃÚね= ぉÎこÎû\nÔÌßÀòÎû ÁÂÌçËÀぉÇú ねÏざÀねだ\nÁÂËçÎこÀづ ねïî Á¿ÂげÀだ.$"
  
  gPikachuIntro_Text_Page3::
 -    .string "Through your adventure, we hope\n"
@@ -228,7 +238,7 @@ index e667b68..9f2dcf4 100644
 -    .string "\n"
 -    .string "Press the A Button, and let your\n"
 -    .string "adventure begin!$"
-+    .string "îÉÀœËÏ áÒ ºÏÈÉÀげÉ ぽ¡ぁ ÊぉÈì\nぺわçÏ áÒね ぎÇÌざÂÁ ぎÉ\n.ÁÈÇëŒ ÀÇ;ôべ ÁÊÌì$"
++    .string "{RTL}ìÈぉÊ ぁ¡ぽ ÉげÀÉÈÏº Òá ÏËœÀÉî\nÉぎ ÁÂざÌÇぎ ねÒá Ïçわぺ\nìÌÊÁ べô;ÇÀ ŒëÇÈÁ.$"
  
  gOakSpeech_Text_WelcomeToTheWorld::
 -    .string "Hello, there!\n"
@@ -237,33 +247,33 @@ index e667b68..9f2dcf4 100644
 -    .string "My name is OAK.\p"
 -    .string "People affectionately refer to me\n"
 -    .string "as the POKéMON PROFESSOR.\p$"
-+    .string "!ºÔ ÀëïÈÉ\n!º%ÀわÓÔ ÎÇœÑ\p!áÊÌÇŒÊÔ ÙÂÀò ùè ºÔ ¡まÒ\p.ÍねÒ ùÌÑÁ\pûぃÊÌÔ カÀêÂÁ ùêこぃÀêこ\n.áÊÌÇŒÊëÂÁ ぷÀËÑÒ\p$"
++    .string "{RTL}ÉÈïëÀ Ôº!\nÑœÇÎ ÔÓわÀ%º!\pÒま¡ Ôº èù òÀÂÙ ÔÊŒÇÌÊá!\pÁÑÌù ÒねÍ.\pこêÀぃこêù ÁÂêÀカ ÔÌÊぃû\nÒÑËÀぷ ÁÂëÊŒÇÌÊá.\p$"
  
  gOakSpeech_Text_ThisWorld::
 -    .string "This world…$"
-+    .string "…ÙÂÀœÂÁ Áじま$"
++    .string "{RTL}まじÁ ÁÂœÀÂÙ…$"
  
  gOakSpeech_Text_IsInhabitedFarAndWide::
 -    .string "…is inhabited far and wide by\n"
 -    .string "creatures called POKéMON.\p$"
-+    .string "áÀごÉ îŒ ùè óêごßÏ…\n.áÊÌÇŒÊÔ +òÎÏ づÀñÊÓôÉ\p$"
++    .string "{RTL}…Ïßごêó èù Œî ÉごÀá\nÉôÓÊñÀづ ÏÎò+ ÔÊŒÇÌÊá.\p$"
  
  gOakSpeech_Text_IStudyPokemon::
 -    .string "For some people, POKéMON are pets.\n"
 -    .string "Others use them for battling.\p"
 -    .string "As for myself…\p"
 -    .string "I study POKéMON as a profession.\p$"
-+    .string "áÊÌÇŒÊëÂÁ áねじôËこ カÀêÂÁ ツœÔ\n.ÀªÔ áÊÓÏÀわこ áねÈぁエね びÀñÀèÚ\p…ÀìÒ ÀÉÒ\p.ùËêªÉ áÊÌÇŒÊëÂÁ ÛÑÁÚÎè\p$"
++    .string "{RTL}Ôœツ ÁÂêÀカ こËôじねá ÁÂëÊŒÇÌÊá\nÚèÀñÀび ねエぁÈねá こわÀÏÓÊá ÔªÀ.\pÒÉÀ ÒìÀ…\pèÎÚÁÑÛ ÁÂëÊŒÇÌÊá ÉªêËù.\p$"
  
  gOakSpeech_Text_TellMeALittleAboutYourself::
 -    .string "But first, tell me a little about\n"
 -    .string "yourself.\p$"
-+    .string "¡ÇÓñ ùêオÎï びぇねÒ úごÂ\n.ºßàì úò\p$"
++    .string "{RTL}Âごú Òねぇび ïÎオêù ñÓÇ¡\nòú ìàßº.\p$"
  
  gOakSpeech_Text_YourNameWhatIsIt::
 -    .string "Let's begin with your name.\n"
 -    .string "What is it?\p$"
-+    .string ".ºÌÑÀÔ ÒÎëêÂ\nぐÊま ÀÉ\p$"
++    .string "{RTL}ÂêëÎÒ ÔÀÑÌº.\nÉÀ まÊぐ\p$"
  
  gOakSpeech_Text_SoYourNameIsPlayer::
 -    .string "Right…\n"
@@ -275,11 +285,11 @@ index e667b68..9f2dcf4 100644
 -    .string "He's been your rival since you both\n"
 -    .string "were babies.\p"
 -    .string "…Erm, what was his name now?$"
-+    .string ".ぢÎÇàï Áじま\pÀÌËêŒ áÒ じêÉ ºßèÀêÉ óìぶ\n.úこÈÇげず úÇÓàト\p.でÇßì ÎわÂ ぐóÌÑÁ ÀÉ…\p$"
++    .string "{RTL}まじÁ ïàÇÎぢ.\pぶìó ÉêÀèßº Éêじ Òá ŒêËÌÀ\nトàÓÇú ずげÇÈこú.\p…ÉÀ ÁÑÌóぐ ÂわÎ ìßÇで.\p$"
  
  gOakSpeech_Text_YourRivalsNameWhatWasIt::
 -    .string "Your rival's name, what was it now?$"
-+    .string "ぐáÀŒ ÁぷÀÉ びºßèÀêÉ ÙÑÁ$"
++    .string "{RTL}ÁÑÙ ÉêÀèßºび ÉÀぷÁ ŒÀáぐ$"
  
  gOakSpeech_Text_ConfirmRivalName::
 -    .string "…Er, was it {RIVAL}?$"
@@ -298,7 +308,7 @@ index e667b68..9f2dcf4 100644
 -    .string "with POKéMON awaits! Let's go!$"
 +    .string "!{PLAYER}\páÊÌÇŒÊëÂÁ ぎÉ ºÏÚÊがÑÒ\n!ÒÎëÏ áÒ ºべね +Óò\pづÁÈÉÀげÌÂÁね ぅ¡ï¿Á úÉ ÙÂÀò\n!ÀÇま !ÍÚÀナËìÀÔ áÊÌÇŒÊëÂÁ ぎÉ\p$"
 diff --git a/data/text/obtain_item.inc b/data/text/obtain_item.inc
-index 8d27081..74cfe18 100644
+index 8d27081..3b2e10b 100644
 --- a/data/text/obtain_item.inc
 +++ b/data/text/obtain_item.inc
 @@ -1,19 +1,17 @@
@@ -308,7 +318,7 @@ index 8d27081..74cfe18 100644
  
  Text_BagIsFull::
 -	.string "The BAG is full…$"
-+	.string "…ÛソÓËÌÉ ÛëÇわçÂÁ$"
++	.string "{RTL}ÁÂçわÇëÛ ÉÌËÓソÛ…$"
  
  Text_PutItemAway::
 -	.string "{PLAYER} put the {STR_VAR_2}\n"
@@ -322,12 +332,12 @@ index 8d27081..74cfe18 100644
  Text_TooBadBagFull::
 -	.string "Too bad!\n"
 -	.string "The BAG is full…$"
-+	.string "!ゃÑフÂ\n…ÛソÓËÌÉ ÛëÇわçÂÁ$"
++	.string "{RTL}ÂフÑゃ!\nÁÂçわÇëÛ ÉÌËÓソÛ…$"
  
  Text_FoundXCoins::
  	.string "{PLAYER} found\n"
 diff --git a/data/text/pc.inc b/data/text/pc.inc
-index 2bf09b3..30d5fd9 100644
+index 2bf09b3..65ef22c 100644
 --- a/data/text/pc.inc
 +++ b/data/text/pc.inc
 @@ -1,17 +1,17 @@
@@ -337,15 +347,15 @@ index 2bf09b3..30d5fd9 100644
  
  Text_AccessWhichPC::
 -	.string "Which PC should be accessed?$"
-+	.string "ぐóÇÂぶ ぽÊずÊÂÁ ÎこÈÏ =ÊÑÀï ぢÒ$"
++	.string "{RTL}Òぢ ïÀÑÊ= ÏÈこÎ ÁÂÊずÊぽ ぶÂÇóぐ$"
  
  Text_AccessedSomeonesPC::
 -	.string "Accessed Someone's PC.$"
-+	.string ".ÀÉ (ôべ =ÊÑÀï どËè ÙÏ$"
++	.string "{RTL}ÏÙ èËど ïÀÑÊ= べô( ÉÀ.$"
  
  Text_OpenedPkmnStorage::
 -	.string "POKéMON Storage System opened.$"
-+	.string ".áÊÌÇŒÊëÂÁ úこぴôÏ ぅÀナì どËè ÙÏ$"
++	.string "{RTL}ÏÙ èËど ìナÀぅ Ïôぴこú ÁÂëÊŒÇÌÊá.$"
  
  Text_AccessedPlayersPC::
 -	.string "Accessed {PLAYER}'s PC.$"
@@ -353,9 +363,35 @@ index 2bf09b3..30d5fd9 100644
  
  Text_AccessedBillsPC::
 -	.string "Accessed BILL's PC.$"
-+	.string ".îÇÔ =ÊÑÀï どËè ÙÏ$"
++	.string "{RTL}ÏÙ èËど ïÀÑÊ= ÔÇî.$"
+diff --git a/include/characters.h b/include/characters.h
+index d00ecf0..41d81f5 100644
+--- a/include/characters.h
++++ b/include/characters.h
+@@ -245,6 +245,7 @@
+ #define EXT_CTRL_CODE_JPN                    0x15
+ #define EXT_CTRL_CODE_ENG                    0x16
+ #define EXT_CTRL_CODE_PAUSE_MUSIC            0x17
++#define EXT_CTRL_CODE_RTL                    0x19
+ #define EXT_CTRL_CODE_RESUME_MUSIC           0x18
+ 
+ #define TEXT_COLOR_TRANSPARENT  0x0
+diff --git a/include/text.h b/include/text.h
+index 7090a02..b1869ab 100644
+--- a/include/text.h
++++ b/include/text.h
+@@ -67,7 +67,8 @@ struct TextPrinterSubStruct
+ {
+     u8 glyphId:4;  // 0x14
+     bool8 hasPrintBeenSpedUp:1;
+-    u8 font_type_5:3;
++    u8 rtl:1;
++    u8 font_type_5:2;
+     u8 downArrowDelay:5;
+     u8 downArrowYPosIdx:2;
+     u8 hasGlyphIdBeenSet:1;
 diff --git a/src/battle_message.c b/src/battle_message.c
-index a6392be..8dc62b2 100644
+index a6392be..d4f6e65 100644
 --- a/src/battle_message.c
 +++ b/src/battle_message.c
 @@ -45,65 +45,65 @@ static void ExpandBattleTextBuffPlaceholders(const u8 *src, u8 *dst);
@@ -384,7 +420,7 @@ index a6392be..8dc62b2 100644
 -static const u8 sText_UseNextPkmn[] = _("Use next POKéMON?");
 -static const u8 sText_AttackMissed[] = _("{B_ATK_NAME_WITH_PREFIX}'s\nattack missed!");
 -static const u8 sText_PkmnProtectedItself[] = _("{B_DEF_NAME_WITH_PREFIX}\nprotected itself!");
-+static const u8 sText_ABoosted[] = _("ûだぴœÉ ");
++static const u8 sText_ABoosted[] = _("{RTL} Éœぴだû");
 +static const u8 sText_PkmnGrewToLv[] = _("+Âぶ +わÏÚÁ {B_BUFF1}\n{WAIT_SE}!{B_BUFF2} っÊËßÌÂÁ\p");
 +static const u8 sText_PkmnLearnedMove[] = _("ÙÓœÏ {B_BUFF1}\n{WAIT_SE}!{B_BUFF2}\p");
 +static const u8 sText_TryToLearnMove1[] = _("áÒ ぽねÀçこ {B_BUFF1}\n.{B_BUFF2} ÙÓœËこ\p");
@@ -393,7 +429,7 @@ index a6392be..8dc62b2 100644
 +static const u8 sText_PkmnForgotMove[] = _("ùßì {B_BUFF1}\n.{B_BUFF2}\p");
 +static const u8 sText_StopLearningMove[] = _("ÙÓœÏ úò ゃñÊËì î{PAUSE 32}ま\nぐ{B_BUFF2}");
 +static const u8 sText_DidNotLearnMove[] = _("ÙÓœËこ ÙÂ {B_BUFF1}\n.{B_BUFF2}\p");
-+static const u8 sText_UseNextPkmn[] = _("ぐÈぁエ áÊÌÇŒÊÔ ぅÎôËßÏ îま");
++static const u8 sText_UseNextPkmn[] = _("{RTL}まî ÏßËôÎぅ ÔÊŒÇÌÊá エぁÈぐ");
 +static const u8 sText_AttackMissed[] = _("{B_ATK_NAME_WITH_PREFIX} ぅÊざま\n!セÎªÂÁ ぜがぁÒ");
 +static const u8 sText_PkmnProtectedItself[] = _("{B_DEF_NAME_WITH_PREFIX}\n!óßàì +Ìï");
  static const u8 sText_AvoidedDamage[] = _("{B_DEF_NAME_WITH_PREFIX} avoided\ndamage with {B_DEF_ABILITY}!");
@@ -420,7 +456,7 @@ index a6392be..8dc62b2 100644
 -static const u8 sText_AttackerCantEscape[] = _("{B_ATK_NAME_WITH_PREFIX} can't escape!");
 -static const u8 sText_HitXTimes[] = _("Hit {B_BUFF1} time(s)!");
 -static const u8 sText_PkmnFellAsleep[] = _("{B_EFF_NAME_WITH_PREFIX}\nfell asleep!");
-+static const u8 sText_CantEscape2[] = _("!=ÈªÂÁ úごÌこ ぇ\p");
++static const u8 sText_CantEscape2[] = _("{RTL}ぇ こÌごú ÁÂªÈ=!\p");
 +static const u8 sText_AttackerCantEscape[] = _("!=ÈªÂÁ ぎÇがËßこ ぇ {B_ATK_NAME_WITH_PREFIX}");
 +static const u8 sText_HitXTimes[] = _("!ûÈÉ {B_BUFF1} óËÔÀずÒ");
 +static const u8 sText_PkmnFellAsleep[] = _("{B_EFF_NAME_WITH_PREFIX}\n!ぅÊêÂÁ ùè ケÈク");
@@ -521,10 +557,10 @@ index a6392be..8dc62b2 100644
 -static const u8 sText_StatHarshly[] = _("harshly ");
 -static const u8 sText_StatFell[] = _("fell!");
 -static const u8 sText_AttackersStatRose[] = _("{B_ATK_NAME_WITH_PREFIX}'s {B_BUFF1}\n{B_BUFF2}");
-+static const u8 sText_StatSharply[] = _(" ûÎぼÔ");
-+const u8 gBattleText_Rose[] = _("!ぎàÏÚÁ");
-+static const u8 sText_StatHarshly[] = _(" ûÎぼÔ");
-+static const u8 sText_StatFell[] = _("!ツàôìÁ");
++static const u8 sText_StatSharply[] = _("{RTL}ÔぼÎû ");
++const u8 gBattleText_Rose[] = _("{RTL}ÁÚÏàぎ!");
++static const u8 sText_StatHarshly[] = _("{RTL}ÔぼÎû ");
++static const u8 sText_StatFell[] = _("{RTL}Áìôàツ!");
 +static const u8 sText_AttackersStatRose[] = _("{B_ATK_NAME_WITH_PREFIX} {B_BUFF1}\n{B_BUFF2}");
  const u8 gText_DefendersStatRose[] = _("{B_DEF_NAME_WITH_PREFIX}'s {B_BUFF1}\n{B_BUFF2}");
  static const u8 sText_UsingItemTheStatOfPkmnRose[] = _("Using {B_LAST_ITEM}, the {B_BUFF1}\nof {B_SCR_ACTIVE_NAME_WITH_PREFIX} {B_BUFF2}");
@@ -534,17 +570,17 @@ index a6392be..8dc62b2 100644
  static const u8 sText_StatsWontDecrease2[] = _("{B_DEF_NAME_WITH_PREFIX}'s stats won't\ngo any lower!");
 -static const u8 sText_CriticalHit[] = _("A critical hit!");
 -static const u8 sText_OneHitKO[] = _("It's a one-hit KO!");
-+static const u8 sText_CriticalHit[] = _("!ÛÌÑÀï ÛÔÈぱ");
-+static const u8 sText_OneHitKO[] = _("!ûÎïÁね ÛÔÈぱ úÉ ぅÀÏ ウÀ)ñ");
++static const u8 sText_CriticalHit[] = _("{RTL}ぱÈÔÛ ïÀÑÌÛ!");
++static const u8 sText_OneHitKO[] = _("{RTL}ñ)Àウ ÏÀぅ Éú ぱÈÔÛ ねÁïÎû!");
  static const u8 sText_123Poof[] = _("{PAUSE 32}1, {PAUSE 15}2, and{PAUSE 15}… {PAUSE 15}… {PAUSE 15}… {PAUSE 15}{PLAY_SE SE_BALL_BOUNCE_1}Poof!\p");
  static const u8 sText_AndEllipsis[] = _("And…\p");
  static const u8 sText_HMMovesCantBeForgotten[] = _("HM moves can't be\nforgotten now.\p");
 -static const u8 sText_NotVeryEffective[] = _("It's not very effective…");
 -static const u8 sText_SuperEffective[] = _("It's super effective!");
 -static const u8 sText_GotAwaySafely[] = _("{PLAY_SE SE_FLEE}Got away safely!\p");
-+static const u8 sText_NotVeryEffective[] = _("…ÀこÊñ チÇÂ ÀまÈÇオぜÏ");
-+static const u8 sText_SuperEffective[] = _("!ÛこÀげÓÂ ぢÊñ ÀまÈÇオぜÏ");
-+static const u8 sText_GotAwaySafely[] = _("!ぅ¡ßÔ でÔÈ{PLAY_SE SE_FLEE}ま\p");
++static const u8 sText_NotVeryEffective[] = _("{RTL}ÏぜオÇÈまÀ ÂÇチ ñÊこÀ…");
++static const u8 sText_SuperEffective[] = _("{RTL}ÏぜオÇÈまÀ ñÊぢ ÂÓげÀこÛ!");
++static const u8 sText_GotAwaySafely[] = _("{RTL}{PLAY_SE SE_FLEE}まÈÔで Ôß¡ぅ!\p");
  static const u8 sText_PkmnFledUsingIts[] = _("{PLAY_SE SE_FLEE}{B_ATK_NAME_WITH_PREFIX} fled\nusing its {B_LAST_ITEM}!\p");
  static const u8 sText_PkmnFledUsing[] = _("{PLAY_SE SE_FLEE}{B_ATK_NAME_WITH_PREFIX} fled\nusing {B_ATK_ABILITY}!\p");
 -static const u8 sText_WildPkmnFled[] = _("{PLAY_SE SE_FLEE}Wild {B_BUFF1} fled!");
@@ -558,8 +594,8 @@ index a6392be..8dc62b2 100644
  static const u8 sText_ButNothingHappened[] = _("But nothing happened!");
 -static const u8 sText_ButItFailed[] = _("But it failed!");
 -static const u8 sText_ItHurtConfusion[] = _("It hurt itself in its\nconfusion!");
-+static const u8 sText_ButItFailed[] = _("!でÓぼè ÀªêごÂ");
-+static const u8 sText_ItHurtConfusion[] = _("ùè óßàì っぷエ\n!óŒÀëÏÚÁ");
++static const u8 sText_ButItFailed[] = _("{RTL}ÂごêªÀ èぼÓで!");
++static const u8 sText_ItHurtConfusion[] = _("{RTL}エぷっ ìàßó èù\nÁÚÏëÀŒó!");
  static const u8 sText_MirrorMoveFailed[] = _("The MIRROR MOVE failed!");
  static const u8 sText_StartedToRain[] = _("It started to rain!");
  static const u8 sText_DownpourStarted[] = _("A downpour started!"); // corresponds to DownpourText in pokegold and pokecrystal and is used by Rain Dance in GSC
@@ -619,14 +655,14 @@ index a6392be..8dc62b2 100644
 -static const u8 sText_AllyPkmnPrefix2[] = _("Ally");
 -static const u8 sText_FoePkmnPrefix4[] = _("Foe");
 -static const u8 sText_AllyPkmnPrefix3[] = _("Ally");
-+static const u8 sText_WildPkmnPrefix[] = _(" ぢÈëÂÁ");
-+static const u8 sText_FoePkmnPrefix[] = _(" Ù;ôÂÁ");
-+static const u8 sText_FoePkmnPrefix2[] = _("Ù;ôÂÁ");
-+static const u8 sText_AllyPkmnPrefix[] = _("ゃÇÓçÂÁ");
-+static const u8 sText_FoePkmnPrefix3[] = _("Ù;ôÂÁ");
-+static const u8 sText_AllyPkmnPrefix2[] = _("ゃÇÓçÂÁ");
-+static const u8 sText_FoePkmnPrefix4[] = _("Ù;ôÂÁ");
-+static const u8 sText_AllyPkmnPrefix3[] = _("ゃÇÓçÂÁ");
++static const u8 sText_WildPkmnPrefix[] = _("{RTL}ÁÂëÈぢ ");
++static const u8 sText_FoePkmnPrefix[] = _("{RTL}ÁÂô;Ù ");
++static const u8 sText_FoePkmnPrefix2[] = _("{RTL}ÁÂô;Ù");
++static const u8 sText_AllyPkmnPrefix[] = _("{RTL}ÁÂçÓÇゃ");
++static const u8 sText_FoePkmnPrefix3[] = _("{RTL}ÁÂô;Ù");
++static const u8 sText_AllyPkmnPrefix2[] = _("{RTL}ÁÂçÓÇゃ");
++static const u8 sText_FoePkmnPrefix4[] = _("{RTL}ÁÂô;Ù");
++static const u8 sText_AllyPkmnPrefix3[] = _("{RTL}ÁÂçÓÇゃ");
  static const u8 sText_AttackerUsedX[] = _("{B_ATK_NAME_WITH_PREFIX} used\n{B_BUFF2}");
  static const u8 sText_ExclamationMark[] = _("!");
  static const u8 sText_ExclamationMark2[] = _("!");
@@ -635,7 +671,7 @@ index a6392be..8dc62b2 100644
  static const u8 sText_YouMissedPkmn[] = _("You missed the POKéMON!");
  static const u8 sText_PkmnBrokeFree[] = _("Oh, no!\nThe POKéMON broke free!");
 -static const u8 sText_ItAppearedCaught[] = _("Aww!\nIt appeared to be caught!");
-+static const u8 sText_ItAppearedCaught[] = _("!ヒエ\n!ºßÉÒ óìぜŒね ÁÎÔ");
++static const u8 sText_ItAppearedCaught[] = _("{RTL}エヒ!\nÔÎÁ ねŒぜìó ÒÉßº!");
  static const u8 sText_AarghAlmostHadIt[] = _("Aargh!\nAlmost had it!");
  static const u8 sText_ShootSoClose[] = _("Shoot!\nIt was so close, too!");
  static const u8 sText_ItDodgedBall2[] = _("よけられた!\nこいつは つかまりそうにないぞ!"); // Unused version of the Marowak ghost dodging text
@@ -655,8 +691,20 @@ index a6392be..8dc62b2 100644
  static const u8 sText_PlayerLostAgainstTrainer1[] = _("Player lost against\n{B_TRAINER1_CLASS} {B_TRAINER1_NAME}!");
  static const u8 sText_PlayerBattledToDrawTrainer1[] = _("Player battled to a draw against\n{B_TRAINER1_CLASS} {B_TRAINER1_NAME}!");
  
+diff --git a/src/string_util.c b/src/string_util.c
+index 5c26d15..439c4ff 100644
+--- a/src/string_util.c
++++ b/src/string_util.c
+@@ -628,6 +628,7 @@ u8 GetExtCtrlCodeLength(u8 code)
+         1,
+         1,
+         1,
++        1,
+     };
+ 
+     u8 length = 0;
 diff --git a/src/strings.c b/src/strings.c
-index c099555..d2fbb18 100644
+index c099555..fa8d1f9 100644
 --- a/src/strings.c
 +++ b/src/strings.c
 @@ -15,25 +15,25 @@ const u8 gExpandedPlaceholder_Groudon[] = _("GROUDON");
@@ -666,13 +714,13 @@ index c099555..d2fbb18 100644
 -const u8 gText_MenuPokemon[] = _("POKéMON");
 -const u8 gText_NewGame[] = _("NEW GAME");
 -const u8 gText_Continue[] = _("CONTINUE");
-+const u8 gText_MenuPokemon[] = _("áÊÌÇŒÊÔ");
-+const u8 gText_NewGame[] = _("ûÎこÎぉ ÛëœÂ");
-+const u8 gText_Continue[] = _("ÛœÔÀËÉ");
++const u8 gText_MenuPokemon[] = _("{RTL}ÔÊŒÇÌÊá");
++const u8 gText_NewGame[] = _("{RTL}ÂœëÛ ぉÎこÎû");
++const u8 gText_Continue[] = _("{RTL}ÉËÀÔœÛ");
  const u8 gTextJP_Options[] = _("せっていを かえる");
  const u8 gUnusedText_MysteryGift[] = _("MYSTERY GIFT");
 -const u8 gText_MysteryGift[] = _("MYSTERY GIFT");
-+const u8 gText_MysteryGift[] = _("Û)ÉÀク ÛこÎま");
++const u8 gText_MysteryGift[] = _("{RTL}まÎこÛ クÀÉ)Û");
  const u8 gText_WirelessNotConnected[] = _("The Wireless Adapter is not\nconnected.");
  const u8 gText_MysteryGiftCantUse[] = _("MYSTERY GIFT can't be used while\nthe Wireless Adapter is attached.");
  const u8 gText_UpdatingSaveExternalData[] = _("がいぶデ-タにより レポ-トを こうしんします\nしばらく おまちください");
@@ -681,8 +729,8 @@ index c099555..d2fbb18 100644
  const u8 gText_FailedUpdateSwapBackup[] = _("レポ-トの こうしんは\nしっぱいしました!\pバックアップカ-トリッジを\nこうかんしてください!\pくわしくは\nにんてんどう サ-ビスセンタ- まで\lおといあわせ ください");
 -const u8 gText_SaveFileCorrupted[] = _("The save file is corrupted.\pThe previous save file will be\nloaded.");
 -const u8 gText_SaveFileHasBeenDeleted[] = _("The save file has been\ndeleted...");
-+const u8 gText_SaveFileCorrupted[] = _(".ゃÂÀÏ ばàçÂÁ ゃÓÉ\pばàçÂÁ ゃÓÉ îÇÌçÏ ÙËÇÑ\n.ぺÔÀßÂÁ");
-+const u8 gText_SaveFileHasBeenDeleted[] = _("ゃÓÉ セじï ÙÏ\n…ばàçÂÁ");
++const u8 gText_SaveFileCorrupted[] = _("{RTL}ÉÓゃ ÁÂçàば ÏÀÂゃ.\pÑÇËÙ ÏçÌÇî ÉÓゃ ÁÂçàば\nÁÂßÀÔぺ.");
++const u8 gText_SaveFileHasBeenDeleted[] = _("{RTL}ÏÙ ïじセ ÉÓゃ\nÁÂçàば…");
  const u8 gText_1MSubCircuitBoardNotInstalled[] = _("The 1M sub-circuit board is\nnot installed.");
  const u8 gTextJP_InternalBatteryHasRunDry[] = _("でんちぎれの ために\nとけいが うごかなくなりました\pとけいに かんけいする できごとは おきませんが\nゲ-ムを つづけて あそぶことは できます");
  const u8 gText_PlayerUnused[] = _("しゅじんこう");
@@ -698,16 +746,16 @@ index c099555..d2fbb18 100644
  const u8 gText_WhatWouldYouLikeToDo[] = _("What would you like to do?");
 -const u8 gText_MenuPokedex[] = _("POKéDEX");
 -const u8 gText_MenuBag[] = _("BAG");
-+const u8 gText_MenuPokedex[] = _("カÈªàÂÁ");
-+const u8 gText_MenuBag[] = _("ÛëÇわçÂÁ");
++const u8 gText_MenuPokedex[] = _("{RTL}ÁÂàªÈカ");
++const u8 gText_MenuBag[] = _("{RTL}ÁÂçわÇëÛ");
  const u8 gText_MenuPokenav[] = _("ポケナビ");
  const u8 gText_MenuPlayer[] = _("{PLAYER}");
 -const u8 gText_MenuSave[] = _("SAVE");
 -const u8 gText_MenuOption[] = _("OPTION");
 -const u8 gText_MenuExit[] = _("EXIT");
-+const u8 gText_MenuSave[] = _("ばàï");
-+const u8 gText_MenuOption[] = _("づÁÚÀÇôÂÁ");
-+const u8 gText_MenuExit[] = _("タねÈぁ");
++const u8 gText_MenuSave[] = _("{RTL}ïàば");
++const u8 gText_MenuOption[] = _("{RTL}ÁÂôÇÀÚÁづ");
++const u8 gText_MenuExit[] = _("{RTL}ぁÈねタ");
  const u8 gText_MenuRetire[] = _("RETIRE");
  const u8 gText_MenuSafariStats[] = _("{STR_VAR_1}/{STR_VAR_2}\nBALLS  {STR_VAR_3}");
  const u8 gText_TimesStrVar1[] = _("×{STR_VAR_1}");
@@ -716,7 +764,7 @@ index c099555..d2fbb18 100644
  ALIGNED(4) const u8 gText_NotPkmnOtherTrainerWants[] = _("That isn't the type of POKéMON\nthat the other TRAINER wants.");
  ALIGNED(4) const u8 gText_ThatIsntAnEgg[] = _("That isn't an EGG.");
 -const u8 gText_ChoosePokemon[] = _("Choose a POKéMON.");
-+const u8 gText_ChoosePokemon[] = _(".áÊÌÇŒÊÔ ÈËぁÁ");
++const u8 gText_ChoosePokemon[] = _("{RTL}ÁぁËÈ ÔÊŒÇÌÊá.");
  const u8 gText_MoveToWhere[] = _("Move to where?");
  const u8 gText_TeachWhichPokemon[] = _("Teach which POKéMON?");
  const u8 gText_UseOnWhichPokemon[] = _("Use on which POKéMON?");
@@ -725,7 +773,7 @@ index c099555..d2fbb18 100644
  const u8 gText_DoWhatWithItem[] = _("Do what with an item?");
  const u8 gText_NoPokemonForBattle[] = _("No battling this way!");
 -const u8 gText_ChoosePokemon2[] = _("Choose a POKéMON.");
-+const u8 gText_ChoosePokemon2[] = _(".áÊÌÇŒÊÔ ÈËぁÁ");
++const u8 gText_ChoosePokemon2[] = _("{RTL}ÁぁËÈ ÔÊŒÇÌÊá.");
  const u8 gText_NotEnoughHp[] = _("Not enough HP‥");
  const u8 gText_ThreePkmnAreNeeded[] = _("Three {PKMN} are needed.");
  const u8 gText_PokemonCantBeSame[] = _("{PKMN} can't be the same.");
@@ -735,8 +783,8 @@ index c099555..d2fbb18 100644
  const u8 gText_NotYet[] = _("これから");
 -const u8 gText_Yes[] = _("YES");
 -const u8 gText_No[] = _("NO");
-+const u8 gText_Yes[] = _("Ùœì");
-+const u8 gText_No[] = _("ぇ");
++const u8 gText_Yes[] = _("{RTL}ìœÙ");
++const u8 gText_No[] = _("{RTL}ぇ");
  const u8 gText_Info4[] = _("せつめい");
  const u8 gText_SingleBattle[] = _("SINGLE BATTLE");
  const u8 gText_DoubleBattle[] = _("DOUBLE BATTLE");
@@ -745,7 +793,7 @@ index c099555..d2fbb18 100644
  const u8 gText_NoSaveFileCantSetTime[] = _("レポ-トが ないので\nじかんの せっていは できません!");
  const u8 gText_InGameClockUsable[] = _("ゲ-ムない じかんの しゅうせい システムが\nつかえる ように なりました!");
 -const u8 gText_SavingDontTurnOffThePower2[] = _("SAVING…\nDON'T TURN OFF THE POWER.");
-+const u8 gText_SavingDontTurnOffThePower2[] = _("…ばàçÂÁ ÚÀぉ\n.ÛñÀがÂÁ î;àÏ ぇ");
++const u8 gText_SavingDontTurnOffThePower2[] = _("{RTL}ぉÀÚ ÁÂçàば…\nぇ Ïà;î ÁÂがÀñÛ.");
  
  // Start menu option descriptions
  const u8 gStartMenuDesc_Pokedex[] = _("A device that records POKéMON secrets\nupon meeting or catching them.");
@@ -755,8 +803,8 @@ index c099555..d2fbb18 100644
  const u8 gText_RegisteredTextChanged_OKtoSave[] = _("The registered text has been changed.\nIs it okay to save the game?");
 -const u8 gText_RegisteredTextChanged_AlreadySavedFile[] = _("There is already a saved file.\nIs it okay to overwrite it?");
 -const u8 gText_RegisteredTextChanged_SavingDontTurnOff[] = _("SAVING‥\nDON'T TURN OFF THE POWER.");
-+const u8 gText_RegisteredTextChanged_AlreadySavedFile[] = _(".îœàÂÀÔ ハÊàçÉ ゃÓÉ ÎぉÊこ\nぐóñÊè ÛÔÀËごÂÁ ÎこÈÏ îま");
-+const u8 gText_RegisteredTextChanged_SavingDontTurnOff[] = _("…ばàçÂÁ ÚÀぉ\n.ÛñÀがÂÁ î;àÏ ぇ");
++const u8 gText_RegisteredTextChanged_AlreadySavedFile[] = _("{RTL}こÊぉÎ ÉÓゃ ÉçàÊハ ÔÀÂàœî.\nまî ÏÈこÎ ÁÂごËÀÔÛ èÊñóぐ");
++const u8 gText_RegisteredTextChanged_SavingDontTurnOff[] = _("{RTL}ぉÀÚ ÁÂçàば…\nぇ Ïà;î ÁÂがÀñÛ.");
  const u8 gText_RegisteredTextChanged_SavedTheGame[] = _("{DYNAMIC 0x00} saved the game.");
  const u8 gText_IfLeaderLeavesChatWillEnd[] = _("If the LEADER leaves, the chat\nwill end. Is that okay?");
  const u8 gText_Hello[] = _("HELLO");
@@ -765,12 +813,12 @@ index c099555..d2fbb18 100644
  const u8 gText_WantToPlayAgain2[] = _("Want to play again?");
  const u8 gText_SomeoneDroppedOut2[] = _("Somebody dropped out.\nThe link will be canceled.");
 -const u8 gText_SavingDontTurnOffPower[] = _("SAVING…\nDON'T TURN OFF THE POWER.");
-+const u8 gText_SavingDontTurnOffPower[] = _("…ばàçÂÁ ÚÀぉ\n.ÛñÀがÂÁ î;àÏ ぇ");
++const u8 gText_SavingDontTurnOffPower[] = _("{RTL}ぉÀÚ ÁÂçàば…\nぇ Ïà;î ÁÂがÀñÛ.");
  const u8 gText_CommunicationStandby4[] = _("Communication standby…");
  const u8 gText_SavingDontTurnOffPower2[] = _("SAVING...\nDON'T TURN OFF THE POWER."); // Unused
  const u8 gText_BerryPickingRecords[] = _("DODRIO BERRY-PICKING RECORDS");
 diff --git a/src/text.c b/src/text.c
-index f3eef07..666d6a2 100644
+index f3eef07..d7c2d85 100644
 --- a/src/text.c
 +++ b/src/text.c
 @@ -100,14 +100,14 @@ const u8 gKeypadIconTiles[] = INCBIN_U8("graphics/fonts/keypad_icons.4bpp");
@@ -901,3 +949,71 @@ index f3eef07..666d6a2 100644
  };
  static const u16 sFontFemaleJapaneseGlyphs[] = INCBIN_U16("graphics/fonts/japanese_female.fwjpnfont");
  static const u8 sFontFemaleJapaneseGlyphWidths[] =
+@@ -626,6 +626,12 @@ void DrawDownArrow(u8 windowId, u16 x, u16 y, u8 bgColor, bool8 drawArrow, u8 *c
+     }
+ }
+ 
++static s32 RtlLineStartX(struct TextPrinter *textPrinter)
++{
++    return gWindows[textPrinter->printerTemplate.windowId].window.width * 8
++         - textPrinter->printerTemplate.x;
++}
++
+ u16 RenderText(struct TextPrinter *textPrinter)
+ {
+     struct TextPrinterSubStruct *subStruct = &textPrinter->subUnion.sub;
+@@ -661,7 +667,8 @@ u16 RenderText(struct TextPrinter *textPrinter)
+         switch (currChar)
+         {
+         case CHAR_NEWLINE:
+-            textPrinter->printerTemplate.currentX = textPrinter->printerTemplate.x;
++            textPrinter->printerTemplate.currentX = textPrinter->subUnion.sub.rtl
++                ? RtlLineStartX(textPrinter) : textPrinter->printerTemplate.x;
+             textPrinter->printerTemplate.currentY += gFonts[textPrinter->printerTemplate.fontId].maxLetterHeight + textPrinter->printerTemplate.lineSpacing;
+             return RENDER_REPEAT;
+         case PLACEHOLDER_BEGIN:
+@@ -737,6 +744,10 @@ u16 RenderText(struct TextPrinter *textPrinter)
+                 textPrinter->printerTemplate.currentChar++;
+                 currChar = *textPrinter->printerTemplate.currentChar;
+                 break;
++            case EXT_CTRL_CODE_RTL:
++                subStruct->rtl = TRUE;
++                textPrinter->printerTemplate.currentX = RtlLineStartX(textPrinter);
++                return RENDER_REPEAT;
+             case EXT_CTRL_CODE_SHIFT_RIGHT:
+                 textPrinter->printerTemplate.currentX = textPrinter->printerTemplate.x + *textPrinter->printerTemplate.currentChar;
+                 textPrinter->printerTemplate.currentChar++;
+@@ -836,6 +847,13 @@ u16 RenderText(struct TextPrinter *textPrinter)
+             break;
+         }
+ 
++        if (subStruct->rtl && !textPrinter->japanese)
++        {
++            textPrinter->printerTemplate.currentX -= gGlyphInfo.width;
++            CopyGlyphToWindow(textPrinter);
++            return RENDER_PRINT;
++        }
++
+         CopyGlyphToWindow(textPrinter);
+ 
+         if (textPrinter->minLetterSpacing)
+@@ -864,7 +882,8 @@ u16 RenderText(struct TextPrinter *textPrinter)
+         if (TextPrinterWaitWithDownArrow(textPrinter))
+         {
+             FillWindowPixelBuffer(textPrinter->printerTemplate.windowId, PIXEL_FILL(textPrinter->printerTemplate.bgColor));
+-            textPrinter->printerTemplate.currentX = textPrinter->printerTemplate.x;
++            textPrinter->printerTemplate.currentX = textPrinter->subUnion.sub.rtl
++                ? RtlLineStartX(textPrinter) : textPrinter->printerTemplate.x;
+             textPrinter->printerTemplate.currentY = textPrinter->printerTemplate.y;
+             textPrinter->state = RENDER_STATE_HANDLE_CHAR;
+         }
+@@ -874,7 +893,8 @@ u16 RenderText(struct TextPrinter *textPrinter)
+         {
+             TextPrinterClearDownArrow(textPrinter);
+             textPrinter->scrollDistance = gFonts[textPrinter->printerTemplate.fontId].maxLetterHeight + textPrinter->printerTemplate.lineSpacing;
+-            textPrinter->printerTemplate.currentX = textPrinter->printerTemplate.x;
++            textPrinter->printerTemplate.currentX = textPrinter->subUnion.sub.rtl
++                ? RtlLineStartX(textPrinter) : textPrinter->printerTemplate.x;
+             textPrinter->state = RENDER_STATE_SCROLL;
+         }
+         return RENDER_UPDATE;

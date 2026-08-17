@@ -552,12 +552,14 @@ def test_isolated_alef_is_not_swallowed(font_path):
 @pil
 def test_joining_edges_stay_flush(font_path):
     # A medial form must keep its ink at both cell edges of its advance, or
-    # every cursive join in the word gains a visible 1px break.
+    # every cursive join in the word gains a visible 1px break. Advance is
+    # measured on INK alone: the drop shadow spills one column further right
+    # and is clipped by the engine's blit on joining edges.
     spec = fontgen.FontSpec()
     glyphs = fontgen.render([MEEM_MEDIAL], font_path, spec)
-    bbox = fontgen.ink_bbox(glyphs[MEEM_MEDIAL])
-    assert bbox[0] == 0
-    assert fontgen.glyph_width(glyphs[MEEM_MEDIAL], spec, MEEM_MEDIAL) == bbox[2]
+    ink = fontgen.ink_bbox(glyphs[MEEM_MEDIAL], fontgen.INK_ONLY)
+    assert ink[0] == 0
+    assert fontgen.glyph_width(glyphs[MEEM_MEDIAL], spec, MEEM_MEDIAL) == ink[2]
 
 
 @pil
@@ -597,11 +599,13 @@ def test_autofit_fits_the_glyph_box(font_path):
     assert info["ascent"] + info["descent"] <= fontgen.BOX_HEIGHT
     # Bottom-aligned: baseline leaves exactly the measured descent below.
     assert spec.baseline == fontgen.BOX_HEIGHT - info["descent"]
-    # And the rendered result honours the promise: every glyph's ink lives in
-    # rows 0..BOX_HEIGHT-1, the only rows the engine draws.
+    # And the rendered result honours the promise: every glyph's INK lives in
+    # rows 0..BOX_HEIGHT-1, the only rows the engine draws. (The drop shadow
+    # may spill one row further; the deepest tail's shadow is clipped, exactly
+    # as the original Latin descenders' shadows are.)
     glyphs = fontgen.render(cps, font_path, spec)
     for cp in cps:
-        bbox = fontgen.ink_bbox(glyphs[cp])
+        bbox = fontgen.ink_bbox(glyphs[cp], fontgen.INK_ONLY)
         assert bbox[1] >= 0 and bbox[3] <= fontgen.BOX_HEIGHT, \
             f"U+{cp:04X} ink at rows {bbox[1]}..{bbox[3] - 1} leaves the box"
 
@@ -622,9 +626,84 @@ def test_final_form_joins_right_but_not_left(font_path):
     # exactly at the advance (right edge flush) but start one column in.
     spec = fontgen.FontSpec()
     glyphs = fontgen.render([0xFE8E], font_path, spec)
-    bbox = fontgen.ink_bbox(glyphs[0xFE8E])
-    assert bbox[0] == 1
-    assert fontgen.glyph_width(glyphs[0xFE8E], spec, 0xFE8E) == bbox[2]
+    ink = fontgen.ink_bbox(glyphs[0xFE8E], fontgen.INK_ONLY)
+    assert ink[0] == 1
+    assert fontgen.glyph_width(glyphs[0xFE8E], spec, 0xFE8E) == ink[2]
+
+
+@pil
+def test_glyphs_are_solid_ink_with_offset_shadow(font_path):
+    # The old three-level quantisation turned antialiasing into shadow-colour
+    # haze that swallowed the letters and their dots in game. Now: every
+    # shadow pixel must be the (+1,+1) neighbour of an ink pixel, never a
+    # free-floating fringe.
+    spec = fontgen.FontSpec()
+    glyphs = fontgen.render([MEEM_MEDIAL, 0xFE92, 0xFE97], font_path, spec)  # م بـ تـ
+    for cp, img in glyphs.items():
+        px = img.load()
+        for y in range(spec.cell_h):
+            for x in range(spec.cell_w):
+                if px[x, y] == fontgen.SHADOW:
+                    assert x > 0 and y > 0 and px[x - 1, y - 1] == fontgen.INK, \
+                        f"U+{cp:04X}: stray shadow at ({x},{y})"
+
+
+@pil
+def test_dots_survive_quantisation(font_path):
+    # ب and ت differ only by their dots; if quantisation eats dots the two
+    # become identical -- the exact failure seen on hardware.
+    spec = fontgen.FontSpec()
+    glyphs = fontgen.render([0xFE92, 0xFE98], font_path, spec)   # بـ medial, تـ medial
+    assert glyphs[0xFE92].tobytes() != glyphs[0xFE98].tobytes()
+
+
+# -- RTL mirroring ---------------------------------------------------------
+
+def test_rtl_eligibility():
+    assert decompsrc.rtl_eligible("مرحبا بك!")
+    assert decompsrc.rtl_eligible("مرحبا {PAUSE 32}بك")          # zero-width ok
+    assert not decompsrc.rtl_eligible("مرحبا {PLAYER}")          # runtime text
+    assert not decompsrc.rtl_eligible("{B_BUFF1} تعلم {B_BUFF2}")
+
+
+def test_convert_rtl_prefixes_and_mirrors(tmp_path):
+    table = cm.Charmap()
+    alloc = gl.allocate(["ابج"], table=table)
+    chars = decompsrc.load_byte_chars(_mini_charmap(tmp_path))
+    ltr = decompsrc.convert("ابج", table, alloc, chars, rtl=False)
+    rtl = decompsrc.convert("ابج", table, alloc, chars, rtl=True)
+    assert rtl.startswith("{RTL}")
+    # Mirrored: the RTL body is the exact reverse of the LTR visual order.
+    assert rtl[len("{RTL}"):] == ltr[::-1]
+
+
+def test_convert_rtl_mirrors_per_line(tmp_path):
+    table = cm.Charmap()
+    alloc = gl.allocate(["اب جد"], table=table)
+    chars = decompsrc.load_byte_chars(_mini_charmap(tmp_path))
+    ltr = decompsrc.convert("اب\\nجد", table, alloc, chars, rtl=False)
+    rtl = decompsrc.convert("اب\\nجد", table, alloc, chars, rtl=True)
+    l1, l2 = ltr.split("\\n")
+    r1, r2 = rtl[len("{RTL}"):].split("\\n")
+    assert (r1, r2) == (l1[::-1], l2[::-1])     # lines mirrored, order kept
+
+
+def test_convert_rtl_refused_for_ineligible_string(tmp_path):
+    table = cm.Charmap()
+    alloc = gl.allocate(["اب"], table=table)
+    chars = decompsrc.load_byte_chars(_mini_charmap(tmp_path))
+    out = decompsrc.convert("اب {B_BUFF1}", table, alloc, chars, rtl=True)
+    assert "{RTL}" not in out                   # silently falls back to LTR
+
+
+def test_patch_tree_rtl_predicate_excludes_data_strings():
+    # The predicate form must be honoured -- a name preset carrying FC 19
+    # would inject a control code into the player's name buffer.
+    calls = []
+    pred = lambda sym: (calls.append(sym), not sym.startswith("gNameChoice_"))[1]
+    assert pred("gText_NewGame") is True
+    assert pred("gNameChoice_Red") is False
+    assert calls == ["gText_NewGame", "gNameChoice_Red"]
 
 
 @pil

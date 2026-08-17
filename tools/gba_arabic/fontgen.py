@@ -65,6 +65,7 @@ def _require_pil() -> None:
 #   behind the glyph, spanning (advance width) x (BOX_HEIGHT) pixels.
 BG, INK, SHADOW, BOX = 0, 1, 2, 3
 INK_INDICES = frozenset({INK, SHADOW})
+INK_ONLY = frozenset({INK})
 BOX_HEIGHT = 14         # gGlyphInfo.height in src/text.c
 
 
@@ -117,6 +118,7 @@ def render(
             top = y0 - spec.baseline
             cell.paste(quantised.crop((bbox[0], top, right, top + spec.cell_h)),
                        (lb, 0))
+            add_shadow(cell)
         out[cp] = cell
     return out
 
@@ -204,16 +206,44 @@ def autofit(
 
 
 def _quantise(img: "Image.Image", spec: FontSpec) -> "Image.Image":
-    """Grayscale coverage -> palette indices 0/1/2."""
+    """Grayscale coverage -> binary ink (palette index 1).
+
+    Deliberately binary, NOT three-level. Mapping medium-coverage pixels to the
+    shadow index looked reasonable on paper but was wrong in game: the engine's
+    palette renders index 2 as a light grey, so every antialiasing fringe
+    became a grey halo and small marks -- the dots that distinguish ب ت ث ن ي
+    -- came out faint or vanished ("the shadow eats the letters"). The original
+    font never does this: its glyphs are solid ink plus a clean offset drop
+    shadow, which ``add_shadow`` reproduces.
+    """
     px = img.load()
     dst = Image.new("P", img.size, 0)
     dpx = dst.load()
     for y in range(img.height):
         for x in range(img.width):
-            v = px[x, y]
-            dpx[x, y] = 1 if v >= spec.fill_at else (2 if v >= spec.edge_at else 0)
+            dpx[x, y] = INK if px[x, y] >= spec.edge_at else BG
     dst.putpalette(_palette())
     return dst
+
+
+def add_shadow(cell: "Image.Image") -> "Image.Image":
+    """Add the (+1, +1) drop shadow the original Gen 3 fonts carry.
+
+    Shadow pixels are only placed where there is no ink, and advance widths are
+    measured on ink alone -- so on a joining edge the shadow column falls
+    beyond the advance and is clipped by the engine's blit, keeping cursive
+    seams closed, while on a non-joining edge it lands inside the spacing
+    column where it is visible, exactly like the Latin glyphs' shadows.
+    """
+    px = cell.load()
+    w, h = cell.size
+    for y in range(h - 1, -1, -1):
+        for x in range(w - 1, -1, -1):
+            if px[x, y] == INK:
+                sx, sy = x + 1, y + 1
+                if sx < w and sy < h and px[sx, sy] == BG:
+                    px[sx, sy] = SHADOW
+    return cell
 
 
 def _palette() -> list[int]:
@@ -383,10 +413,16 @@ def glyph_width(img: "Image.Image", spec: FontSpec = FontSpec(),
     only the right bearing is added here. Without ``cp`` the ``pad_right``
     fallback applies -- fine for Latin, wrong for Arabic, so pass it whenever
     the glyph is a shaped form.
+
+    Measured on INK only, excluding the drop shadow: the shadow belongs inside
+    the spacing column on non-joining edges and must be clipped on joining
+    ones, so it never widens the advance.
     """
-    bbox = ink_bbox(img)
+    bbox = ink_bbox(img, INK_ONLY)
     if bbox is None:
-        return max(2, spec.cell_w // 4)     # a space-like blank
+        bbox = ink_bbox(img)                # shadow-only cell, or truly blank
+        if bbox is None:
+            return max(2, spec.cell_w // 4)
     right = visual_bearings(cp)[1] if cp is not None else spec.pad_right
     return min(spec.cell_w, bbox[2] + right)
 
