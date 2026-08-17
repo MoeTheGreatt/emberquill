@@ -29,15 +29,27 @@ first) so the allocation, fonts and strings stay consistent with each other.
 
 ## Coverage
 
-~165 strings: the complete new-game intro (Oak's speech, controls guide,
-naming, gender/rival dialogue), Arabic default name presets, main menu, start
-menu, save flow, PC access, item pickup, and the core battle text (encounters,
-send-outs, damage effectiveness, status conditions, experience/level/moves,
-catching, fleeing, prize money).
+~250 strings across two files:
 
-Everything else — NPC dialogue, item/move/species names, Pokédex entries —
-remains English. Add entries to `firered_ar.json` (key = decomp symbol) and
-re-run; the tool reports any symbol it cannot find.
+- `firered_ar.json` (~212): the complete new-game intro, Arabic name presets,
+  main/start menus, save flow, the full PC flow (item storage, mailbox,
+  withdraw/deposit), bag pockets and context verbs (use/give/toss/register…),
+  the battle action menu, and the core battle text.
+- `firered_ar_items.json`: 35 item names + 29 descriptions (balls, potions,
+  status heals, revives, drinks, repels, key early items). Patched into
+  `src/data/items.json` — the generated `items.h` is deleted so the build
+  regenerates it; names are data (plain visual order, no RTL code),
+  descriptions get the RTL printer.
+
+Everything else — NPC dialogue, moves, species names, Pokédex entries —
+remains English (~9,300 strings total in FireRed). Add entries and re-run;
+the tool reports any symbol it cannot find.
+
+Layout-sensitive strings: positional codes like `{CLEAR_TO}` are treated as
+column boundaries — text reorders within a column, never across, so grid
+menus keep each label in the slot the cursor expects. Leading/trailing
+zero-width codes (colours, {WAIT_SE}) stay at segment edges instead of riding
+a reordered character into mid-word.
 
 ## How this was verified
 

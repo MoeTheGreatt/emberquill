@@ -316,8 +316,21 @@ def cmd_translate(args: argparse.Namespace) -> int:
         if not k.startswith("_")}
     print(f"{len(translations)} translated string(s) loaded")
 
+    # Item names/descriptions, if a data file is supplied. Descriptions merge
+    # into the ordinary symbol pass; names patch struct fields in items.h.
+    # Merged BEFORE allocation so the fonts carry every glyph the corpus needs.
+    item_names: dict[str, str] = {}
+    item_descs: dict[str, str] = {}
+    if args.items:
+        data = json.loads(Path(args.items).read_text(encoding="utf-8"))
+        item_names = data.get("names", {})
+        item_descs = data.get("descriptions", {})
+        print(f"items: {len(item_names)} name(s), {len(item_descs)} description(s)")
+
     # One allocation over the WHOLE corpus, so every string shares the map.
     corpus = [decompsrc.plain_runs(t) for t in translations.values()]
+    corpus += [decompsrc.plain_runs(t) for t in item_names.values()]
+    corpus += [decompsrc.plain_runs(t) for t in item_descs.values()]
     alloc = gl.allocate(corpus, table=table, free_ranges=_ranges(args))
     print(f"glyphs: {alloc.slots_used} new + {len(alloc.reused)} reused, "
           f"{alloc.slots_total - alloc.slots_used} slot(s) spare")
@@ -367,6 +380,17 @@ def cmd_translate(args: argparse.Namespace) -> int:
     # Patch the string sources.
     report = decompsrc.patch_tree(repo, translations, table, alloc, byte_chars,
                                   rtl=rtl_pred)
+
+    if item_names or item_descs:
+        named, described = decompsrc.patch_items_json(
+            repo, item_names, item_descs, table, alloc, byte_chars)
+        print(f"items.json: {len(named)}/{len(item_names)} name(s), "
+              f"{len(described)}/{len(item_descs)} description(s) patched; "
+              f"stale items.h removed for regeneration")
+        for miss in sorted(set(item_names) - set(named)):
+            print(f"  name not found: {miss!r}", file=sys.stderr)
+        for miss in sorted(set(item_descs) - set(described)):
+            print(f"  description not found: {miss!r}", file=sys.stderr)
     print(f"\npatched {len(report.patched)} string(s) across "
           f"{len(report.files)} file(s)")
     for f in sorted(report.files):
@@ -555,11 +579,13 @@ def build_parser() -> argparse.ArgumentParser:
                    help="JSON of {decomp symbol: Arabic text}")
     p.add_argument("-f", "--font", help="TTF to rasterise (omit to skip fonts)")
     p.add_argument("-m", "--map", help="also write the glyph map here")
+    p.add_argument("--items", help="JSON with item {names} keyed by English literal "
+                        "and {descriptions} keyed by symbol")
     p.add_argument("--free-ranges", help="override the profile's free byte ranges")
     p.add_argument("--rtl", action="store_true",
                    help="patch the engine for right-to-left printing and emit "
                         "mirrored strings (typewriter reveals Arabic correctly)")
-    p.add_argument("--rtl-exclude", default=r"^gNameChoice_|^gText_MainMenuTime$",
+    p.add_argument("--rtl-exclude", default=r"^gNameChoice_|^gText_MainMenuTime$|^gText_BattleMenu$",
                    help="regex of symbols that must NOT use the RTL printer "
                         "(data-like strings whose bytes get copied into buffers)")
     p.set_defaults(fn=cmd_translate)

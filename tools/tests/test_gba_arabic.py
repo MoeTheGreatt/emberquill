@@ -696,6 +696,36 @@ def test_convert_rtl_refused_for_ineligible_string(tmp_path):
     assert "{RTL}" not in out                   # silently falls back to LTR
 
 
+def test_positional_codes_are_column_boundaries(tmp_path):
+    # {CLEAR_TO} jumps the pen to an absolute x: it separates layout columns.
+    # Reordering across it would swap which label lands in which slot -- the
+    # battle menu maps cursor slots to actions by position, so a swapped label
+    # selects the wrong action. Words stay in their authored segments.
+    table = cm.Charmap()
+    alloc = gl.allocate(["اب جد"], table=table)
+    chars = decompsrc.load_byte_chars(_mini_charmap(tmp_path))
+    out = decompsrc.convert("اب{CLEAR_TO 56}جد", table, alloc, chars)
+    left, right = out.split("{CLEAR_TO 56}")
+    seg1 = decompsrc.convert("اب", table, alloc, chars)
+    seg2 = decompsrc.convert("جد", table, alloc, chars)
+    assert (left, right) == (seg1, seg2)     # order kept, each visually correct
+
+
+def test_edge_zero_width_codes_stay_at_the_edges(tmp_path):
+    # A leading colour code must execute before ANY glyph draws, and a
+    # trailing {WAIT_SE} after ALL of them -- not mid-word where reordering
+    # would otherwise carry them.
+    table = cm.Charmap()
+    alloc = gl.allocate(["ابج"], table=table)
+    chars = decompsrc.load_byte_chars(_mini_charmap(tmp_path))
+    out = decompsrc.convert("{COLOR RED}ابج{WAIT_SE}", table, alloc, chars)
+    assert out.startswith("{COLOR RED}")
+    assert out.endswith("{WAIT_SE}")
+    body = out[len("{COLOR RED}"):-len("{WAIT_SE}")]
+    assert "{" not in body                       # nothing interleaved mid-run
+    assert body == decompsrc.convert("ابج", table, alloc, chars)
+
+
 def test_patch_tree_rtl_predicate_excludes_data_strings():
     # The predicate form must be honoured -- a name preset carrying FC 19
     # would inject a control code into the player's name buffer.

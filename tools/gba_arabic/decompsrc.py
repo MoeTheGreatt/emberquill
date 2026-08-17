@@ -39,8 +39,17 @@ _ZERO_WIDTH_PREFIXES = (
 _TOKEN_RE = re.compile(r"\{([^}]*)\}|\\([nlp])")
 
 
+# Codes that move the pen to an absolute or relative position: they separate
+# layout segments (columns), so text must never be reordered across them.
+_POSITIONAL_PREFIXES = ("CLEAR_TO", "CLEAR ", "SKIP", "SHIFT_RIGHT")
+
+
 def _is_zero_width(macro: str) -> bool:
     return any(macro.startswith(p) for p in _ZERO_WIDTH_PREFIXES)
+
+
+def _is_positional(macro: str) -> bool:
+    return any(macro.startswith(p) for p in _POSITIONAL_PREFIXES)
 
 
 def load_byte_chars(charmap_path: str | Path) -> dict[int, str]:
@@ -130,9 +139,42 @@ def convert(
     rtl = rtl and rtl_eligible(text)
     out: list[str] = ["{RTL}"] if rtl else []
     for line in tokenise(text):
-        visual = bidi.reorder(pipeline.shape_line(line.tokens))
-        if rtl:
-            visual = list(reversed(visual))
+        # Positional codes ({CLEAR_TO 56}...) are COLUMN separators: the pen
+        # jumps to an absolute x. Reordering across one would swap which label
+        # sits in which column slot -- the battle menu's FIGHT/BAG grid maps
+        # cursor position to action by slot, so a swapped label picks the
+        # wrong action. Each segment reorders independently; segment order
+        # and the separators stay exactly where the author put them.
+        segments: list[list] = [[]]
+        separators: list[cm.Atom] = []
+        for tok in line.tokens:
+            if isinstance(tok, cm.Atom) and _is_positional(tok.name):
+                separators.append(tok)
+                segments.append([])
+            else:
+                segments[-1].append(tok)
+
+        visual: list = []
+        for i, seg in enumerate(segments):
+            if i > 0:
+                visual.append(bidi.Atom(separators[i - 1].name, b"", width=False))
+            # Zero-width codes at a segment's edges stay at the edges. Left
+            # to the generic binding they ride the first LOGICAL character,
+            # which reordering puts mid-run -- so a leading colour code would
+            # execute after half the word had already drawn in the old colour.
+            lead: list = []
+            trail: list = []
+            while seg and isinstance(seg[0], cm.Atom) and not seg[0].width:
+                lead.append(seg.pop(0))
+            while seg and isinstance(seg[-1], cm.Atom) and not seg[-1].width:
+                trail.append(seg.pop())
+            trail.reverse()
+            seg_vis = bidi.reorder(pipeline.shape_line(seg))
+            if rtl:
+                seg_vis = list(reversed(seg_vis))
+            visual.extend(bidi.Atom(a.name, b"", width=False) for a in lead)
+            visual.extend(seg_vis)
+            visual.extend(bidi.Atom(a.name, b"", width=False) for a in trail)
         for tok in visual:
             if isinstance(tok, bidi.Atom):
                 out.append("{" + tok.name + "}")
@@ -222,6 +264,64 @@ def patch_inc_string(source: str, symbol: str, new_text: str) -> str | None:
     return "".join(lines[:start]) + replacement + "".join(lines[end:])
 
 
+def patch_items_json(
+    repo: "str | Path",
+    names: dict[str, str],
+    descriptions: dict[str, str],
+    table: cm.Charmap,
+    alloc: Allocation,
+    byte_chars: dict[int, str],
+) -> tuple[list[str], list[str]]:
+    """Patch item names/descriptions in src/data/items.json.
+
+    items.h looks like the place, but it is GENERATED from items.json by the
+    build (and gitignored), so edits there are silently regenerated away and
+    invisible to git resets -- which is exactly how a stale half-patched copy
+    once masqueraded as a patching bug. The JSON is the source of truth:
+    ``english`` feeds the ``.name`` field and ``description_english`` the
+    gItemDescription_* symbol, per src/data/items.json.txt.
+
+    Names are DATA (inserted via buffers, listed by the LTR printer): plain
+    visual order, no RTL code. Descriptions are printed standalone and get
+    the RTL treatment. The stale items.h is deleted so the build regenerates.
+
+    Descriptions are keyed by their generated symbol name
+    (``gItemDescription_<ITEM_ID>``), matching how they appear to the rest of
+    the translation corpus.
+    """
+    import json as _json
+
+    path = Path(repo) / "src" / "data" / "items.json"
+    data = _json.loads(path.read_text(encoding="utf-8"))
+    items = data["items"]
+
+    by_name = {e.get("english"): e for e in items}
+    named: list[str] = []
+    for english, arabic in names.items():
+        entry = by_name.get(english)
+        if entry is None:
+            continue
+        entry["english"] = convert(arabic, table, alloc, byte_chars, rtl=False)
+        named.append(english)
+
+    by_symbol = {f"gItemDescription_{e['itemId']}": e
+                 for e in items if e.get("itemId")}
+    described: list[str] = []
+    for symbol, arabic in descriptions.items():
+        entry = by_symbol.get(symbol)
+        if entry is None:
+            continue
+        entry["description_english"] = convert(arabic, table, alloc, byte_chars,
+                                               rtl=True)
+        described.append(symbol)
+
+    path.write_text(_json.dumps(data, ensure_ascii=False, indent=2) + "\n",
+                    encoding="utf-8")
+    stale = Path(repo) / "src" / "data" / "items.h"
+    stale.unlink(missing_ok=True)
+    return named, described
+
+
 def patch_tree(
     repo: str | Path,
     translations: dict[str, str],
@@ -242,6 +342,7 @@ def patch_tree(
         root = repo / sub
         if root.is_dir():
             candidates += [p for p in root.rglob("*.c")]
+            candidates += [p for p in root.rglob("*.h")]
             candidates += [p for p in root.rglob("*.inc")]
 
     for path in candidates:
@@ -256,9 +357,9 @@ def patch_tree(
             want_rtl = rtl(symbol) if callable(rtl) else rtl
             converted = convert(remaining[symbol], table, alloc, byte_chars,
                                 rtl=want_rtl)
-            patched = (patch_c_string(text, symbol, converted)
-                       if path.suffix == ".c"
-                       else patch_inc_string(text, symbol, converted))
+            patched = (patch_inc_string(text, symbol, converted)
+                       if path.suffix == ".inc"
+                       else patch_c_string(text, symbol, converted))
             if patched is None:
                 continue
             text = patched
