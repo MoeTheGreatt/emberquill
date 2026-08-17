@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Never commit ROMs, ROM archives or patches: copyrighted game data.
+*.gba
+*.gb
+*.gbc
+*.nds
+*.ips
+*.ups
+*.bps
+*.zip
