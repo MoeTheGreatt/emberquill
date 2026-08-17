@@ -322,6 +322,43 @@ def patch_items_json(
     return named, described
 
 
+def patch_indexed_array(
+    source: str,
+    entries: dict[str, str],
+    table: cm.Charmap,
+    alloc: Allocation,
+    byte_chars: dict[int, str],
+    *,
+    limit: int | None = None,
+) -> tuple[str, list[str], list[str]]:
+    """Patch ``[CONST] = _("...")`` rows in a data table.
+
+    Species, move and type names live in fixed-width arrays
+    (``gSpeciesNames[][POKEMON_NAME_LENGTH + 1]``), so ``limit`` is a HARD
+    byte budget: an over-long name would silently truncate mid-glyph in game.
+    Anything over budget is rejected with an error instead of patched.
+
+    These are data strings -- inserted into sentences via buffers and listed
+    by the LTR printer -- so they convert in plain visual order, no RTL code.
+    """
+    patched: list[str] = []
+    errors: list[str] = []
+    for const, arabic in entries.items():
+        pat = re.compile(rf'(\[{re.escape(const)}\]\s*=\s*_\(")([^"]*)("\))')
+        m = pat.search(source)
+        if not m:
+            errors.append(f"{const}: not found")
+            continue
+        converted = convert(arabic, table, alloc, byte_chars, rtl=False)
+        if limit is not None and len(converted) > limit:
+            errors.append(f"{const}: {arabic!r} needs {len(converted)} bytes, "
+                          f"limit {limit}")
+            continue
+        source = source[:m.start(2)] + converted + source[m.end(2):]
+        patched.append(const)
+    return source, patched, errors
+
+
 def patch_tree(
     repo: str | Path,
     translations: dict[str, str],
@@ -344,6 +381,7 @@ def patch_tree(
             candidates += [p for p in root.rglob("*.c")]
             candidates += [p for p in root.rglob("*.h")]
             candidates += [p for p in root.rglob("*.inc")]
+            candidates += [p for p in root.rglob("*.s")]
 
     for path in candidates:
         if not remaining:
@@ -358,7 +396,7 @@ def patch_tree(
             converted = convert(remaining[symbol], table, alloc, byte_chars,
                                 rtl=want_rtl)
             patched = (patch_inc_string(text, symbol, converted)
-                       if path.suffix == ".inc"
+                       if path.suffix in (".inc", ".s")
                        else patch_c_string(text, symbol, converted))
             if patched is None:
                 continue

@@ -969,7 +969,11 @@ def test_firered_profile_excludes_the_glyphs_that_are_in_use():
     assert 0x1B not in free, "0x1B is 'é', used in 1234 ROM strings"
     assert 0x2D not in free, "0x2D is '&', used in real strings"
     assert 0x01 in free and 0x77 in free
-    assert len(free) == 117
+    # 0x87-0x9F: kana-only cells, blank in every Latin sheet, no CHAR_* define
+    # (arrows sit at 0x79-0x7C, SUPER_E at 0x84 -- all excluded).
+    assert 0x87 in free and 0x9F in free
+    assert not any(b in free for b in (0x79, 0x7A, 0x7B, 0x7C, 0x84, 0x85, 0x86))
+    assert len(free) == 142
     assert prof.placeholders["PLAYER"] == 0x01
     assert "VERSION" not in prof.placeholders    # FireRed has no VERSION
 

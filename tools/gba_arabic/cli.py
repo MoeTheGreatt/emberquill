@@ -327,11 +327,31 @@ def cmd_translate(args: argparse.Namespace) -> int:
         item_descs = data.get("descriptions", {})
         print(f"items: {len(item_names)} name(s), {len(item_descs)} description(s)")
 
+    data_arrays: list = []
+    if args.data:
+        data_arrays = json.loads(Path(args.data).read_text(encoding="utf-8")).get("arrays", [])
+        n = sum(len(a["entries"]) for a in data_arrays)
+        print(f"data tables: {n} name(s) across {len(data_arrays)} array(s)")
+
     # One allocation over the WHOLE corpus, so every string shares the map.
     corpus = [decompsrc.plain_runs(t) for t in translations.values()]
     corpus += [decompsrc.plain_runs(t) for t in item_names.values()]
     corpus += [decompsrc.plain_runs(t) for t in item_descs.values()]
-    alloc = gl.allocate(corpus, table=table, free_ranges=_ranges(args))
+    for arr in data_arrays:
+        corpus += [decompsrc.plain_runs(t) for t in arr["entries"].values()]
+
+    # Two forms that rasterise to identical pixels can share one byte -- at
+    # 11pt several isolated/final pairs genuinely do. Decided from rendered
+    # pixels, never from script assumptions.
+    equivalent = None
+    if args.font:
+        wanted = sorted(gl.collect(corpus))
+        probe, _ = _fitted_render(wanted, args.font, profiles.get(args.profile).font,
+                                  label="dedupe probe")
+        equivalent = fontgen.bitmap_equivalence(probe)
+
+    alloc = gl.allocate(corpus, table=table, free_ranges=_ranges(args),
+                        equivalent=equivalent)
     print(f"glyphs: {alloc.slots_used} new + {len(alloc.reused)} reused, "
           f"{alloc.slots_total - alloc.slots_used} slot(s) spare")
     if not alloc.ok:
@@ -380,6 +400,17 @@ def cmd_translate(args: argparse.Namespace) -> int:
     # Patch the string sources.
     report = decompsrc.patch_tree(repo, translations, table, alloc, byte_chars,
                                   rtl=rtl_pred)
+
+    for arr in data_arrays:
+        path = repo / arr["file"]
+        src = path.read_text(encoding="utf-8")
+        src, done_a, errs = decompsrc.patch_indexed_array(
+            src, arr["entries"], table, alloc, byte_chars,
+            limit=arr.get("limit"))
+        path.write_text(src, encoding="utf-8")
+        print(f"  {arr['file']}: {len(done_a)}/{len(arr['entries'])} patched")
+        for e in errs[:10]:
+            print(f"    {e}", file=sys.stderr)
 
     if item_names or item_descs:
         named, described = decompsrc.patch_items_json(
@@ -579,6 +610,8 @@ def build_parser() -> argparse.ArgumentParser:
                    help="JSON of {decomp symbol: Arabic text}")
     p.add_argument("-f", "--font", help="TTF to rasterise (omit to skip fonts)")
     p.add_argument("-m", "--map", help="also write the glyph map here")
+    p.add_argument("--data", help="JSON with fixed-width name tables: "
+                        "{arrays:[{file,limit,entries:{CONST:arabic}}]}")
     p.add_argument("--items", help="JSON with item {names} keyed by English literal "
                         "and {descriptions} keyed by symbol")
     p.add_argument("--free-ranges", help="override the profile's free byte ranges")

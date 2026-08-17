@@ -43,7 +43,11 @@ class Profile:
 #     Cheap to leave alone, so it is excluded too.
 #   * Bytes seen after 0xFC (0x02..0x09 and similar) are control-code arguments,
 #     never font lookups, so they do not cost a glyph slot.
-FIRERED_FREE = ((0x01, 0x1A), (0x1C, 0x2C), (0x2E, 0x77))
+#   * 0x87-0x9F holds kana that only the Japanese font draws: the cells are
+#     blank in every latin_*.png, no CHAR_* define touches the range (the
+#     arrows sit at 0x79-0x7C and SUPER_E at 0x84, both excluded), and the
+#     ROM-wide scan found no English text using it. 25 extra slots.
+FIRERED_FREE = ((0x01, 0x1A), (0x1C, 0x2C), (0x2E, 0x77), (0x87, 0x9F))
 
 FIRERED_PLACEHOLDERS = {
     "PLAYER": 0x01, "STR_VAR_1": 0x02, "STR_VAR_2": 0x03, "STR_VAR_3": 0x04,
@@ -78,7 +82,7 @@ PROFILES: dict[str, Profile] = {
         font=FontSpec(cell_w=16, cell_h=16, columns=16, size=11, baseline=11),
         decomp="pokefirered",
         notes="Verified against BPRE rev 1 and pokefirered. 117 free glyph "
-              "slots in 0x01-0x77 with Latin kept, which fits full Arabic. "
+              "slots in 0x01-0x77 plus 0x87-0x9F with Latin kept. "
               "Note the font is near-monospace: most glyphs are 6px, so 'm' "
               "and 'w' are no wider than 'A'.",
     ),

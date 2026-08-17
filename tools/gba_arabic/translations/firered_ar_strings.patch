@@ -8,33 +8,177 @@ index b9d0ed9..5cf6c5a 100644
  '\n' = FE @ new line
 +
 +RTL = FC 19
+diff --git a/data/event_scripts.s b/data/event_scripts.s
+index 88d7594..7c07167 100644
+--- a/data/event_scripts.s
++++ b/data/event_scripts.s
+@@ -814,7 +814,7 @@ Text_WouldYouLikeToMixRecords::
+ 
+ @ Unused
+ Text_WeHopeToSeeYouAgain2::
+-	.string "We hope to see you again!$"
++	.string "{RTL}ÛオÉî Ñà ÛÊÁだ ÉぅÏßÁ!$"
+ 
+ 	.include "data/text/pc.inc"
+ 
+@@ -882,25 +882,19 @@ Text_GiveNicknameToReceivedMon::
+ 	.string "{STR_VAR_2} you received?$"
+ 
+ gText_PkmnFainted3::
+-	.string "{STR_VAR_1} fainted…\p"
+-	.string "$"
++	.string "…ぉÇÚò ëÔぐÑ {STR_VAR_1}\p$"
+ 
+ Text_WelcomeWantToHealPkmn::
+-	.string "Welcome to our POKéMON CENTER!\p"
+-	.string "Would you like me to heal your\n"
+-	.string "POKéMON back to perfect health?$"
++	.string "{RTL}Ñùぶ こご èë ÉÊÓぜ ÁÈçÂÓÇÔÂà!\pùî ŒÊËÏ Éねë ÉまÀÈぅÙ こÂÓÇÔÂÛご\nÈÇまÂß こぞïÙ ÉヒÀÈÇÙっ$"
+ 
+ Text_TakeYourPkmnForFewSeconds::
+-	.string "Okay, I'll take your POKéMON for a\n"
+-	.string "few seconds.$"
++	.string "{RTL}ôìねÀク áヤªど こÂÓÇÔÂÛご\nÈçぼび タÂÁà.$"
+ 
+ Text_WeHopeToSeeYouAgain::
+-	.string "We hope to see you again!$"
++	.string "{RTL}ÛオÉî Ñà ÛÊÁだ ÉぅÏßÁ!$"
+ 
+ Text_RestoredPkmnToFullHealth::
+-	.string "Thank you for waiting.\n"
+-	.string "We've restored your POKéMON to\l"
+-	.string "full health.$"
++	.string "{RTL}げûÊÁ òÚじ ÁÛÒキÀÌだ.\nÈºÏ ÁáÒまÀß こÂÓÇÔÂÛご\lÓÀÉî +ïÒぉ.$"
+ 
+ 	.include "data/text/surf.inc"
+ 
+diff --git a/data/maps/PalletTown/text.inc b/data/maps/PalletTown/text.inc
+index 726aea8..3aaa07a 100644
+--- a/data/maps/PalletTown/text.inc
++++ b/data/maps/PalletTown/text.inc
+@@ -1,37 +1,26 @@
+ PalletTown_Text_OakDontGoOut::
+-    .string "OAK: Hey! Wait!\n"
+-    .string "Don't go out!$"
++    .string "{RTL}ÑÎだ: É;ぶ! ÁÛÒキÊ!\nぴ ŒぁÊ¿!$"
+ 
+ PalletTown_Text_OakGrassUnsafeNeedMon::
+-    .string "OAK: It's unsafe!\n"
+-    .string "Wild POKéMON live in tall grass!\p"
+-    .string "You need your own POKéMON for\n"
+-    .string "your protection.\p"
+-    .string "I know!\n"
+-    .string "Here, come with me!$"
++    .string "{RTL}ÑÎだ: ÁエÉÊ ªぇÇÊ!\nこÂÓÇÔÂà こÊËÙ ŒまÇニ èë ÁÈまぃぢ ÁÈぇÂËî!\pŒïÒÀ¿ ゃÈじ こÂÓÇÔÂà ªÀメ こご\nÉœ Ñわî ôÔÀËÒご.\pÎわÏŒ;À!\nŒまÀで Éまë!$"
+ 
+ PalletTown_Text_RaisingMonsToo::
+-    .string "I'm raising POKéMON, too.\p"
+-    .string "When they get strong, they can\n"
+-    .string "protect me.$"
++    .string "{RTL}ÑÛÀ ÑÌこë こÂÓÇÔÂà ÑËぼÀ.\pòねÏÉÀ Œぞç¡ úÂËÙク\nËÔûね;À ôÔÀËÒë.$"
+ 
+ PalletTown_Text_CanStoreItemsAndMonsInPC::
+-    .string "Technology is incredible!\p"
+-    .string "You can now store and recall items\n"
+-    .string "and POKéMON as data via PC.$"
++    .string "{RTL}ÁÈÒºねÇÙ ÉどùÚÙ!\pËÔûねご Áムà ŒぁぜËœ ÎÁáÒÊわÀぺ ÁエßÎÁず\nÎÁÈçÂÓÇÔÂà ÓçÇÀÛÀず òçÊ ÁÈïÀáÂが.$"
+ 
+ PalletTown_Text_OakPokemonResearchLab::
+-    .string "OAK POKéMON RESEARCH LAB$"
++    .string "{RTL}ÉぁÒçÊ ÑÎだ エこïÀハ ÁÈçÂÓÇÔÂà$"
+ 
+ PalletTown_Text_PlayersHouse::
+-    .string "{PLAYER}'s house$"
++    .string "{PLAYER} でぜねÉ$"
+ 
+ PalletTown_Text_RivalsHouse::
+-    .string "{RIVAL}'s house$"
++    .string "{RIVAL} でぜねÉ$"
+ 
+ PalletTown_Text_TownSign::
+-    .string "PALLET TOWN\n"
+-    .string "Shades of your journey await!$"
++    .string "{RTL}こÚÏó こÀÈÇぷ\nトぶで ÌôÚÒご こÀÛÒキÀÌだ!$"
+ 
+ PalletTown_Text_OakLetMeSeePokedex::
+     .string "OAK: Ah, {PLAYER}!\n"
+diff --git a/data/maps/PalletTown_PlayersHouse_1F/text.inc b/data/maps/PalletTown_PlayersHouse_1F/text.inc
+index 6b339b4..26dc11f 100644
+--- a/data/maps/PalletTown_PlayersHouse_1F/text.inc
++++ b/data/maps/PalletTown_PlayersHouse_1F/text.inc
+@@ -1,38 +1,21 @@
+ PalletTown_PlayersHouse_1F_Text_AllBoysLeaveOakLookingForYou::
+-    .string "MOM: …Right.\n"
+-    .string "All boys leave home someday.\l"
+-    .string "It said so on TV.\p"
+-    .string "Oh, yes. PROF. OAK, next door, was\n"
+-    .string "looking for you.$"
++    .string "{RTL}ÉÀÉÀ: …+ïÇ¡.\nÓî ÁÈêÒÇÀà ËづÀßÌÎà ÁÈçÇぷ ËÂÉÀ ÉÀ.\lùûどÁ úÀÈÂÁ èë ÁÈÒÚêÀば.\pソミク +ïÇ¡. ÁエáÒÀぎ ÑÎだ èë ÁÈぅÂÁÌ\nÓÀà Ëçïホ òねご.$"
+ 
+ PalletTown_PlayersHouse_1F_Text_AllGirlsLeaveOakLookingForYou::
+-    .string "MOM: …Right.\n"
+-    .string "All girls dream of traveling.\l"
+-    .string "It said so on TV.\p"
+-    .string "Oh, yes. PROF. OAK, next door, was\n"
+-    .string "looking for you.$"
++    .string "{RTL}ÉÀÉÀ: …+ïÇ¡.\nÓî ÁÈêÒÇÀず ËïÚÔœ こÀÈìêÊ.\lùûどÁ úÀÈÂÁ èë ÁÈÒÚêÀば.\pソミク +ïÇ¡. ÁエáÒÀぎ ÑÎだ èë ÁÈぅÂÁÌ\nÓÀà Ëçïホ òねご.$"
+ 
+ PalletTown_PlayersHouse_1F_Text_YouShouldTakeQuickRest::
+-    .string "MOM: {PLAYER}!\n"
+-    .string "You should take a quick rest.$"
++    .string "!{PLAYER} :ÀÉÀÉ\n.ぶÇÚú チÀŒÊŒ àÑ ごこ ÌÏぅË$"
+ 
+ PalletTown_PlayersHouse_1F_Text_LookingGreatTakeCare::
+-    .string "MOM: Oh, good! You and your\n"
+-    .string "POKéMON are looking great.\l"
+-    .string "Take care now!$"
++    .string "{RTL}ÉÀÉÀ: ÌÁナび! ÑÛぷ ÎこÂÓÇÔÂÛご\nŒçÏÎÁà èë Ñôìœ ôÀで.\lÁòÒœ こねêìご!$"
+ 
+ PalletTown_PlayersHouse_1F_Text_MovieOnTVFourBoysOnRailroad::
+-    .string "There's a movie on TV.\n"
+-    .string "Four boys are walking on railroad\l"
+-    .string "tracks.\p"
+-    .string "…I better go, too.$"
++    .string "{RTL}ùねÀだ èÇÚñ èë ÁÈÒÚêÀば.\nÑÌこまÙ èÒÇÀà ËÔぃÂà òÚじ áûÙ\lÁÈºぇÀÌ.\p…ËぅÏÌ こë ÁÈどùÀが ÑÛÀ ÑËぼÀ.$"
+ 
+ PalletTown_PlayersHouse_1F_Text_MovieOnTVGirlOnBrickRoad::
+-    .string "There's a movie on TV.\n"
+-    .string "A girl with her hair in pigtails is\l"
+-    .string "walking up a brick road.\p"
+-    .string "…I better go, too.$"
++    .string "{RTL}ùねÀだ èÇÚñ èë ÁÈÒÚêÀば.\nèÒÀó こぼêÇÊŒÇœ ŒÔぃë\lòÚじ ぱÊË% Éœ ÁÈぇÂが.\p…ËぅÏÌ こë ÁÈどùÀが ÑÛÀ ÑËぼÀ.$"
+ 
+ PalletTown_PlayersHouse_1F_Text_OopsWrongSide::
+-    .string "Oops, wrong side…$"
++    .string "{RTL}òêÂÁク ÁÈぅ;Ù ÁÈぁぇオ…$"
+ 
 diff --git a/data/text/new_game_intro.inc b/data/text/new_game_intro.inc
-index e667b68..5ce68d0 100644
+index e667b68..3ca82a4 100644
 --- a/data/text/new_game_intro.inc
 +++ b/data/text/new_game_intro.inc
 @@ -1,20 +1,20 @@
  gOtherText_NewName::
 -    .string "NEW NAME$"
-+    .string "{RTL}Àèœ がÌこÌ$"
++    .string "{RTL}Ááñ わÏËÏ$"
  
  gNameChoice_Green::
      .string "GREEN$"
  
  gNameChoice_Red::
 -    .string "RED$"
-+    .string "ÌËまŒ$"
++    .string "ÏÔôÑ$"
  
  gNameChoice_Leaf::
 -    .string "LEAF$"
-+    .string "ぇÚÈÂ$"
++    .string "じÚÇÈ$"
  
  gNameChoice_Fire::
 -    .string "FIRE$"
-+    .string "œこÊÒ$"
++    .string "ñËÊÓ$"
  
  gNameChoice_Gary::
 -    .string "GARY$"
-+    .string "ÊËï$"
++    .string "ÊÔò$"
  
  gNameChoice_Kaz::
      .string "KAZ$"
@@ -43,171 +187,171 @@ index e667b68..5ce68d0 100644
  
  gNameChoice_Ash::
 -    .string "ASH$"
-+    .string "ÑÁこび$"
++    .string "ßÀËば$"
  
  gNameChoice_Kene::
 -    .string "KENE$"
-+    .string "úÉÁè$"
++    .string "ëÉÀá$"
  
  gNameChoice_Geki::
      .string "GEKI$"
  
  gNameChoice_Jak::
 -    .string "JAK$"
-+    .string "ぼÛÁべ$"
++    .string "ぽÌÀぱ$"
  
  gNameChoice_Janne::
      .string "JANNE$"
  
  gNameChoice_Jonn::
 -    .string "JONN$"
-+    .string "ÌÂÁわ$"
++    .string "ÏÈÀª$"
  
  gNameChoice_Kamon::
      .string "KAMON$"
  
  gNameChoice_Karl::
 -    .string "KARL$"
-+    .string "ツÛÁò$"
++    .string "(ÌÀè$"
  
  gNameChoice_Taylor::
      .string "TAYLOR$"
  
  gNameChoice_Oscar::
 -    .string "OSCAR$"
-+    .string "でèÇこ$"
++    .string "ウáÂË$"
  
  gNameChoice_Hiro::
      .string "HIRO$"
  
  gNameChoice_Max::
 -    .string "MAX$"
-+    .string "àびÁÉ$"
++    .string "àばÀÉ$"
  
  gNameChoice_Jon::
 -    .string "JON$"
-+    .string "âôŒ$"
++    .string ")ÛÑ$"
  
  gNameChoice_Ralph::
 -    .string "RALPH$"
-+    .string "úÉÀÛ$"
++    .string "ëÉÁÌ$"
  
  gNameChoice_Kay::
      .string "KAY$"
  
  gNameChoice_Tosh::
 -    .string "TOSH$"
-+    .string "ìèÁÓ$"
++    .string "îáÀこ$"
  
  gNameChoice_Roak::
 -    .string "ROAK$"
-+    .string "ÛÑÁô$"
++    .string "ÌßÀÛ$"
  
  gNameChoice_Omi::
      .string "OMI$"
  
  gNameChoice_Jodi::
 -    .string "JODI$"
-+    .string "ぷÌª$"
++    .string "ケÏù$"
  
  gNameChoice_Amanda::
 -    .string "AMANDA$"
-+    .string "ÔóÈÉŒ$"
++    .string "ÙねÇÉÑ$"
  
  gNameChoice_Hillary::
 -    .string "HILLARY$"
-+    .string "ぇËÚè$"
++    .string "じÔÚá$"
  
  gNameChoice_Makey::
      .string "MAKEY$"
  
  gNameChoice_Michi::
 -    .string "MICHI$"
-+    .string "ぇóÉ$"
++    .string "じねÉ$"
  
  gNameChoice_Paula::
 -    .string "PAULA$"
-+    .string "ÔôÀÑ$"
++    .string "ÙÛÁß$"
  
  gNameChoice_June::
 -    .string "JUNE$"
-+    .string "ぇóが$"
++    .string "じねわ$"
  
  gNameChoice_Cassie::
 -    .string "CASSIE$"
-+    .string "ÁóÈÂ$"
++    .string "ÀねÇÈ$"
  
  gNameChoice_Rey::
 -    .string "REY$"
-+    .string "œこÛ$"
++    .string "ñËÌ$"
  
  gNameChoice_Seda::
      .string "SEDA$"
  
  gNameChoice_Kiko::
 -    .string "KIKO$"
-+    .string "Ìぁぶ$"
++    .string "Ï;げ$"
  
  gNameChoice_Mina::
 -    .string "MINA$"
-+    .string "œこÊÉ$"
++    .string "ñËÊÉ$"
  
  gNameChoice_Norie::
      .string "NORIE$"
  
  gNameChoice_Sai::
 -    .string "SAI$"
-+    .string "çÛÁè$"
++    .string "óÌÀá$"
  
  gNameChoice_Momo::
 -    .string "MOMO$"
-+    .string "çÛÇô$"
++    .string "óÌÂÛ$"
  
  gNameChoice_Suzi::
 -    .string "SUZI$"
-+    .string "ざóこび$"
++    .string "ぢねËば$"
  
  gControlsGuide_Text_Intro::
 -    .string "The various buttons will be explained in\n"
 -    .string "the order of their importance.$"
-+    .string "{RTL}èó=Ê) ÀウびÛÀÛ ÀÂËûÏÚëÔ\nÓáßざ ŒªËÈÏぁÁ.$"
++    .string "{RTL}áねぃÊチ ÁエばÌÁÌ ÁÈÔぁÒÚêÙ\nこïìぢ ÑùÔÇÒ;À.$"
  
  gControlsGuide_Text_DPad::
 -    .string "Moves the main character.\n"
 -    .string "Also used to choose various data\n"
 -    .string "headings.$"
-+    .string "{RTL}こáÊ¡ ÀÂ=ûぐÈÔ ÀÂÊタÈßÈÔ.\nこßÏûÌだ ŒこキÁ どわÏÈÁÛ\nÉûÏÚで ÀÂêÈÁôÁぜ.$"
++    .string "{RTL}ËïÊだ ÁÈぃぁぞÇÙ ÁÈÊナÇìÇÙ.\nËìÒぁÏざ ÑËぼÀ ぴªÒÇÀÌ\nÉぁÒÚウ ÁÈçÇÀÛÀず.$"
  
  gControlsGuide_Text_AButton::
 -    .string "Used to confirm a choice, check\n"
 -    .string "things, chat, and scroll text.$"
-+    .string "{RTL}こßÏûÌだ ÂÚÏぺÒÈÌ ÎÀÂëáÍ\nÎÀÂáÇÀÛ ÎÙËÊこÊ ÀÂóÍ.$"
++    .string "{RTL}ËìÒぁÏざ ÈÚÒオÓÇÏ ÎÁÈêïテ\nÎÁÈïÂÁÌ ÎŒÔÊËÊ ÁÈねテ.$"
  
  gControlsGuide_Text_BButton::
 -    .string "Used to exit, cancel a choice,\n"
 -    .string "and cancel a mode.$"
-+    .string "{RTL}こßÏûÌだ ÂÚûÊÎぽ ÎぉÂぞÁñ\nÀどわÏÈÁÛ ÎぉÂぞÁñ ÀÂÇカげ.$"
++    .string "{RTL}ËìÒぁÏざ ÈÚぁÊÎ¿ ÎゃÈづÀ=\nÁぴªÒÇÀÌ ÎゃÈづÀ= ÁÈÂカび.$"
  
  gControlsGuide_Text_StartButton::
 -    .string "Press this button to open the\n"
 -    .string "MENU.$"
-+    .string "{RTL}Àカぞテ ªぢÀ ÀÂっÛ ÂëÏエ\nÀÂºÁタËÔ.$"
++    .string "{RTL}Áカづノ ùどÁ ÁÈぜÌ ÈêÒ¡\nÁÈºÀナÔÙ.$"
  
  gControlsGuide_Text_SelectButton::
 -    .string "Used to shift items and to use\n"
 -    .string "a registered item.$"
-+    .string "{RTL}こßÏûÌだ Âóºì ÀウÑÎÀぜ\nÎどèÏûÌÀだ ŒÑÀç ÉßぎÚÔ.$"
++    .string "{RTL}ËìÒぁÏざ Èねºî ÁエßÎÁず\nÎぴáÒぁÏÁざ ÑßÁó ÉìぅÚÙ.$"
  
  gControlsGuide_Text_LRButtons::
 -    .string "If you need help playing the\n"
 -    .string "game, or on how to do things,\n"
 -    .string "press the L or R Button.$"
-+    .string "{RTL}ぉà ÀまÏぎぴ ÉßÁïÌç òú ÀÂÚねざ\nŒÎ òú ÒÈëÈÔ òねì ÀウぶÈÁñオ\nòÁカぞテ ªぢこî ÀÂっÛこî.$"
++    .string "{RTL}ゃà ÁôÒぅぷ ÉìÀòÏó èë ÁÈÚまぢ\nÑÎ èë ÓÇêÇÙ èまî ÁエげÇÀ=ク\nèÀカづノ ùどËœ ÁÈぜÌËœ.$"
  
  gOakSpeech_Text_AskPlayerGender::
 -    .string "Now tell me. Are you a boy?\n"
 -    .string "Or are you a girl?$"
-+    .string "{RTL}ŒわêÊôú Àヒà. ªì Œôぴ òÏぇづ\nŒだ òÏÁçづ$"
++    .string "{RTL}ÑªçÊÛë Áムà. ùî ÑÛぷ èÒじっ\nÑざ èÒÀóっ$"
  
  gPikachuIntro_Text_Page1::
 -    .string "In the world which you are about to\n"
@@ -218,7 +362,7 @@ index e667b68..5ce68d0 100644
 -    .string "wherever you go, be it towns, roads,\n"
 -    .string "or caves. Gather information and\n"
 -    .string "hints from every source.$"
-+    .string "{RTL}òú ÀÂねÁÂœ ÀÂぢず Œôぴ ïÚぇ Îぶじ\nÑわÇÂùオ èÏóぃÚ( òú ÉぞÁÉÊç ÒêÊぷ.$"
++    .string "{RTL}èë ÁÈまÀÈñ ÁÈどべ ÑÛぷ òÚじ Îげご\nßªÂÈぉク áÒねぇÚ% èë ÉづÀÉÊó ÓçÊケ.$"
  
  gPikachuIntro_Text_Page2::
 -    .string "New paths will open to you by helping\n"
@@ -228,7 +372,7 @@ index e667b68..5ce68d0 100644
 -    .string "At times, you will be challenged by\n"
 -    .string "others and attacked by wild creatures.\n"
 -    .string "Be brave and keep pushing on.$"
-+    .string "{RTL}èÏóëÏエ ŒÉÁÉじ ÑÛÎ; がÌこÌç\nÓËßÁïÌç ÀÂËáÏÁがÈî ÎÙぎÁÎび\nÀÂÏáÌこÁぜ Îまì ÀウÂぞÁび.$"
++    .string "{RTL}áÒねêÒ¡ ÑÉÀÉご ßÌÎが わÏËÏó\nこÔìÀòÏó ÁÈÔïÒÀわÇœ ÎŒぅÀÎば\nÁÈÒïÏËÀず Îôî ÁエÈづÀば.$"
  
  gPikachuIntro_Text_Page3::
 -    .string "Through your adventure, we hope\n"
@@ -238,7 +382,7 @@ index e667b68..5ce68d0 100644
 -    .string "\n"
 -    .string "Press the A Button, and let your\n"
 -    .string "adventure begin!$"
-+    .string "{RTL}ôÊがÇ わばぱ ÉぞÁÉÊÙじ Œà ÙÏねÁÉì\nÉげ ÀÂぎËÈげ ÎŒà Ùáº(\nôËÇÀ ぶûぐÈÁ ÒêÈÊÀ.$"
++    .string "{RTL}ÛÊわÂ ªぶで ÉづÀÉÊŒご Ñà ŒÒまÀÉî\nÉび ÁÈぅÔÇび ÎÑà Œïº%\nÛÔÂÁ げぁぞÇÀ ÓçÇÊÁ.$"
  
  gOakSpeech_Text_WelcomeToTheWorld::
 -    .string "Hello, there!\n"
@@ -247,58 +391,58 @@ index e667b68..5ce68d0 100644
 -    .string "My name is OAK.\p"
 -    .string "People affectionately refer to me\n"
 -    .string "as the POKéMON PROFESSOR.\p$"
-+    .string "{RTL}ÉÊまêÁ Óじ!\nèねÈÌ ÓÚºÁタじ!\pŒªば Óじ òú ïÁÂœ ÓÇÒÈËÇà!\pÀèËú ŒÎ¡.\pこóÁÑこóú ÀÂóÁツ ÓËÇÑç\nŒèÏÁ+ ÀÂêÇÒÈËÇà.\p$"
++    .string "{RTL}ÉÊôçÀ こご!\náまÇÏ こÚºÀナご!\pÑùぶ こご èë òÀÈñ こÂÓÇÔÂà!\pÁáÔë ÑÎだ.\pËねÀßËねë ÁÈねÀ( こÔÂßó\nÑáÒÀぎ ÁÈçÂÓÇÔÂà.\p$"
  
  gOakSpeech_Text_ThisWorld::
 -    .string "This world…$"
-+    .string "{RTL}ªぢÀ ÀÂねÁÂœ…$"
++    .string "{RTL}ùどÁ ÁÈまÀÈñ…$"
  
  gOakSpeech_Text_IsInhabitedFarAndWide::
 -    .string "…is inhabited far and wide by\n"
 -    .string "creatures called POKéMON.\p$"
-+    .string "{RTL}…Ùßごóù òú Òì ÉごÁà\nÉûÚÇぅÁぜ ÙÌïぇ ÓÇÒÈËÇà.\p$"
++    .string "{RTL}…Œìûねぉ èë Óî ÉûÀà\nÉぁÚÂúÀず ŒÏòじ こÂÓÇÔÂà.\p$"
  
  gOakSpeech_Text_IStudyPokemon::
 -    .string "For some people, POKéMON are pets.\n"
 -    .string "Others use them for battling.\p"
 -    .string "As for myself…\p"
 -    .string "I study POKéMON as a profession.\p$"
-+    .string "{RTL}Óねハ ÀÂóÁツ こÏûぢÎà ÀÂêÇÒÈËÇà\nÛòÁぅÁオ ÎソわÊÎà こºÁÙÚÇà ÓぁÁ.\pŒÉÁ ŒôÁ…\pòÌÛÀèÔ ÀÂêÇÒÈËÇà ÉぁóÏú.\p$"
++    .string "{RTL}こまâ ÁÈねÀ( ËÒぁどÎà ÁÈçÂÓÇÔÂà\nÌèÀúÀク ÎソªÊÎà ËºÀŒÚÂà こ;À.\pÑÉÀ ÑÛÀ…\pèÏÌÁáÙ ÁÈçÂÓÇÔÂà É;ねÒë.\p$"
  
  gOakSpeech_Text_TellMeALittleAboutYourself::
 -    .string "But first, tell me a little about\n"
 -    .string "yourself.\p$"
-+    .string "{RTL}Âごî ŒÎどオ まÌチóú ぅÚÈば\nïî ôëßじ.\p$"
++    .string "{RTL}Èûœ ÑÎぴク ôÏタねë úÚÇぶ\nòœ Ûêìご.\p$"
  
  gOakSpeech_Text_YourNameWhatIsIt::
 -    .string "Let's begin with your name.\n"
 -    .string "What is it?\p$"
-+    .string "{RTL}ÂóêÌŒ ÓÁèËじ.\nÉÁ ªÇづ\p$"
++    .string "{RTL}ÈねçÏÑ こÀáÔご.\nÉÀ ùÂっ\p$"
  
  gOakSpeech_Text_SoYourNameIsPlayer::
 -    .string "Right…\n"
 -    .string "So your name is {PLAYER}.$"
-+    .string "…Áóßま\n.{PLAYER} じËèÀ à+ぉ$"
++    .string "…Àねìô\n.{PLAYER} ごÔáÁ àぎゃ$"
  
  gOakSpeech_Text_WhatWasHisName::
 -    .string "This is my grandson.\p"
 -    .string "He's been your rival since you both\n"
 -    .string "were babies.\p"
 -    .string "…Erm, what was his name now?$"
-+    .string "{RTL}ªぢÀ まëÈÌず.\pぉôù ÉóÁòßじ Éóぢ Œà ÒóÏËÁ\nべëÚÈî ゃぞÈÊこî.\p…ÉÁ ÀèËùづ ÂºÌ ôßÈぴ.\p$"
++    .string "{RTL}ùどÁ ôêÇÏべ.\pゃÛぉ ÉねÀèìご Éねど Ñà ÓねÒÔÀ\nぱêÚÇœ +づÇÊËœ.\p…ÉÀ ÁáÔぉっ ÈºÏ ÛìÇぷ.\p$"
  
  gOakSpeech_Text_YourRivalsNameWhatWasIt::
 -    .string "Your rival's name, what was it now?$"
-+    .string "{RTL}Àèœ ÉóÁòßじオ ÉÁ+À ÒÁàづ$"
++    .string "{RTL}Ááñ ÉねÀèìごク ÉÀぎÁ ÓÀàっ$"
  
  gOakSpeech_Text_ConfirmRivalName::
 -    .string "…Er, was it {RIVAL}?$"
-+    .string "づ{RIVAL} àÁÒ ìª…$"
++    .string "っ{RIVAL} àÀÓ îù…$"
  
  gOakSpeech_Text_RememberRivalsName::
 -    .string "That's right! I remember now!\n"
 -    .string "His name is {RIVAL}!\p$"
-+    .string "!àヒÀ ぜÊÒぢÙ !エÈáゃ\n!{RIVAL} ùËèÀ\p$"
++    .string "!àムÁ ずÊÓどŒ !¡Çï+\n!{RIVAL} ぉÔáÁ\p$"
  
  gOakSpeech_Text_LetsGo::
 -    .string "{PLAYER}!\p"
@@ -306,64 +450,64 @@ index e667b68..5ce68d0 100644
 -    .string "about to unfold!\p"
 -    .string "A world of dreams and adventures\n"
 -    .string "with POKéMON awaits! Let's go!$"
-+    .string "!{PLAYER}\pàÇËÈÒÇêÂÀ げÉ じÙÛÇぃèŒ\n!ŒÌêÙ àŒ じぶÎ ぇÚï\pぜÀÊÉÁぞËÂÀÎ だばまウÀ îÉ œÂÁï\n!ÁÈª !¡ÛÁクÏôÁÓ àÇËÈÒÇêÂÀ げÉ\p$"
++    .string "!{PLAYER}\pàÂÔÇÓÂçÈÁ びÉ ごŒÌÂぇáÑ\n!ÑÏçŒ àÑ ごげÎ じÚò\pずÁÊÉÀづÔÈÁÎ ざぶôエÁ œÉ ñÈÀò\n!ÀÇù !だÌÀキÒÛÀこ àÂÔÇÓÂçÈÁ びÉ\p$"
 diff --git a/data/text/obtain_item.inc b/data/text/obtain_item.inc
-index 8d27081..bc5f274 100644
+index 8d27081..f809cc0 100644
 --- a/data/text/obtain_item.inc
 +++ b/data/text/obtain_item.inc
 @@ -1,19 +1,17 @@
  Text_ObtainedTheX::
 -	.string "Obtained the {STR_VAR_2}!$"
-+	.string "!{STR_VAR_2} ぇÚï ぴÚぐま$"
++	.string "!{STR_VAR_2} じÚò ぷÚぞô$"
  
  Text_BagIsFull::
 -	.string "The BAG is full…$"
-+	.string "{RTL}ÀÂáºÈêÔ ÉËÏÚナÔ…$"
++	.string "{RTL}ÁÈïºÇçÙ ÉÔÒÚヘÙ…$"
  
  Text_PutItemAway::
 -	.string "{PLAYER} put the {STR_VAR_2}\n"
 -	.string "in the {STR_VAR_3}.$"
-+	.string "{STR_VAR_2} げカÎ {PLAYER}\n.{STR_VAR_3} úò$"
++	.string "{STR_VAR_2} びカÎ {PLAYER}\n.{STR_VAR_3} ëè$"
  
  Text_FoundOneItem::
 -	.string "{PLAYER} found one {STR_VAR_2}!$"
-+	.string "!{STR_VAR_2} ÌがÎ {PLAYER}$"
++	.string "!{STR_VAR_2} ÏわÎ {PLAYER}$"
  
  Text_TooBadBagFull::
 -	.string "Too bad!\n"
 -	.string "The BAG is full…$"
-+	.string "{RTL}Âムèで!\nÀÂáºÈêÔ ÉËÏÚナÔ…$"
++	.string "{RTL}Èグáウ!\nÁÈïºÇçÙ ÉÔÒÚヘÙ…$"
  
  Text_FoundXCoins::
  	.string "{PLAYER} found\n"
 diff --git a/data/text/pc.inc b/data/text/pc.inc
-index 2bf09b3..96ec43f 100644
+index 2bf09b3..e60c1e0 100644
 --- a/data/text/pc.inc
 +++ b/data/text/pc.inc
 @@ -1,17 +1,17 @@
  Text_BootedUpPC::
 -	.string "{PLAYER} booted up the PC.$"
-+	.string ".;ÇèÁáÂÀ ìぞぶ {PLAYER}$"
++	.string ".がÂáÀïÈÁ îづげ {PLAYER}$"
  
  Text_AccessWhichPC::
 -	.string "Which PC should be accessed?$"
-+	.string "{RTL}Œず まÁèÇ; ÙÊこÌ ÀÂÇゃÇぱ ぉÂÈùづ$"
++	.string "{RTL}Ñべ ôÀáÂが ŒÊËÏ ÁÈÂ+Âで ゃÈÇぉっ$"
  
  Text_AccessedSomeonesPC::
 -	.string "Accessed Someone's PC.$"
-+	.string "{RTL}Ùœ òÏエ まÁèÇ; ぶûÍ ÉÁ.$"
++	.string "{RTL}Œñ èÒ¡ ôÀáÂが げぁテ ÉÀ.$"
  
  Text_OpenedPkmnStorage::
 -	.string "POKéMON Storage System opened.$"
-+	.string "{RTL}Ùœ òÏエ ôクÁだ Ùûっこî ÀÂêÇÒÈËÇà.$"
++	.string "{RTL}Œñ èÒ¡ ÛキÀざ ŒぁぜËœ ÁÈçÂÓÇÔÂà.$"
  
  Text_AccessedPlayersPC::
 -	.string "Accessed {PLAYER}'s PC.$"
-+	.string ".{PLAYER} ;ÇèÁま エÏò œÙ$"
++	.string ".{PLAYER} がÂáÀô ¡Òè ñŒ$"
  
  Text_AccessedBillsPC::
 -	.string "Accessed BILL's PC.$"
-+	.string "{RTL}Ùœ òÏエ まÁèÇ; ÓÈì.$"
++	.string "{RTL}Œñ èÒ¡ ôÀáÂが こÇî.$"
 diff --git a/include/characters.h b/include/characters.h
 index d00ecf0..41d81f5 100644
 --- a/include/characters.h
@@ -390,8 +534,54 @@ index 7090a02..b1869ab 100644
      u8 downArrowDelay:5;
      u8 downArrowYPosIdx:2;
      u8 hasGlyphIdBeenSet:1;
+diff --git a/src/battle_main.c b/src/battle_main.c
+index 64c9e59..8d4ce0b 100644
+--- a/src/battle_main.c
++++ b/src/battle_main.c
+@@ -427,24 +427,24 @@ const u8 gTypeEffectiveness[336] =
+ 
+ const u8 gTypeNames[NUMBER_OF_MON_TYPES][TYPE_NAME_LENGTH + 1] =
+ {
+-    [TYPE_NORMAL] = _("NORMAL"),
+-    [TYPE_FIGHTING] = _("FIGHT"),
+-    [TYPE_FLYING] = _("FLYING"),
+-    [TYPE_POISON] = _("POISON"),
+-    [TYPE_GROUND] = _("GROUND"),
+-    [TYPE_ROCK] = _("ROCK"),
+-    [TYPE_BUG] = _("BUG"),
+-    [TYPE_GHOST] = _("GHOST"),
+-    [TYPE_STEEL] = _("STEEL"),
++    [TYPE_NORMAL] = _("べßÀò"),
++    [TYPE_FIGHTING] = _("でÀÒú"),
++    [TYPE_FLYING] = _("àÁÊÇぱ"),
++    [TYPE_POISON] = _("ñá"),
++    [TYPE_GROUND] = _("ガÌÑ"),
++    [TYPE_ROCK] = _("Êぁ+"),
++    [TYPE_BUG] = _("óÊぃô"),
++    [TYPE_GHOST] = _("¡çげ"),
++    [TYPE_STEEL] = _("ぎぴÂè"),
+     [TYPE_MYSTERY] = _("???"),
+-    [TYPE_FIRE] = _("FIRE"),
+-    [TYPE_WATER] = _("WATER"),
+-    [TYPE_GRASS] = _("GRASS"),
+-    [TYPE_ELECTRIC] = _("ELECTR"),
+-    [TYPE_PSYCHIC] = _("PSYCHC"),
+-    [TYPE_ICE] = _("ICE"),
+-    [TYPE_DRAGON] = _("DRAGON"),
+-    [TYPE_DARK] = _("DARK"),
++    [TYPE_FIRE] = _("ÌÀÛ"),
++    [TYPE_WATER] = _("=ÀÉ"),
++    [TYPE_GRASS] = _("ぢぃò"),
++    [TYPE_ELECTRIC] = _("=ÀこÊ;Ó"),
++    [TYPE_PSYCHIC] = _("ëìêÛ"),
++    [TYPE_ICE] = _("ÏÇÚわ"),
++    [TYPE_DRAGON] = _("œÇねŒ"),
++    [TYPE_DARK] = _("ざぶト"),
+ };
+ 
+ // This is a factor in how much money you get for beating a trainer.
 diff --git a/src/battle_message.c b/src/battle_message.c
-index a6392be..b780f27 100644
+index a6392be..ddaed95 100644
 --- a/src/battle_message.c
 +++ b/src/battle_message.c
 @@ -45,65 +45,65 @@ static void ExpandBattleTextBuffPlaceholders(const u8 *src, u8 *dst);
@@ -399,14 +589,14 @@ index a6392be..b780f27 100644
  static const u8 sText_Trainer1LoseText[] = _("{B_TRAINER1_LOSE_TEXT}");
  static const u8 sText_Trainer2LoseText[] = _("{B_TRAINER2_LOSE_TEXT}");
 -static const u8 sText_Trainer1RecallPkmn1[] = _("{B_TRAINER1_NAME}: {B_OPPONENT_MON1_NAME}, come back!");
-+static const u8 sText_Trainer1RecallPkmn1[] = _("!Ìï オ{B_OPPONENT_MON1_NAME} :{B_TRAINER1_NAME}");
++static const u8 sText_Trainer1RecallPkmn1[] = _("!Ïò ク{B_OPPONENT_MON1_NAME} :{B_TRAINER1_NAME}");
  static const u8 sText_Trainer1WinText[] = _("{B_TRAINER1_WIN_TEXT}");
 -static const u8 sText_Trainer1RecallPkmn2[] = _("{B_TRAINER1_NAME}: {B_OPPONENT_MON2_NAME}, come back!");
-+static const u8 sText_Trainer1RecallPkmn2[] = _("!Ìï オ{B_OPPONENT_MON2_NAME} :{B_TRAINER1_NAME}");
++static const u8 sText_Trainer1RecallPkmn2[] = _("!Ïò ク{B_OPPONENT_MON2_NAME} :{B_TRAINER1_NAME}");
  static const u8 sText_Trainer1RecallBoth[] = _("{B_TRAINER1_NAME}: {B_OPPONENT_MON1_NAME} and\n{B_OPPONENT_MON2_NAME}, come back!");
  static const u8 sText_Trainer2WinText[] = _("{B_TRAINER2_WIN_TEXT}");
 -static const u8 sText_PkmnGainedEXP[] = _("{B_BUFF1} gained{B_BUFF2}\n{B_BUFF3} EXP. Points!\p");
-+static const u8 sText_PkmnGainedEXP[] = _("ざßÒ {B_BUFF1}\n!{B_BUFF2}çÊêわ Ôぃºô {B_BUFF3}\p");
++static const u8 sText_PkmnGainedEXP[] = _("ぢìÓ {B_BUFF1}\n!{B_BUFF2}óÊçª ÙぇºÛ {B_BUFF3}\p");
  static const u8 sText_EmptyString4[] = _("");
 -static const u8 sText_ABoosted[] = _(" a boosted");
 -static const u8 sText_PkmnGrewToLv[] = _("{B_BUFF1} grew to\nLV. {B_BUFF2}!{WAIT_SE}\p");
@@ -420,18 +610,18 @@ index a6392be..b780f27 100644
 -static const u8 sText_UseNextPkmn[] = _("Use next POKéMON?");
 -static const u8 sText_AttackMissed[] = _("{B_ATK_NAME_WITH_PREFIX}'s\nattack missed!");
 -static const u8 sText_PkmnProtectedItself[] = _("{B_DEF_NAME_WITH_PREFIX}\nprotected itself!");
-+static const u8 sText_ABoosted[] = _("{RTL} Éねっびç");
-+static const u8 sText_PkmnGrewToLv[] = _("ぇÂぉ ぇºÙÛÀ {B_BUFF1}\n!{B_BUFF2} ぷÇÏßËÂÀ{WAIT_SE}\p");
-+static const u8 sText_PkmnLearnedMove[] = _("œÚねÙ {B_BUFF1}\n!{B_BUFF2}{WAIT_SE}\p");
-+static const u8 sText_TryToLearnMove1[] = _("àŒ ぱÎÁáこ {B_BUFF1}\n.{B_BUFF2} œÚねÏこ\p");
-+static const u8 sText_TryToLearnMove2[] = _("œÚねÙ げÈぃÏßこ ど {B_BUFF1} îごÂ\n.ぜÁÒÊま げÓÛŒ îÉ ÊヌÒŒ\p");
-+static const u8 sText_TryToLearnMove3[] = _("エßëÏÂ ÔÒÊま セぢáÙ ìª\nづ{B_BUFF2}フÂ ÁôÁごÉ");
-+static const u8 sText_PkmnForgotMove[] = _("úßô {B_BUFF1}\n.{B_BUFF2}\p");
-+static const u8 sText_StopLearningMove[] = _("{PAUSE 32}œÚねÙ îï でぅÇÏô ìª\nづ{B_BUFF2}");
-+static const u8 sText_DidNotLearnMove[] = _("œÚねÏこ œÂ {B_BUFF1}\n.{B_BUFF2}\p");
-+static const u8 sText_UseNextPkmn[] = _("{RTL}ªì ÙßÏûÌだ ÓÇÒÈËÇà ソわÊづ");
-+static const u8 sText_AttackMissed[] = _("{B_ATK_NAME_WITH_PREFIX} だÇぎª\n!セÌぁÂÀ ぺぃわŒ");
-+static const u8 sText_PkmnProtectedItself[] = _("{B_DEF_NAME_WITH_PREFIX}\n!ùßëô ぇËま");
++static const u8 sText_ABoosted[] = _("{RTL} Éまぜばó");
++static const u8 sText_PkmnGrewToLv[] = _("じÈゃ じºŒÌÁ {B_BUFF1}\n!{B_BUFF2} ケÂÒìÔÈÁ{WAIT_SE}\p");
++static const u8 sText_PkmnLearnedMove[] = _("ñÚまŒ {B_BUFF1}\n!{B_BUFF2}{WAIT_SE}\p");
++static const u8 sText_TryToLearnMove1[] = _("àÑ でÎÀïË {B_BUFF1}\n.{B_BUFF2} ñÚまÒË\p");
++static const u8 sText_TryToLearnMove2[] = _("ñÚまŒ びÇぇÒìË ぴ {B_BUFF1} œûÈ\n.ずÀÓÊô びこÌÑ œÉ ÊヒÓÑ\p");
++static const u8 sText_TryToLearnMove3[] = _("¡ìêÒÈ ÙÓÊô ÍどïŒ îù\nっ{B_BUFF2}モÈ ÀÛÀûÉ");
++static const u8 sText_PkmnForgotMove[] = _("ëìÛ {B_BUFF1}\n.{B_BUFF2}\p");
++static const u8 sText_StopLearningMove[] = _("{PAUSE 32}ñÚまŒ œò ウúÂÒÛ îù\nっ{B_BUFF2}");
++static const u8 sText_DidNotLearnMove[] = _("ñÚまÒË ñÈ {B_BUFF1}\n.{B_BUFF2}\p");
++static const u8 sText_UseNextPkmn[] = _("{RTL}ùî ŒìÒぁÏざ こÂÓÇÔÂà ソªÊっ");
++static const u8 sText_AttackMissed[] = _("{B_ATK_NAME_WITH_PREFIX} ざÂぅù\n!ÍÏ;ÈÁ オぇªÑ");
++static const u8 sText_PkmnProtectedItself[] = _("{B_DEF_NAME_WITH_PREFIX}\n!ぉìêÛ じÔô");
  static const u8 sText_AvoidedDamage[] = _("{B_DEF_NAME_WITH_PREFIX} avoided\ndamage with {B_DEF_ABILITY}!");
  static const u8 sText_PkmnMakesGroundMiss[] = _("{B_DEF_NAME_WITH_PREFIX} makes GROUND\nmoves miss with {B_DEF_ABILITY}!");
 -static const u8 sText_PkmnAvoidedAttack[] = _("{B_DEF_NAME_WITH_PREFIX} avoided\nthe attack!");
@@ -440,58 +630,58 @@ index a6392be..b780f27 100644
 -static const u8 sText_TargetFainted[] = _("{B_DEF_NAME_WITH_PREFIX}\nfainted!\p");
 -static const u8 sText_PlayerGotMoney[] = _("{B_PLAYER_NAME} got ¥{B_BUFF1}\nfor winning!\p");
 -static const u8 sText_PlayerWhiteout[] = _("{B_PLAYER_NAME} is out of\nusable POKéMON!\p");
-+static const u8 sText_PkmnAvoidedAttack[] = _("ぷÑÁëÙ {B_DEF_NAME_WITH_PREFIX}\n!だÇぎぁÂÀ");
-+static const u8 sText_ItDoesntAffect[] = _("ぇÚï ÁぁÂ ÊÈチぺÙ ど\n…{B_DEF_NAME_WITH_PREFIX}");
-+static const u8 sText_AttackerFainted[] = _("{B_ATK_NAME_WITH_PREFIX}\n!ùÈÚï úËケŒ\p");
-+static const u8 sText_TargetFainted[] = _("{B_DEF_NAME_WITH_PREFIX}\n!ùÈÚï úËケŒ\p");
-+static const u8 sText_PlayerGotMoney[] = _("¥{B_BUFF1} ぇÚï ìぐま {B_PLAYER_NAME}\n!びÇëÂÀ çぺòÁごÉ\p");
-+static const u8 sText_PlayerWhiteout[] = _("ùこÌÂ (êこ œÂ {B_PLAYER_NAME}\n!ぱÁÏºÂÀ ぇÚï ÛÑÁぅ àÇËÈÒÇÓ\p");
++static const u8 sText_PkmnAvoidedAttack[] = _("ケßÀêŒ {B_DEF_NAME_WITH_PREFIX}\n!ざÂぅ;ÈÁ");
++static const u8 sText_ItDoesntAffect[] = _("じÚò À;È ÊÇタオŒ ぴ\n…{B_DEF_NAME_WITH_PREFIX}");
++static const u8 sText_AttackerFainted[] = _("{B_ATK_NAME_WITH_PREFIX}\n!ぉÇÚò ëÔぐÑ\p");
++static const u8 sText_TargetFainted[] = _("{B_DEF_NAME_WITH_PREFIX}\n!ぉÇÚò ëÔぐÑ\p");
++static const u8 sText_PlayerGotMoney[] = _("¥{B_BUFF1} じÚò îぞô {B_PLAYER_NAME}\n!ばÂêÈÁ óオèÀûÉ\p");
++static const u8 sText_PlayerWhiteout[] = _("ぉËÏÈ %çË ñÈ {B_PLAYER_NAME}\n!でÀÒºÈÁ じÚò ÌßÀú àÂÔÇÓÂこ\p");
  static const u8 sText_PlayerPanicked[] = _("{B_PLAYER_NAME} panicked and lost ¥{B_BUFF1}…\p… … … …\p{B_PLAYER_NAME} whited out!{PAUSE_UNTIL_PRESS}");
  static const u8 sText_PlayerWhiteoutAgainstTrainer[] = _("{B_PLAYER_NAME} is out of\nusable POKéMON!\pPlayer lost against\n{B_TRAINER1_CLASS} {B_TRAINER1_NAME}!{PAUSE_UNTIL_PRESS}");
  static const u8 sText_PlayerPaidAsPrizeMoney[] = _("{B_PLAYER_NAME} paid ¥{B_BUFF1} as the prize\nmoney…\p… … … …\p{B_PLAYER_NAME} whited out!{PAUSE_UNTIL_PRESS}");
 -static const u8 sText_PlayerWhiteout2[] = _("{B_PLAYER_NAME} whited out!{PAUSE_UNTIL_PRESS}");
-+static const u8 sText_PlayerWhiteout2[] = _("!úïÇÂÀ Ìºò {B_PLAYER_NAME}{PAUSE_UNTIL_PRESS}");
++static const u8 sText_PlayerWhiteout2[] = _("!ëòÂÈÁ Ïºè {B_PLAYER_NAME}{PAUSE_UNTIL_PRESS}");
  static const u8 sText_PreventsEscape[] = _("{B_SCR_ACTIVE_NAME_WITH_PREFIX} prevents\nescape with {B_SCR_ACTIVE_ABILITY}!\p");
 -static const u8 sText_CantEscape2[] = _("Can't escape!\p");
 -static const u8 sText_AttackerCantEscape[] = _("{B_ATK_NAME_WITH_PREFIX} can't escape!");
 -static const u8 sText_HitXTimes[] = _("Hit {B_BUFF1} time(s)!");
 -static const u8 sText_PkmnFellAsleep[] = _("{B_EFF_NAME_WITH_PREFIX}\nfell asleep!");
-+static const u8 sText_CantEscape2[] = _("{RTL}ど こËごî ÀÂぁÊ;!\p");
-+static const u8 sText_AttackerCantEscape[] = _("!;ÊぁÂÀ げÈぃÏßこ ど {B_ATK_NAME_WITH_PREFIX}");
-+static const u8 sText_HitXTimes[] = _("!çÊÉ {B_BUFF1} ùÏÓÁゃŒ");
-+static const u8 sText_PkmnFellAsleep[] = _("{B_EFF_NAME_WITH_PREFIX}\n!だÇóÂÀ úò ぼÊケ");
++static const u8 sText_CantEscape2[] = _("{RTL}ぴ ËÔûœ ÁÈ;Êが!\p");
++static const u8 sText_AttackerCantEscape[] = _("!がÊ;ÈÁ びÇぇÒìË ぴ {B_ATK_NAME_WITH_PREFIX}");
++static const u8 sText_HitXTimes[] = _("!óÊÉ {B_BUFF1} ぉÒこÀ+Ñ");
++static const u8 sText_PkmnFellAsleep[] = _("{B_EFF_NAME_WITH_PREFIX}\n!ざÂねÈÁ ëè ぽÊぐ");
  static const u8 sText_PkmnMadeSleep[] = _("{B_SCR_ACTIVE_NAME_WITH_PREFIX}'s {B_SCR_ACTIVE_ABILITY}\nmade {B_EFF_NAME_WITH_PREFIX} sleep!");
  static const u8 sText_PkmnAlreadyAsleep[] = _("{B_DEF_NAME_WITH_PREFIX} is\nalready asleep!");
  static const u8 sText_PkmnAlreadyAsleep2[] = _("{B_ATK_NAME_WITH_PREFIX} is\nalready asleep!");
  static const u8 sText_PkmnWasntAffected[] = _("{B_DEF_NAME_WITH_PREFIX}\nwasn't affected!");
 -static const u8 sText_PkmnWasPoisoned[] = _("{B_EFF_NAME_WITH_PREFIX}\nwas poisoned!");
-+static const u8 sText_PkmnWasPoisoned[] = _("{B_EFF_NAME_WITH_PREFIX}\n!œËßÏÂÁÓ ざÈゃŒ");
++static const u8 sText_PkmnWasPoisoned[] = _("{B_EFF_NAME_WITH_PREFIX}\n!ñÔìÒÈÀこ ぢÇ+Ñ");
  static const u8 sText_PkmnPoisonedBy[] = _("{B_SCR_ACTIVE_NAME_WITH_PREFIX}'s {B_SCR_ACTIVE_ABILITY}\npoisoned {B_EFF_NAME_WITH_PREFIX}!");
 -static const u8 sText_PkmnHurtByPoison[] = _("{B_ATK_NAME_WITH_PREFIX} is hurt\nby poison!");
-+static const u8 sText_PkmnHurtByPoison[] = _("œÂぺÏこ {B_ATK_NAME_WITH_PREFIX}\n!œßÂÀ îÉ");
++static const u8 sText_PkmnHurtByPoison[] = _("ñÈオÒË {B_ATK_NAME_WITH_PREFIX}\n!ñìÈÁ œÉ");
  static const u8 sText_PkmnAlreadyPoisoned[] = _("{B_DEF_NAME_WITH_PREFIX} is already\npoisoned.");
  static const u8 sText_PkmnBadlyPoisoned[] = _("{B_EFF_NAME_WITH_PREFIX} is badly\npoisoned!");
  static const u8 sText_PkmnEnergyDrained[] = _("{B_DEF_NAME_WITH_PREFIX} had its\nenergy drained!");
 -static const u8 sText_PkmnWasBurned[] = _("{B_EFF_NAME_WITH_PREFIX} was burned!");
-+static const u8 sText_PkmnWasBurned[] = _("!ぼÊáÓ ざÈゃŒ {B_EFF_NAME_WITH_PREFIX}");
++static const u8 sText_PkmnWasBurned[] = _("!ぽÊïこ ぢÇ+Ñ {B_EFF_NAME_WITH_PREFIX}");
  static const u8 sText_PkmnBurnedBy[] = _("{B_SCR_ACTIVE_NAME_WITH_PREFIX}'s {B_SCR_ACTIVE_ABILITY}\nburned {B_EFF_NAME_WITH_PREFIX}!");
 -static const u8 sText_PkmnHurtByBurn[] = _("{B_ATK_NAME_WITH_PREFIX} is hurt\nby its burn!");
-+static const u8 sText_PkmnHurtByBurn[] = _("œÂぺÏこ {B_ATK_NAME_WITH_PREFIX}\n!ùぅÊま îÉ");
++static const u8 sText_PkmnHurtByBurn[] = _("ñÈオÒË {B_ATK_NAME_WITH_PREFIX}\n!ぉúÊô œÉ");
  static const u8 sText_PkmnAlreadyHasBurn[] = _("{B_DEF_NAME_WITH_PREFIX} already\nhas a burn.");
 -static const u8 sText_PkmnWasFrozen[] = _("{B_EFF_NAME_WITH_PREFIX} was\nfrozen solid!");
-+static const u8 sText_PkmnWasFrozen[] = _("ÌËぎÙ {B_EFF_NAME_WITH_PREFIX}\n!ÁÉÁËÙ");
++static const u8 sText_PkmnWasFrozen[] = _("ÏÔぅŒ {B_EFF_NAME_WITH_PREFIX}\n!ÀÉÀÔŒ");
  static const u8 sText_PkmnFrozenBy[] = _("{B_SCR_ACTIVE_NAME_WITH_PREFIX}'s {B_SCR_ACTIVE_ABILITY}\nfroze {B_EFF_NAME_WITH_PREFIX} solid!");
 -static const u8 sText_PkmnIsFrozen[] = _("{B_ATK_NAME_WITH_PREFIX} is\nfrozen solid!");
 -static const u8 sText_PkmnWasDefrosted[] = _("{B_DEF_NAME_WITH_PREFIX} was\ndefrosted!");
-+static const u8 sText_PkmnIsFrozen[] = _("ÌËぎÏÉ {B_ATK_NAME_WITH_PREFIX}\n!ÁÉÁËÙ");
-+static const u8 sText_PkmnWasDefrosted[] = _(";À+ {B_DEF_NAME_WITH_PREFIX}\n!ÌÈÚぎÂÀ ùóï");
++static const u8 sText_PkmnIsFrozen[] = _("ÏÔぅÒÉ {B_ATK_NAME_WITH_PREFIX}\n!ÀÉÀÔŒ");
++static const u8 sText_PkmnWasDefrosted[] = _("がÁぎ {B_DEF_NAME_WITH_PREFIX}\n!ÏÇÚぅÈÁ ぉねò");
  static const u8 sText_PkmnWasDefrosted2[] = _("{B_ATK_NAME_WITH_PREFIX} was\ndefrosted!");
  static const u8 sText_PkmnWasDefrostedBy[] = _("{B_ATK_NAME_WITH_PREFIX} was\ndefrosted by {B_CURRENT_MOVE}!");
 -static const u8 sText_PkmnWasParalyzed[] = _("{B_EFF_NAME_WITH_PREFIX} is paralyzed!\nIt may be unable to move!");
-+static const u8 sText_PkmnWasParalyzed[] = _("!ìÚ=ÂÁÓ ざÈゃŒ {B_EFF_NAME_WITH_PREFIX}\n!ÔÒÊáÂÀ îï っぎねこ Ìぅ");
++static const u8 sText_PkmnWasParalyzed[] = _("!îÚぃÈÀこ ぢÇ+Ñ {B_EFF_NAME_WITH_PREFIX}\n!ÙÓÊïÈÁ œò ぜぅまË Ïú");
  static const u8 sText_PkmnWasParalyzedBy[] = _("{B_SCR_ACTIVE_NAME_WITH_PREFIX}'s {B_SCR_ACTIVE_ABILITY}\nparalyzed {B_EFF_NAME_WITH_PREFIX}!\lIt may be unable to move!");
 -static const u8 sText_PkmnIsParalyzed[] = _("{B_ATK_NAME_WITH_PREFIX} is paralyzed!\nIt can't move!");
-+static const u8 sText_PkmnIsParalyzed[] = _("!ぱÇÚ=É {B_ATK_NAME_WITH_PREFIX}\n!ÔÒÊáÂÀ げÈぃÏßこ ど");
++static const u8 sText_PkmnIsParalyzed[] = _("!でÂÚぃÉ {B_ATK_NAME_WITH_PREFIX}\n!ÙÓÊïÈÁ びÇぇÒìË ぴ");
  static const u8 sText_PkmnIsAlreadyParalyzed[] = _("{B_DEF_NAME_WITH_PREFIX} is\nalready paralyzed!");
  static const u8 sText_PkmnHealedParalysis[] = _("{B_DEF_NAME_WITH_PREFIX} was\nhealed of paralysis!");
  static const u8 sText_PkmnDreamEaten[] = _("{B_DEF_NAME_WITH_PREFIX}'s\ndream was eaten!");
@@ -502,20 +692,20 @@ index a6392be..b780f27 100644
 -static const u8 sText_PkmnIsConfused[] = _("{B_ATK_NAME_WITH_PREFIX} is\nconfused!");
 -static const u8 sText_PkmnHealedConfusion[] = _("{B_ATK_NAME_WITH_PREFIX} snapped\nout of confusion!");
 -static const u8 sText_PkmnWasConfused[] = _("{B_EFF_NAME_WITH_PREFIX} became\nconfused!");
-+static const u8 sText_PkmnIsConfused[] = _("{B_ATK_NAME_WITH_PREFIX}\n!じêÙÊÉ");
-+static const u8 sText_PkmnHealedConfusion[] = _("ぼÁòŒ {B_ATK_NAME_WITH_PREFIX}\n!ùÒÁêÙÛÀ îÉ");
-+static const u8 sText_PkmnWasConfused[] = _("ざÈゃŒ {B_EFF_NAME_WITH_PREFIX}\n!¡ÁêÙÛどÁÓ");
++static const u8 sText_PkmnIsConfused[] = _("{B_ATK_NAME_WITH_PREFIX}\n!ごçŒÊÉ");
++static const u8 sText_PkmnHealedConfusion[] = _("ぽÀèÑ {B_ATK_NAME_WITH_PREFIX}\n!ぉÓÀçŒÌÁ œÉ");
++static const u8 sText_PkmnWasConfused[] = _("ぢÇ+Ñ {B_EFF_NAME_WITH_PREFIX}\n!だÀçŒÌぴÀこ");
  static const u8 sText_PkmnAlreadyConfused[] = _("{B_DEF_NAME_WITH_PREFIX} is\nalready confused!");
 -static const u8 sText_PkmnFellInLove[] = _("{B_DEF_NAME_WITH_PREFIX}\nfell in love!");
-+static const u8 sText_PkmnFellInLove[] = _("{B_DEF_NAME_WITH_PREFIX}\n!ざáÂÀ úò げぅÎ");
++static const u8 sText_PkmnFellInLove[] = _("{B_DEF_NAME_WITH_PREFIX}\n!ぢïÈÁ ëè びúÎ");
  static const u8 sText_PkmnInLove[] = _("{B_ATK_NAME_WITH_PREFIX} is in love\nwith {B_SCR_ACTIVE_NAME_WITH_PREFIX}!");
  static const u8 sText_PkmnImmobilizedByLove[] = _("{B_ATK_NAME_WITH_PREFIX} is\nimmobilized by love!");
  static const u8 sText_PkmnBlownAway[] = _("{B_DEF_NAME_WITH_PREFIX} was\nblown away!");
  static const u8 sText_PkmnChangedType[] = _("{B_ATK_NAME_WITH_PREFIX} transformed\ninto the {B_BUFF1} type!");
 -static const u8 sText_PkmnFlinched[] = _("{B_ATK_NAME_WITH_PREFIX} flinched!");
 -static const u8 sText_PkmnRegainedHealth[] = _("{B_DEF_NAME_WITH_PREFIX} regained\nhealth!");
-+static const u8 sText_PkmnFlinched[] = _("!ìëが {B_ATK_NAME_WITH_PREFIX}");
-+static const u8 sText_PkmnRegainedHealth[] = _("ÑÁねÏèÀ {B_DEF_NAME_WITH_PREFIX}\n!ùÏÈòÁï");
++static const u8 sText_PkmnFlinched[] = _("!îêわ {B_ATK_NAME_WITH_PREFIX}");
++static const u8 sText_PkmnRegainedHealth[] = _("ßÀまÒáÁ {B_DEF_NAME_WITH_PREFIX}\n!ぉÒÇèÀò");
  static const u8 sText_PkmnHPFull[] = _("{B_DEF_NAME_WITH_PREFIX}'s\nHP is full!");
  static const u8 sText_PkmnRaisedSpDef[] = _("{B_ATK_PREFIX2}'s {B_CURRENT_MOVE}\nraised SP. DEF!");
  static const u8 sText_PkmnRaisedSpDefALittle[] = _("{B_ATK_PREFIX2}'s {B_CURRENT_MOVE}\nraised SP. DEF a little!");
@@ -525,8 +715,8 @@ index a6392be..b780f27 100644
  static const u8 sText_PkmnIsGlowing[] = _("{B_ATK_NAME_WITH_PREFIX} is glowing!");
 -static const u8 sText_PkmnFlewHigh[] = _("{B_ATK_NAME_WITH_PREFIX} flew\nup high!");
 -static const u8 sText_PkmnDugHole[] = _("{B_ATK_NAME_WITH_PREFIX} dug a hole!");
-+static const u8 sText_PkmnFlewHigh[] = _("(Úま {B_ATK_NAME_WITH_PREFIX}\n!ÁÈÂÁï");
-+static const u8 sText_PkmnDugHole[] = _("!Áºëô Êëま {B_ATK_NAME_WITH_PREFIX}");
++static const u8 sText_PkmnFlewHigh[] = _("%Úô {B_ATK_NAME_WITH_PREFIX}\n!ÀÇÈÀò");
++static const u8 sText_PkmnDugHole[] = _("!ÀºêÛ Êêô {B_ATK_NAME_WITH_PREFIX}");
  static const u8 sText_PkmnHidUnderwater[] = _("{B_ATK_NAME_WITH_PREFIX} hid\nunderwater!");
  static const u8 sText_PkmnSprangUp[] = _("{B_ATK_NAME_WITH_PREFIX} sprang up!");
  static const u8 sText_PkmnSqueezedByBind[] = _("{B_DEF_NAME_WITH_PREFIX} was squeezed by\n{B_ATK_NAME_WITH_PREFIX}'s BIND!");
@@ -535,7 +725,7 @@ index a6392be..b780f27 100644
  static const u8 sText_PkmnSappedByLeechSeed[] = _("{B_ATK_NAME_WITH_PREFIX}'s health is\nsapped by LEECH SEED!");
  static const u8 sText_PkmnFastAsleep[] = _("{B_ATK_NAME_WITH_PREFIX} is fast\nasleep.");
 -static const u8 sText_PkmnWokeUp[] = _("{B_ATK_NAME_WITH_PREFIX} woke up!");
-+static const u8 sText_PkmnWokeUp[] = _("!¿ºÈÏèÀ {B_ATK_NAME_WITH_PREFIX}");
++static const u8 sText_PkmnWokeUp[] = _("!セºÇÒáÁ {B_ATK_NAME_WITH_PREFIX}");
  static const u8 sText_PkmnUproarKeptAwake[] = _("But {B_SCR_ACTIVE_NAME_WITH_PREFIX}'s UPROAR\nkept it awake!");
  static const u8 sText_PkmnWokeUpInUproar[] = _("{B_ATK_NAME_WITH_PREFIX} woke up\nin the UPROAR!");
  static const u8 sText_PkmnCausedUproar[] = _("{B_ATK_NAME_WITH_PREFIX} caused\nan UPROAR!");
@@ -544,7 +734,7 @@ index a6392be..b780f27 100644
  static const u8 sText_PkmnShedLeechSeed[] = _("{B_ATK_NAME_WITH_PREFIX} shed\nLEECH SEED!");
  static const u8 sText_PkmnBlewAwaySpikes[] = _("{B_ATK_NAME_WITH_PREFIX} blew away\nSPIKES!");
 -static const u8 sText_PkmnFledFromBattle[] = _("{B_ATK_NAME_WITH_PREFIX} fled from\nbattle!");
-+static const u8 sText_PkmnFledFromBattle[] = _("îÉ ;Êª {B_ATK_NAME_WITH_PREFIX}\n!ÔÒÊねËÂÀ");
++static const u8 sText_PkmnFledFromBattle[] = _("œÉ がÊù {B_ATK_NAME_WITH_PREFIX}\n!ÙÓÊまÔÈÁ");
  static const u8 sText_PkmnForesawAttack[] = _("{B_ATK_NAME_WITH_PREFIX} foresaw\nan attack!");
  static const u8 sText_PkmnTookAttack[] = _("{B_DEF_NAME_WITH_PREFIX} took the\n{B_BUFF1} attack!");
  static const u8 sText_PkmnChoseXAsDestiny[] = _("{B_ATK_NAME_WITH_PREFIX} chose\n{B_CURRENT_MOVE} as its destiny!");
@@ -557,10 +747,10 @@ index a6392be..b780f27 100644
 -static const u8 sText_StatHarshly[] = _("harshly ");
 -static const u8 sText_StatFell[] = _("fell!");
 -static const u8 sText_AttackersStatRose[] = _("{B_ATK_NAME_WITH_PREFIX}'s {B_BUFF1}\n{B_BUFF2}");
-+static const u8 sText_StatSharply[] = _("{RTL}Ó=Ìç ");
-+const u8 gBattleText_Rose[] = _("{RTL}ÀÛÙëげ!");
-+static const u8 sText_StatHarshly[] = _("{RTL}Ó=Ìç ");
-+static const u8 sText_StatFell[] = _("{RTL}Àôûëハ!");
++static const u8 sText_StatSharply[] = _("{RTL}こぃÏó ");
++const u8 gBattleText_Rose[] = _("{RTL}ÁÌŒêび!");
++static const u8 sText_StatHarshly[] = _("{RTL}こぃÏó ");
++static const u8 sText_StatFell[] = _("{RTL}ÁÛぁêâ!");
 +static const u8 sText_AttackersStatRose[] = _("{B_ATK_NAME_WITH_PREFIX} {B_BUFF1}\n{B_BUFF2}");
  const u8 gText_DefendersStatRose[] = _("{B_DEF_NAME_WITH_PREFIX}'s {B_BUFF1}\n{B_BUFF2}");
  static const u8 sText_UsingItemTheStatOfPkmnRose[] = _("Using {B_LAST_ITEM}, the {B_BUFF1}\nof {B_SCR_ACTIVE_NAME_WITH_PREFIX} {B_BUFF2}");
@@ -570,21 +760,21 @@ index a6392be..b780f27 100644
  static const u8 sText_StatsWontDecrease2[] = _("{B_DEF_NAME_WITH_PREFIX}'s stats won't\ngo any lower!");
 -static const u8 sText_CriticalHit[] = _("A critical hit!");
 -static const u8 sText_OneHitKO[] = _("It's a one-hit KO!");
-+static const u8 sText_CriticalHit[] = _("{RTL}カÊÓÔ まÁèËÔ!");
-+static const u8 sText_OneHitKO[] = _("{RTL}ぅキÁñ ÙÁだ Éî カÊÓÔ ÎÀまÌç!");
++static const u8 sText_CriticalHit[] = _("{RTL}カÊこÙ ôÀáÔÙ!");
++static const u8 sText_OneHitKO[] = _("{RTL}úぼÀ= ŒÀざ Éœ カÊこÙ ÎÁôÏó!");
  static const u8 sText_123Poof[] = _("{PAUSE 32}1, {PAUSE 15}2, and{PAUSE 15}… {PAUSE 15}… {PAUSE 15}… {PAUSE 15}{PLAY_SE SE_BALL_BOUNCE_1}Poof!\p");
  static const u8 sText_AndEllipsis[] = _("And…\p");
  static const u8 sText_HMMovesCantBeForgotten[] = _("HM moves can't be\nforgotten now.\p");
 -static const u8 sText_NotVeryEffective[] = _("It's not very effective…");
 -static const u8 sText_SuperEffective[] = _("It's super effective!");
 -static const u8 sText_GotAwaySafely[] = _("{PLAY_SE SE_FLEE}Got away safely!\p");
-+static const u8 sText_NotVeryEffective[] = _("{RTL}ÙぺチÈÊªÁ ÂÈâ ぅÇこÁ…");
-+static const u8 sText_SuperEffective[] = _("{RTL}ÙぺチÈÊªÁ ぅÇず ÂÚぞÁこÔ!");
-+static const u8 sText_GotAwaySafely[] = _("{RTL}{PLAY_SE SE_FLEE}ªÊÓぴ Óßばだ!\p");
++static const u8 sText_NotVeryEffective[] = _("{RTL}ŒオタÇÊùÀ ÈÇ) úÂËÀ…");
++static const u8 sText_SuperEffective[] = _("{RTL}ŒオタÇÊùÀ úÂべ ÈÚづÀËÙ!");
++static const u8 sText_GotAwaySafely[] = _("{RTL}{PLAY_SE SE_FLEE}ùÊこぷ こìぶざ!\p");
  static const u8 sText_PkmnFledUsingIts[] = _("{PLAY_SE SE_FLEE}{B_ATK_NAME_WITH_PREFIX} fled\nusing its {B_LAST_ITEM}!\p");
  static const u8 sText_PkmnFledUsing[] = _("{PLAY_SE SE_FLEE}{B_ATK_NAME_WITH_PREFIX} fled\nusing {B_ATK_ABILITY}!\p");
 -static const u8 sText_WildPkmnFled[] = _("{PLAY_SE SE_FLEE}Wild {B_BUFF1} fled!");
-+static const u8 sText_WildPkmnFled[] = _("{PLAY_SE SE_FLEE}!;Êª ずÊêÂÀ {B_BUFF1}");
++static const u8 sText_WildPkmnFled[] = _("{PLAY_SE SE_FLEE}!がÊù べÊçÈÁ {B_BUFF1}");
  static const u8 sText_PlayerDefeatedLinkTrainer[] = _("Player defeated\n{B_LINK_OPPONENT1_NAME}!");
  static const u8 sText_TwoLinkTrainersDefeated[] = _("Player beat {B_LINK_OPPONENT1_NAME}\nand {B_LINK_OPPONENT2_NAME}!");
  static const u8 sText_PlayerLostAgainstLinkTrainer[] = _("Player lost against\n{B_LINK_OPPONENT1_NAME}!");
@@ -594,8 +784,8 @@ index a6392be..b780f27 100644
  static const u8 sText_ButNothingHappened[] = _("But nothing happened!");
 -static const u8 sText_ButItFailed[] = _("But it failed!");
 -static const u8 sText_ItHurtConfusion[] = _("It hurt itself in its\nconfusion!");
-+static const u8 sText_ButItFailed[] = _("{RTL}ÂごóぁÁ ò=Úぴ!");
-+static const u8 sText_ItHurtConfusion[] = _("{RTL}ソ+ぷ ôëßù òú\nÀÛÙêÁÒù!");
++static const u8 sText_ButItFailed[] = _("{RTL}Èûね;À èぃÚぷ!");
++static const u8 sText_ItHurtConfusion[] = _("{RTL}ソぎケ Ûêìぉ èë\nÁÌŒçÀÓぉ!");
  static const u8 sText_MirrorMoveFailed[] = _("The MIRROR MOVE failed!");
  static const u8 sText_StartedToRain[] = _("It started to rain!");
  static const u8 sText_DownpourStarted[] = _("A downpour started!"); // corresponds to DownpourText in pokegold and pokecrystal and is used by Rain Dance in GSC
@@ -607,39 +797,39 @@ index a6392be..b780f27 100644
 -static const u8 sText_WildPkmnAppeared2[] = _("Wild {B_OPPONENT_MON1_NAME} appeared!\p");
 -static const u8 sText_WildPkmnAppearedPause[] = _("Wild {B_OPPONENT_MON1_NAME} appeared!{PAUSE 127}");
 -static const u8 sText_TwoWildPkmnAppeared[] = _("Wild {B_OPPONENT_MON1_NAME} and\n{B_OPPONENT_MON2_NAME} appeared!\p");
-+static const u8 sText_WildPkmnAppeared[] = _("!ずÊÓ {B_OPPONENT_MON1_NAME} Êぁト\p");
-+static const u8 sText_WildPkmnAppeared2[] = _("!ずÊÓ {B_OPPONENT_MON1_NAME} Êぁト\p");
-+static const u8 sText_WildPkmnAppearedPause[] = _("!ずÊÓ {B_OPPONENT_MON1_NAME} Êぁト{PAUSE 127}");
-+static const u8 sText_TwoWildPkmnAppeared[] = _("Î {B_OPPONENT_MON1_NAME} Êぁト\n!àÁこÊêÂÀ {B_OPPONENT_MON2_NAME}\p");
++static const u8 sText_WildPkmnAppeared[] = _("!べÊこ {B_OPPONENT_MON1_NAME} Ê;ト\p");
++static const u8 sText_WildPkmnAppeared2[] = _("!べÊこ {B_OPPONENT_MON1_NAME} Ê;ト\p");
++static const u8 sText_WildPkmnAppearedPause[] = _("!べÊこ {B_OPPONENT_MON1_NAME} Ê;ト{PAUSE 127}");
++static const u8 sText_TwoWildPkmnAppeared[] = _("Î {B_OPPONENT_MON1_NAME} Ê;ト\n!àÀËÊçÈÁ {B_OPPONENT_MON2_NAME}\p");
  static const u8 sText_GhostAppearedCantId[] = _("The GHOST appeared!\pDarn!\nThe GHOST can't be ID'd!\p");
  static const u8 sText_TheGhostAppeared[] = _("The GHOST appeared!\p");
  static const u8 sText_SilphScopeUnveil[] = _("SILPH SCOPE unveiled the GHOST's\nidentity!");
  static const u8 sText_TheGhostWas[] = _("The GHOST was MAROWAK!\p\n");
 -static const u8 sText_Trainer1WantsToBattle[] = _("{B_TRAINER1_CLASS} {B_TRAINER1_NAME}\nwould like to battle!\p");
-+static const u8 sText_Trainer1WantsToBattle[] = _("{B_TRAINER1_NAME} {B_TRAINER1_CLASS}\n!ÔÂびÁóËÂÀ ÌこÊこ\p");
++static const u8 sText_Trainer1WantsToBattle[] = _("{B_TRAINER1_NAME} {B_TRAINER1_CLASS}\n!ÙÈばÀねÔÈÁ ÏËÊË\p");
  static const u8 sText_LinkTrainerWantsToBattle[] = _("{B_LINK_OPPONENT1_NAME}\nwants to battle!");
  static const u8 sText_TwoLinkTrainersWantToBattle[] = _("{B_LINK_OPPONENT1_NAME} and {B_LINK_OPPONENT2_NAME}\nwant to battle!");
 -static const u8 sText_Trainer1SentOutPkmn[] = _("{B_TRAINER1_CLASS} {B_TRAINER1_NAME} sent\nout {B_OPPONENT_MON1_NAME}!{PAUSE 60}");
-+static const u8 sText_Trainer1SentOutPkmn[] = _("ìèÛŒ {B_TRAINER1_NAME} {B_TRAINER1_CLASS}\n!{B_OPPONENT_MON1_NAME}{PAUSE 60}");
++static const u8 sText_Trainer1SentOutPkmn[] = _("îáÌÑ {B_TRAINER1_NAME} {B_TRAINER1_CLASS}\n!{B_OPPONENT_MON1_NAME}{PAUSE 60}");
  static const u8 sText_Trainer1SentOutTwoPkmn[] = _("{B_TRAINER1_CLASS} {B_TRAINER1_NAME} sent\nout {B_OPPONENT_MON1_NAME} and {B_OPPONENT_MON2_NAME}!{PAUSE 60}");
 -static const u8 sText_Trainer1SentOutPkmn2[] = _("{B_TRAINER1_CLASS} {B_TRAINER1_NAME} sent\nout {B_BUFF1}!");
-+static const u8 sText_Trainer1SentOutPkmn2[] = _("ìèÛŒ {B_TRAINER1_NAME} {B_TRAINER1_CLASS}\n!{B_BUFF1}");
++static const u8 sText_Trainer1SentOutPkmn2[] = _("îáÌÑ {B_TRAINER1_NAME} {B_TRAINER1_CLASS}\n!{B_BUFF1}");
  static const u8 sText_LinkTrainerSentOutPkmn[] = _("{B_LINK_OPPONENT1_NAME} sent out\n{B_OPPONENT_MON1_NAME}!");
  static const u8 sText_LinkTrainerSentOutTwoPkmn[] = _("{B_LINK_OPPONENT1_NAME} sent out\n{B_OPPONENT_MON1_NAME} and {B_OPPONENT_MON2_NAME}!");
  static const u8 sText_TwoLinkTrainersSentOutPkmn[] = _("{B_LINK_OPPONENT1_NAME} sent out {B_LINK_OPPONENT_MON1_NAME}!\n{B_LINK_OPPONENT2_NAME} sent out {B_LINK_OPPONENT_MON2_NAME}!");
  static const u8 sText_LinkTrainerSentOutPkmn2[] = _("{B_LINK_OPPONENT1_NAME} sent out\n{B_BUFF1}!");
  static const u8 sText_LinkTrainerMultiSentOutPkmn[] = _("{B_LINK_SCR_TRAINER_NAME} sent out\n{B_BUFF1}!");
 -static const u8 sText_GoPkmn[] = _("Go! {B_PLAYER_MON1_NAME}!");
-+static const u8 sText_GoPkmn[] = _("!{B_PLAYER_MON1_NAME} !ÁÈª");
++static const u8 sText_GoPkmn[] = _("!{B_PLAYER_MON1_NAME} !ÀÇù");
  static const u8 sText_GoTwoPkmn[] = _("Go! {B_PLAYER_MON1_NAME} and\n{B_PLAYER_MON2_NAME}!");
 -static const u8 sText_GoPkmn2[] = _("Go! {B_BUFF1}!");
 -static const u8 sText_DoItPkmn[] = _("Do it! {B_BUFF1}!");
 -static const u8 sText_GoForItPkmn[] = _("Go for it, {B_BUFF1}!");
 -static const u8 sText_YourFoesWeakGetEmPkmn[] = _("Your foe's weak!\nGet 'em, {B_BUFF1}!");
-+static const u8 sText_GoPkmn2[] = _("!{B_BUFF1} !ÁÈª");
-+static const u8 sText_DoItPkmn[] = _("!{B_BUFF1} !œªÛŒ");
-+static const u8 sText_GoForItPkmn[] = _("!{B_BUFF1} Áこ ìÒÇÙ");
-+static const u8 sText_YourFoesWeakGetEmPkmn[] = _("!でÈねカ じËぐわ\n!{B_BUFF1} Áこ ùÈÚï っぁがŒ");
++static const u8 sText_GoPkmn2[] = _("!{B_BUFF1} !ÀÇù");
++static const u8 sText_DoItPkmn[] = _("!{B_BUFF1} !ñùÌÑ");
++static const u8 sText_GoForItPkmn[] = _("!{B_BUFF1} ÀË îÓÂŒ");
++static const u8 sText_YourFoesWeakGetEmPkmn[] = _("!ウÇまカ ごÔぞª\n!{B_BUFF1} ÀË ぉÇÚò ぜ;わÑ");
  static const u8 sText_LinkPartnerSentOutPkmnGoPkmn[] = _("{B_LINK_PARTNER_NAME} sent out {B_LINK_PLAYER_MON2_NAME}!\nGo! {B_LINK_PLAYER_MON1_NAME}!");
  static const u8 sText_PkmnThatsEnough[] = _("{B_BUFF1}, that's enough!\nCome back!");
  static const u8 sText_PkmnComeBack[] = _("{B_BUFF1}, come back!");
@@ -655,14 +845,14 @@ index a6392be..b780f27 100644
 -static const u8 sText_AllyPkmnPrefix2[] = _("Ally");
 -static const u8 sText_FoePkmnPrefix4[] = _("Foe");
 -static const u8 sText_AllyPkmnPrefix3[] = _("Ally");
-+static const u8 sText_WildPkmnPrefix[] = _("{RTL}ÀÂêÊず ");
-+static const u8 sText_FoePkmnPrefix[] = _("{RTL}ÀÂûぐœ ");
-+static const u8 sText_FoePkmnPrefix2[] = _("{RTL}ÀÂûぐœ");
-+static const u8 sText_AllyPkmnPrefix[] = _("{RTL}ÀÂáÚÈで");
-+static const u8 sText_FoePkmnPrefix3[] = _("{RTL}ÀÂûぐœ");
-+static const u8 sText_AllyPkmnPrefix2[] = _("{RTL}ÀÂáÚÈで");
-+static const u8 sText_FoePkmnPrefix4[] = _("{RTL}ÀÂûぐœ");
-+static const u8 sText_AllyPkmnPrefix3[] = _("{RTL}ÀÂáÚÈで");
++static const u8 sText_WildPkmnPrefix[] = _("{RTL}ÁÈçÊべ ");
++static const u8 sText_FoePkmnPrefix[] = _("{RTL}ÁÈぁぞñ ");
++static const u8 sText_FoePkmnPrefix2[] = _("{RTL}ÁÈぁぞñ");
++static const u8 sText_AllyPkmnPrefix[] = _("{RTL}ÁÈïÚÇウ");
++static const u8 sText_FoePkmnPrefix3[] = _("{RTL}ÁÈぁぞñ");
++static const u8 sText_AllyPkmnPrefix2[] = _("{RTL}ÁÈïÚÇウ");
++static const u8 sText_FoePkmnPrefix4[] = _("{RTL}ÁÈぁぞñ");
++static const u8 sText_AllyPkmnPrefix3[] = _("{RTL}ÁÈïÚÇウ");
  static const u8 sText_AttackerUsedX[] = _("{B_ATK_NAME_WITH_PREFIX} used\n{B_BUFF2}");
  static const u8 sText_ExclamationMark[] = _("!");
  static const u8 sText_ExclamationMark2[] = _("!");
@@ -671,14 +861,14 @@ index a6392be..b780f27 100644
  static const u8 sText_YouMissedPkmn[] = _("You missed the POKéMON!");
  static const u8 sText_PkmnBrokeFree[] = _("Oh, no!\nThe POKéMON broke free!");
 -static const u8 sText_ItAppearedCaught[] = _("Aww!\nIt appeared to be caught!");
-+static const u8 sText_ItAppearedCaught[] = _("{RTL}ソミ!\nÓÌÀ ÎÒぺôù ŒÉßじ!");
++static const u8 sText_ItAppearedCaught[] = _("{RTL}ソミ!\nこÏÁ ÎÓオÛぉ ÑÉìご!");
  static const u8 sText_AarghAlmostHadIt[] = _("Aargh!\nAlmost had it!");
  static const u8 sText_ShootSoClose[] = _("Shoot!\nIt was so close, too!");
  static const u8 sText_ItDodgedBall2[] = _("よけられた!\nこいつは つかまりそうにないぞ!"); // Unused version of the Marowak ghost dodging text
 -static const u8 sText_GotchaPkmnCaught[] = _("Gotcha!\n{B_OPPONENT_MON1_NAME} was caught!{WAIT_SE}{PLAY_BGM MUS_CAUGHT}\p");
 -static const u8 sText_GotchaPkmnCaught2[] = _("Gotcha!\n{B_OPPONENT_MON1_NAME} was caught!{WAIT_SE}{PLAY_BGM MUS_CAUGHT}{PAUSE 127}");
-+static const u8 sText_GotchaPkmnCaught[] = _("!ùÏごßÉŒ\n!{B_OPPONENT_MON1_NAME} ÑÁÈぃゃÀ œÙ{WAIT_SE}{PLAY_BGM MUS_CAUGHT}\p");
-+static const u8 sText_GotchaPkmnCaught2[] = _("!ùÏごßÉŒ\n!{B_OPPONENT_MON1_NAME} ÑÁÈぃゃÀ œÙ{WAIT_SE}{PLAY_BGM MUS_CAUGHT}{PAUSE 127}");
++static const u8 sText_GotchaPkmnCaught[] = _("!ぉÒûìÉÑ\n!{B_OPPONENT_MON1_NAME} ßÀÇぇ+Á ñŒ{WAIT_SE}{PLAY_BGM MUS_CAUGHT}\p");
++static const u8 sText_GotchaPkmnCaught2[] = _("!ぉÒûìÉÑ\n!{B_OPPONENT_MON1_NAME} ßÀÇぇ+Á ñŒ{WAIT_SE}{PLAY_BGM MUS_CAUGHT}{PAUSE 127}");
  static const u8 sText_GiveNicknameCaptured[] = _("Give a nickname to the\ncaptured {B_OPPONENT_MON1_NAME}?");
  static const u8 sText_PkmnSentToPC[] = _("{B_OPPONENT_MON1_NAME} was sent to\n{B_PC_CREATOR_NAME} PC.");
  static const u8 sText_Someones[] = _("someone's");
@@ -687,7 +877,7 @@ index a6392be..b780f27 100644
  const u8 gText_WhatWillOldManDo[] = _("What will the\nold man do?");
  const u8 gText_LinkStandby[] = _("{PAUSE 16}Link standby…");
 -const u8 gText_BattleMenu[] = _("{PALETTE 5}{COLOR_HIGHLIGHT_SHADOW 13 14 15}FIGHT{CLEAR_TO 56}BAG\nPOKéMON{CLEAR_TO 56}RUN");
-+const u8 gText_BattleMenu[] = _("{PALETTE 5}{COLOR_HIGHLIGHT_SHADOW 13 14 15}ぱÁÏぅ{CLEAR_TO 56}ÔêÈºま\nàÇËÈÒÇÓ{CLEAR_TO 56};Êª");
++const u8 gText_BattleMenu[] = _("{PALETTE 5}{COLOR_HIGHLIGHT_SHADOW 13 14 15}でÀÒú{CLEAR_TO 56}ÙçÇºô\nàÂÔÇÓÂこ{CLEAR_TO 56}がÊù");
  const u8 gText_SafariZoneMenu[] = _("{PALETTE 5}{COLOR_HIGHLIGHT_SHADOW 13 14 15}BALL{CLEAR_TO 56}BAIT\nROCK{CLEAR_TO 56}RUN");
  const u8 gText_MoveInterfacePP[] = _("PP ");
  const u8 gText_MoveInterfaceType[] = _("TYPE/");
@@ -696,12 +886,12 @@ index a6392be..b780f27 100644
  };
  
 -static const u8 sText_Trainer1Fled[] = _("{PLAY_SE SE_FLEE}{B_TRAINER1_CLASS} {B_TRAINER1_NAME} fled!");
-+static const u8 sText_Trainer1Fled[] = _("{PLAY_SE SE_FLEE}!;Êª {B_TRAINER1_NAME} {B_TRAINER1_CLASS}");
++static const u8 sText_Trainer1Fled[] = _("{PLAY_SE SE_FLEE}!がÊù {B_TRAINER1_NAME} {B_TRAINER1_CLASS}");
  static const u8 sText_PlayerLostAgainstTrainer1[] = _("Player lost against\n{B_TRAINER1_CLASS} {B_TRAINER1_NAME}!");
  static const u8 sText_PlayerBattledToDrawTrainer1[] = _("Player battled to a draw against\n{B_TRAINER1_CLASS} {B_TRAINER1_NAME}!");
  
 diff --git a/src/data/items.json b/src/data/items.json
-index 0a87abb..70ac92e 100644
+index 0a87abb..92732d5 100644
 --- a/src/data/items.json
 +++ b/src/data/items.json
 @@ -17,12 +17,12 @@
@@ -709,13 +899,13 @@ index 0a87abb..70ac92e 100644
      },
      {
 -      "english": "MASTER BALL",
-+      "english": "ぇËクï çÊÒ",
++      "english": "じÔキò óÊÓ",
        "itemId": "ITEM_MASTER_BALL",
        "price": 0,
        "holdEffect": "HOLD_EFFECT_NONE",
        "holdEffectParam": 0,
 -      "description_english": "The best BALL with the ultimate\\nperformance. It will catch any wild\\nPOKéMON without fail.",
-+      "description_english": "{RTL}Œòキì ÒÊç ïÚぇ Àメべばぼ.\\nÙËßじ Œず ÓÇÒÈËÇà ÓÊず\\nÑÎà Œà Ùë=ì ŒÓÌÀ.",
++      "description_english": "{RTL}Ñèぼî ÓÊó òÚじ Áゲぱぶぽ.\\nŒÔìご Ñべ こÂÓÇÔÂà こÊべ\\nßÎà Ñà Œêぃî ÑこÏÁ.",
        "importance": 0,
        "registrability": 0,
        "pocket": "POCKET_POKE_BALLS",
@@ -724,13 +914,13 @@ index 0a87abb..70ac92e 100644
      },
      {
 -      "english": "ULTRA BALL",
-+      "english": "ÔºタÁò çÊÒ",
++      "english": "ÙºナÀè óÊÓ",
        "itemId": "ITEM_ULTRA_BALL",
        "price": 1200,
        "holdEffect": "HOLD_EFFECT_NONE",
        "holdEffectParam": 0,
 -      "description_english": "A very high-grade BALL that offers\\na higher POKéMON catch rate than\\na GREAT BALL.",
-+      "description_english": "{RTL}ÒÊç ïÁÂÈÔ ÀÂぎÇÑç ÙÇòÊ\\nÉねÌぱ ぉÉßÁ¡ ŒïÚぇ Éî\\nÀÂごÊç ÀÂËËÏÁびç.",
++      "description_english": "{RTL}ÓÊó òÀÈÇÙ ÁÈぅÂßó ŒÂèÊ\\nÉまÏで ゃÉìÀだ ÑòÚじ Éœ\\nÁÈûÊó ÁÈÔÔÒÀばó.",
        "importance": 0,
        "registrability": 0,
        "pocket": "POCKET_POKE_BALLS",
@@ -739,13 +929,13 @@ index 0a87abb..70ac92e 100644
      },
      {
 -      "english": "GREAT BALL",
-+      "english": "çびÁÏËÉ çÊÒ",
++      "english": "óばÀÒÔÉ óÊÓ",
        "itemId": "ITEM_GREAT_BALL",
        "price": 600,
        "holdEffect": "HOLD_EFFECT_NONE",
        "holdEffectParam": 0,
 -      "description_english": "A good, quality BALL that offers\\na higher POKéMON catch rate than\\na standard POKé BALL.",
-+      "description_english": "{RTL}ÒÊç がÈÌç ÙÇòÊ ÉねÌぱ\\nぉÉßÁ¡ ŒïÚぇ Éî ÒÊç\\nÓÇÒÈù ÀÂねÁÑこÔ.",
++      "description_english": "{RTL}ÓÊó わÇÏó ŒÂèÊ ÉまÏで\\nゃÉìÀだ ÑòÚじ Éœ ÓÊó\\nこÂÓÇぉ ÁÈまÀßËÙ.",
        "importance": 0,
        "registrability": 0,
        "pocket": "POCKET_POKE_BALLS",
@@ -754,13 +944,13 @@ index 0a87abb..70ac92e 100644
      },
      {
 -      "english": "POK\u00e9 BALL",
-+      "english": "ùÈÒÇÓ çÊÒ",
++      "english": "ぉÇÓÂこ óÊÓ",
        "itemId": "ITEM_POKE_BALL",
        "price": 200,
        "holdEffect": "HOLD_EFFECT_NONE",
        "holdEffectParam": 0,
 -      "description_english": "A BALL thrown to catch a wild\\nPOKéMON. It is designed in a\\ncapsule style.",
-+      "description_english": "{RTL}ÒÊç ÙÊÉぇ ÂモÉßÁ¡\\nÓêÇÒÈËÇà ÓÊず. ÉぐËËÔ\\nïÚぇ ぶごì ÒêßÇÂÔ.",
++      "description_english": "{RTL}ÓÊó ŒÊÉじ ÈゴÉìÀだ\\nこçÂÓÇÔÂà こÊべ. ÉぞÔÔÙ\\nòÚじ げûî ÓçìÂÈÙ.",
        "importance": 0,
        "registrability": 0,
        "pocket": "POCKET_POKE_BALLS",
@@ -769,13 +959,13 @@ index 0a87abb..70ac92e 100644
      },
      {
 -      "english": "SAFARI BALL",
-+      "english": "ずÛÁëè çÊÒ",
++      "english": "べÌÀêá óÊÓ",
        "itemId": "ITEM_SAFARI_BALL",
        "price": 0,
        "holdEffect": "HOLD_EFFECT_NONE",
        "holdEffectParam": 0,
 -      "description_english": "A special BALL that is used only in\\nthe SAFARI ZONE. It is finished in\\na camouflage pattern.",
-+      "description_english": "{RTL}ÒÊç わÁゃÔ ÙßÏûÌだ òºテ\\nòú ÉóぃºÔ ÀÂßëÁÛず.\\nべばヘªÁ ÓóËテ ÙËÇこù.",
++      "description_english": "{RTL}ÓÊó ªÀ+Ù ŒìÒぁÏざ èºノ\\nèë ÉねぇºÙ ÁÈìêÀÌべ.\\nぱぶユùÀ こねÔノ ŒÔÂËぉ.",
        "importance": 0,
        "registrability": 0,
        "pocket": "POCKET_POKE_BALLS",
@@ -784,13 +974,13 @@ index 0a87abb..70ac92e 100644
      },
      {
 -      "english": "POTION",
-+      "english": "ÔïÊが",
++      "english": "ÙòÊわ",
        "itemId": "ITEM_POTION",
        "price": 300,
        "holdEffect": "HOLD_EFFECT_NONE",
        "holdEffectParam": 20,
 -      "description_english": "A spray-type wound medicine.\\nIt restores the HP of one POKéMON\\nby 20 points.",
-+      "description_english": "{RTL}ÑÎÀñ Û+À+ Âねばぽ ÀÂぎÊÎ).\\nこßÏねÈÌ 02 ôºぃÔ Éî\\nゃáÔ ÓÇÒÈËÇà ÎÀまÌ.",
++      "description_english": "{RTL}ßÎÁ= ÌぎÁぎ Èまぶ¿ ÁÈぅÊÎチ.\\nËìÒまÇÏ 02 ÛºぇÙ Éœ\\n+ïÙ こÂÓÇÔÂà ÎÁôÏ.",
        "importance": 0,
        "registrability": 0,
        "pocket": "POCKET_ITEMS",
@@ -799,13 +989,13 @@ index 0a87abb..70ac92e 100644
      },
      {
 -      "english": "ANTIDOTE",
-+      "english": "ぼÁこÊÙ",
++      "english": "ぽÀËÊŒ",
        "itemId": "ITEM_ANTIDOTE",
        "price": 100,
        "holdEffect": "HOLD_EFFECT_NONE",
        "holdEffectParam": 0,
 -      "description_english": "A spray-type medicine.\\nIt heals one POKéMON from a\\npoisoning.",
-+      "description_english": "{RTL}ÑÎÀñ Û+À+ こ=ëú\\nÓÇÒÈËÇà ÎÀまÌÀ\\nÉî ÀÂÏßËœ.",
++      "description_english": "{RTL}ßÎÁ= ÌぎÁぎ Ëぃêë\\nこÂÓÇÔÂà ÎÁôÏÁ\\nÉœ ÁÈÒìÔñ.",
        "importance": 0,
        "registrability": 0,
        "pocket": "POCKET_ITEMS",
@@ -814,13 +1004,13 @@ index 0a87abb..70ac92e 100644
      },
      {
 -      "english": "BURN HEAL",
-+      "english": "ぼÊáÂÀ ñÀÎÑ",
++      "english": "ぽÊïÈÁ =ÁÎß",
        "itemId": "ITEM_BURN_HEAL",
        "price": 250,
        "holdEffect": "HOLD_EFFECT_NONE",
        "holdEffectParam": 0,
 -      "description_english": "A spray-type medicine.\\nIt heals one POKéMON of a burn.",
-+      "description_english": "{RTL}ÑÎÀñ Û+À+ こ=ëú\\nÓÇÒÈËÇà ÎÀまÌÀ\\nÉî ÀÂáÊÎぼ.",
++      "description_english": "{RTL}ßÎÁ= ÌぎÁぎ Ëぃêë\\nこÂÓÇÔÂà ÎÁôÏÁ\\nÉœ ÁÈïÊÎぽ.",
        "importance": 0,
        "registrability": 0,
        "pocket": "POCKET_ITEMS",
@@ -829,13 +1019,13 @@ index 0a87abb..70ac92e 100644
      },
      {
 -      "english": "ICE HEAL",
-+      "english": "ÌÈÚぎÂÀ ñÀÎÑ",
++      "english": "ÏÇÚぅÈÁ =ÁÎß",
        "itemId": "ITEM_ICE_HEAL",
        "price": 250,
        "holdEffect": "HOLD_EFFECT_NONE",
        "holdEffectParam": 0,
 -      "description_english": "A spray-type medicine.\\nIt defrosts a frozen POKéMON.",
-+      "description_english": "{RTL}ÑÎÀñ Û+À+ こぢこざ ÀÂぎÚÈÌ\\nïî ÓÇÒÈËÇà\\nÉÏぎËÌ.",
++      "description_english": "{RTL}ßÎÁ= ÌぎÁぎ ËどËぢ ÁÈぅÚÇÏ\\nòœ こÂÓÇÔÂà\\nÉÒぅÔÏ.",
        "importance": 0,
        "registrability": 0,
        "pocket": "POCKET_ITEMS",
@@ -844,13 +1034,13 @@ index 0a87abb..70ac92e 100644
      },
      {
 -      "english": "AWAKENING",
-+      "english": "ùêóÉ",
++      "english": "ぉçねÉ",
        "itemId": "ITEM_AWAKENING",
        "price": 250,
        "holdEffect": "HOLD_EFFECT_NONE",
        "holdEffectParam": 0,
 -      "description_english": "A spray-type medicine.\\nIt awakens a sleeping POKéMON.",
-+      "description_english": "{RTL}ÑÎÀñ Û+À+ こÇぅ¿\\nÓÇÒÈËÇà ケÁÛぅÁ\\nòú ÀÂóÇだ.",
++      "description_english": "{RTL}ßÎÁ= ÌぎÁぎ ËÂúセ\\nこÂÓÇÔÂà ぐÀÌúÀ\\nèë ÁÈねÂざ.",
        "importance": 0,
        "registrability": 0,
        "pocket": "POCKET_ITEMS",
@@ -859,13 +1049,13 @@ index 0a87abb..70ac92e 100644
      },
      {
 -      "english": "PARLYZ HEAL",
-+      "english": "ìÚ=ÂÀ ñÀÎÑ",
++      "english": "îÚぃÈÁ =ÁÎß",
        "itemId": "ITEM_PARALYZE_HEAL",
        "price": 200,
        "holdEffect": "HOLD_EFFECT_NONE",
        "holdEffectParam": 0,
 -      "description_english": "A spray-type medicine.\\nIt heals one POKéMON from\\nparalysis.",
-+      "description_english": "{RTL}ÑÎÀñ Û+À+ こ=ëú\\nÓÇÒÈËÇà ÎÀまÌÀ\\nÉî ÀÂ=Úì.",
++      "description_english": "{RTL}ßÎÁ= ÌぎÁぎ Ëぃêë\\nこÂÓÇÔÂà ÎÁôÏÁ\\nÉœ ÁÈぃÚî.",
        "importance": 0,
        "registrability": 0,
        "pocket": "POCKET_ITEMS",
@@ -874,13 +1064,13 @@ index 0a87abb..70ac92e 100644
      },
      {
 -      "english": "FULL RESTORE",
-+      "english": "ìÉÁÒ ñÁëぶ",
++      "english": "îÉÀÓ =Àêげ",
        "itemId": "ITEM_FULL_RESTORE",
        "price": 3000,
        "holdEffect": "HOLD_EFFECT_NONE",
        "holdEffectParam": 255,
 -      "description_english": "A medicine that fully restores the\\nHP and heals any status problems\\nof one POKéMON.",
-+      "description_english": "{RTL}ÑÎÀñ こßÏねÈÌ ÒÁÉì ÀÂぐáÔ\\nÎこ=ëú Œず É=ごÚÔ まÁÂÔ\\nÂêÇÒÈËÇà ÎÀまÌ.",
++      "description_english": "{RTL}ßÎÁ= ËìÒまÇÏ ÓÀÉî ÁÈぞïÙ\\nÎËぃêë Ñべ ÉぃûÚÙ ôÀÈÙ\\nÈçÂÓÇÔÂà ÎÁôÏ.",
        "importance": 0,
        "registrability": 0,
        "pocket": "POCKET_ITEMS",
@@ -889,13 +1079,13 @@ index 0a87abb..70ac92e 100644
      },
      {
 -      "english": "MAX POTION",
-+      "english": "ぷÇぐぅ ÔïÊが",
++      "english": "ケÂぞú ÙòÊわ",
        "itemId": "ITEM_MAX_POTION",
        "price": 2500,
        "holdEffect": "HOLD_EFFECT_NONE",
        "holdEffectParam": 255,
 -      "description_english": "A spray-type wound medicine.\\nIt fully restores the HP of one\\nPOKéMON.",
-+      "description_english": "{RTL}ÑÎÀñ Û+À+ Âねばぽ ÀÂぎÊÎ).\\nこßÏねÈÌ ゃáÔ ÓÇÒÈËÇà\\nÎÀまÌ ÓÁÂごÁÉì.",
++      "description_english": "{RTL}ßÎÁ= ÌぎÁぎ Èまぶ¿ ÁÈぅÊÎチ.\\nËìÒまÇÏ +ïÙ こÂÓÇÔÂà\\nÎÁôÏ こÀÈûÀÉî.",
        "importance": 0,
        "registrability": 0,
        "pocket": "POCKET_ITEMS",
@@ -904,13 +1094,13 @@ index 0a87abb..70ac92e 100644
      },
      {
 -      "english": "HYPER POTION",
-+      "english": "ÔËÈクï ÔïÊが",
++      "english": "ÙÔÇキò ÙòÊわ",
        "itemId": "ITEM_HYPER_POTION",
        "price": 1200,
        "holdEffect": "HOLD_EFFECT_NONE",
        "holdEffectParam": 200,
 -      "description_english": "A spray-type wound medicine.\\nIt restores the HP of one POKéMON\\nby 200 points.",
-+      "description_english": "{RTL}ÑÎÀñ Û+À+ Âねばぽ ÀÂぎÊÎ).\\nこßÏねÈÌ 002 ôºぃÔ Éî\\nゃáÔ ÓÇÒÈËÇà ÎÀまÌ.",
++      "description_english": "{RTL}ßÎÁ= ÌぎÁぎ Èまぶ¿ ÁÈぅÊÎチ.\\nËìÒまÇÏ 002 ÛºぇÙ Éœ\\n+ïÙ こÂÓÇÔÂà ÎÁôÏ.",
        "importance": 0,
        "registrability": 0,
        "pocket": "POCKET_ITEMS",
@@ -919,13 +1109,13 @@ index 0a87abb..70ac92e 100644
      },
      {
 -      "english": "SUPER POTION",
-+      "english": "çÊÈêÒ ÔïÊが",
++      "english": "óÊÇçÓ ÙòÊわ",
        "itemId": "ITEM_SUPER_POTION",
        "price": 700,
        "holdEffect": "HOLD_EFFECT_NONE",
        "holdEffectParam": 50,
 -      "description_english": "A spray-type wound medicine.\\nIt restores the HP of one POKéMON\\nby 50 points.",
-+      "description_english": "{RTL}ÑÎÀñ Û+À+ Âねばぽ ÀÂぎÊÎ).\\nこßÏねÈÌ 05 ôºぃÔ Éî\\nゃáÔ ÓÇÒÈËÇà ÎÀまÌ.",
++      "description_english": "{RTL}ßÎÁ= ÌぎÁぎ Èまぶ¿ ÁÈぅÊÎチ.\\nËìÒまÇÏ 05 ÛºぇÙ Éœ\\n+ïÙ こÂÓÇÔÂà ÎÁôÏ.",
        "importance": 0,
        "registrability": 0,
        "pocket": "POCKET_ITEMS",
@@ -934,13 +1124,13 @@ index 0a87abb..70ac92e 100644
      },
      {
 -      "english": "FULL HEAL",
-+      "english": "ìÉÁぶ ñÀÎÑ",
++      "english": "îÉÀげ =ÁÎß",
        "itemId": "ITEM_FULL_HEAL",
        "price": 600,
        "holdEffect": "HOLD_EFFECT_NONE",
        "holdEffectParam": 0,
 -      "description_english": "A spray-type medicine.\\nIt heals all the status problems of\\none POKéMON.",
-+      "description_english": "{RTL}ÑÎÀñ Û+À+ こ=ëú がËÈげ\\nÉ=ÁÒì ÀÂáÁÂÔ ÂêÇÒÈËÇà\\nÎÀまÌ.",
++      "description_english": "{RTL}ßÎÁ= ÌぎÁぎ Ëぃêë わÔÇび\\nÉぃÀÓî ÁÈïÀÈÙ ÈçÂÓÇÔÂà\\nÎÁôÏ.",
        "importance": 0,
        "registrability": 0,
        "pocket": "POCKET_ITEMS",
@@ -949,13 +1139,13 @@ index 0a87abb..70ac92e 100644
      },
      {
 -      "english": "REVIVE",
-+      "english": "ノÁねôぉ",
++      "english": "ツÀまÛゃ",
        "itemId": "ITEM_REVIVE",
        "price": 1500,
        "holdEffect": "HOLD_EFFECT_NONE",
        "holdEffectParam": 0,
 -      "description_english": "A medicine that revives a fainted\\nPOKéMON, restoring HP by half the\\nmaximum amount.",
-+      "description_english": "{RTL}ÑÎÀñ こóねニ ÓÇÒÈËÇà\\nÉぞËぇ ïÚÈù ÎこßÏねÈÌ\\nôぐで ゃáÏù ÀÂºぐÇぷ.",
++      "description_english": "{RTL}ßÎÁ= Ëねまニ こÂÓÇÔÂà\\nÉづÔじ òÚÇぉ ÎËìÒまÇÏ\\nÛぞウ +ïÒぉ ÁÈºぞÂケ.",
        "importance": 0,
        "registrability": 0,
        "pocket": "POCKET_ITEMS",
@@ -964,13 +1154,13 @@ index 0a87abb..70ac92e 100644
      },
      {
 -      "english": "MAX REVIVE",
-+      "english": "ぇぐぅŒ ノÁねôぉ",
++      "english": "じぞúÑ ツÀまÛゃ",
        "itemId": "ITEM_MAX_REVIVE",
        "price": 4000,
        "holdEffect": "HOLD_EFFECT_NONE",
        "holdEffectParam": 0,
 -      "description_english": "A medicine that revives a fainted\\nPOKéMON, restoring HP fully.",
-+      "description_english": "{RTL}ÑÎÀñ こóねニ ÓÇÒÈËÇà\\nÉぞËぇ ïÚÈù ÎこßÏねÈÌ\\nゃáÏù ÓÁÂごÁÉì.",
++      "description_english": "{RTL}ßÎÁ= Ëねまニ こÂÓÇÔÂà\\nÉづÔじ òÚÇぉ ÎËìÒまÇÏ\\n+ïÒぉ こÀÈûÀÉî.",
        "importance": 0,
        "registrability": 0,
        "pocket": "POCKET_ITEMS",
@@ -979,13 +1169,13 @@ index 0a87abb..70ac92e 100644
      },
      {
 -      "english": "FRESH WATER",
-+      "english": ";ぢï ñÁÉ",
++      "english": "がどò =ÀÉ",
        "itemId": "ITEM_FRESH_WATER",
        "price": 200,
        "holdEffect": "HOLD_EFFECT_NONE",
        "holdEffectParam": 50,
 -      "description_english": "Water with a high mineral content.\\nIt restores the HP of one POKéMON\\nby 50 points.",
-+      "description_english": "{RTL}ÉÁñ ôºú ÉÚúñ\\nÓÁÂËねÁÑà. こßÏねÈÌ 05\\nôºぃÔ ゃáÔ.",
++      "description_english": "{RTL}ÉÀ= Ûºë ÉÚë=\\nこÀÈÔまÀßà. ËìÒまÇÏ 05\\nÛºぇÙ +ïÙ.",
        "importance": 0,
        "registrability": 0,
        "pocket": "POCKET_ITEMS",
@@ -994,13 +1184,13 @@ index 0a87abb..70ac92e 100644
      },
      {
 -      "english": "SODA POP",
-+      "english": "ずびÁケ ;ÎÊ=É",
++      "english": "べばÀぐ がÎÊぃÉ",
        "itemId": "ITEM_SODA_POP",
        "price": 300,
        "holdEffect": "HOLD_EFFECT_NONE",
        "holdEffectParam": 60,
 -      "description_english": "A fizzy soda drink.\\nIt restores the HP of one POKéMON\\nby 60 points.",
-+      "description_english": "{RTL}É=ÊÎ; òÇÀÛ まÚÇ.\\nこßÏねÈÌ 06 ôºぃÔ\\nゃáÔ.",
++      "description_english": "{RTL}ÉぃÊÎが èÂÁÌ ôÚÂ.\\nËìÒまÇÏ 06 ÛºぇÙ\\n+ïÙ.",
        "importance": 0,
        "registrability": 0,
        "pocket": "POCKET_ITEMS",
@@ -1009,13 +1199,13 @@ index 0a87abb..70ac92e 100644
      },
      {
 -      "english": "LEMONADE",
-+      "english": "àÇËÈÂ ÊÈぐï",
++      "english": "àÂÔÇÈ ÊÇぞò",
        "itemId": "ITEM_LEMONADE",
        "price": 350,
        "holdEffect": "HOLD_EFFECT_NONE",
        "holdEffectParam": 80,
 -      "description_english": "A very sweet drink.\\nIt restores the HP of one POKéMON\\nby 80 points.",
-+      "description_english": "{RTL}É=ÊÎ; まÚÇ Éóねニ.\\nこßÏねÈÌ 08 ôºぃÔ\\nゃáÔ.",
++      "description_english": "{RTL}ÉぃÊÎが ôÚÂ Éねまニ.\\nËìÒまÇÏ 08 ÛºぇÙ\\n+ïÙ.",
        "importance": 0,
        "registrability": 0,
        "pocket": "POCKET_ITEMS",
@@ -1024,7 +1214,7 @@ index 0a87abb..70ac92e 100644
      },
      {
 -      "english": "MOOMOO MILK",
-+      "english": "ÇÉÎÇÉ ざÈÚま",
++      "english": "ÂÉÎÂÉ ぢÇÚô",
        "itemId": "ITEM_MOOMOO_MILK",
        "price": 500,
        "holdEffect": "HOLD_EFFECT_NONE",
@@ -1033,7 +1223,7 @@ index 0a87abb..70ac92e 100644
      },
      {
 -      "english": "ETHER",
-+      "english": "ÊÈßÒぉ",
++      "english": "ÊÇìÓゃ",
        "itemId": "ITEM_ETHER",
        "price": 1200,
        "holdEffect": "HOLD_EFFECT_NONE",
@@ -1042,7 +1232,7 @@ index 0a87abb..70ac92e 100644
      },
      {
 -      "english": "MAX ETHER",
-+      "english": "ぇぐぅŒ ÊÈßÒぉ",
++      "english": "じぞúÑ ÊÇìÓゃ",
        "itemId": "ITEM_MAX_ETHER",
        "price": 2000,
        "holdEffect": "HOLD_EFFECT_NONE",
@@ -1051,7 +1241,7 @@ index 0a87abb..70ac92e 100644
      },
      {
 -      "english": "ELIXIR",
-+      "english": "ìÉÁÒ ÊÈßÒぉ",
++      "english": "îÉÀÓ ÊÇìÓゃ",
        "itemId": "ITEM_ELIXIR",
        "price": 3000,
        "holdEffect": "HOLD_EFFECT_NONE",
@@ -1060,13 +1250,13 @@ index 0a87abb..70ac92e 100644
      },
      {
 -      "english": "RARE CANDY",
-+      "english": "çÛÑÁô ぷÇÚま",
++      "english": "óÌßÀÛ ケÂÚô",
        "itemId": "ITEM_RARE_CANDY",
        "price": 4800,
        "holdEffect": "HOLD_EFFECT_NONE",
        "holdEffectParam": 0,
 -      "description_english": "A candy that is packed with energy.\\nIt raises the level of a POKéMON\\nby one.",
-+      "description_english": "{RTL}まÚÇぷ ÉÚÈナÔ ÓÁÂぃÁぅÔ\\nÙÊòげ ÉßÏÇぷ ÓÇÒÈËÇà\\nÎÀまÌ ÓËºÌÀÛ ÎÀまÌ.",
++      "description_english": "{RTL}ôÚÂケ ÉÚÇヘÙ こÀÈぇÀúÙ\\nŒÊèび ÉìÒÂケ こÂÓÇÔÂà\\nÎÁôÏ こÔºÏÁÌ ÎÁôÏ.",
        "importance": 0,
        "registrability": 0,
        "pocket": "POCKET_ITEMS",
@@ -1075,7 +1265,7 @@ index 0a87abb..70ac92e 100644
      },
      {
 -      "english": "POK\u00e9 DOLL",
-+      "english": "ùÈÒÇÓ ÔÈÉÑ",
++      "english": "ぉÇÓÂこ ÙÇÉß",
        "itemId": "ITEM_POKE_DOLL",
        "price": 1000,
        "holdEffect": "HOLD_EFFECT_NONE",
@@ -1084,13 +1274,13 @@ index 0a87abb..70ac92e 100644
      },
      {
 -      "english": "SUPER REPEL",
-+      "english": "ずÇぅ ÑÛÁべ",
++      "english": "べÂú ßÌÀぱ",
        "itemId": "ITEM_SUPER_REPEL",
        "price": 500,
        "holdEffect": "HOLD_EFFECT_NONE",
        "holdEffectParam": 200,
 -      "description_english": "Prevents weak wild POKéMON from\\nappearing for 200 steps.",
-+      "description_english": "{RTL}こËóげ ÀÂêÇÒÈËÇà ÀÂキねÈëÔ\\nÉî ÀÂクぁÇÛ ÂËÌç 002\\nわぃÇç ÓねÌ ÀèÏûÌÀÉù.",
++      "description_english": "{RTL}ËÔねび ÁÈçÂÓÇÔÂà ÁÈぼまÇêÙ\\nÉœ ÁÈキ;ÂÌ ÈÔÏó 002\\nªぇÂó こまÏ ÁáÒぁÏÁÉぉ.",
        "importance": 0,
        "registrability": 0,
        "pocket": "POCKET_ITEMS",
@@ -1099,13 +1289,13 @@ index 0a87abb..70ac92e 100644
      },
      {
 -      "english": "MAX REPEL",
-+      "english": "ぇぐぅŒ ÑÛÁべ",
++      "english": "じぞúÑ ßÌÀぱ",
        "itemId": "ITEM_MAX_REPEL",
        "price": 700,
        "holdEffect": "HOLD_EFFECT_NONE",
        "holdEffectParam": 250,
 -      "description_english": "Prevents weak wild POKéMON from\\nappearing for 250 steps.",
-+      "description_english": "{RTL}こËóげ ÀÂêÇÒÈËÇà ÀÂキねÈëÔ\\nÉî ÀÂクぁÇÛ ÂËÌç 052\\nわぃÇç ÓねÌ ÀèÏûÌÀÉù.",
++      "description_english": "{RTL}ËÔねび ÁÈçÂÓÇÔÂà ÁÈぼまÇêÙ\\nÉœ ÁÈキ;ÂÌ ÈÔÏó 052\\nªぇÂó こまÏ ÁáÒぁÏÁÉぉ.",
        "importance": 0,
        "registrability": 0,
        "pocket": "POCKET_ITEMS",
@@ -1114,13 +1304,13 @@ index 0a87abb..70ac92e 100644
      },
      {
 -      "english": "ESCAPE ROPE",
-+      "english": ";ÎÊぁÂÀ ìêま",
++      "english": "がÎÊ;ÈÁ îçô",
        "itemId": "ITEM_ESCAPE_ROPE",
        "price": 550,
        "holdEffect": "HOLD_EFFECT_NONE",
        "holdEffectParam": 0,
 -      "description_english": "A long, durable rope.\\nUse it to escape instantly from a\\ncave or a dungeon.",
-+      "description_english": "{RTL}まêì べÇこì ÎÉÏÈî\\nÂÚぁÊÎ; Éî ÀÂごぁÇセ\\nÎÉÁ ぶÁÓぁぁÁ.",
++      "description_english": "{RTL}ôçî ぱÂËî ÎÉÒÇœ\\nÈÚ;ÊÎが Éœ ÁÈû;ÂÍ\\nÎÉÀ げÀこ;;À.",
        "importance": 0,
        "registrability": 0,
        "pocket": "POCKET_ITEMS",
@@ -1129,13 +1319,13 @@ index 0a87abb..70ac92e 100644
      },
      {
 -      "english": "REPEL",
-+      "english": "ÑÛÁべ",
++      "english": "ßÌÀぱ",
        "itemId": "ITEM_REPEL",
        "price": 350,
        "holdEffect": "HOLD_EFFECT_NONE",
        "holdEffectParam": 100,
 -      "description_english": "Prevents weak wild POKéMON from\\nappearing for 100 steps.",
-+      "description_english": "{RTL}こËóげ ÀÂêÇÒÈËÇà ÀÂキねÈëÔ\\nÉî ÀÂクぁÇÛ ÂËÌç 001\\nわぃÇç ÓねÌ ÀèÏûÌÀÉù.",
++      "description_english": "{RTL}ËÔねび ÁÈçÂÓÇÔÂà ÁÈぼまÇêÙ\\nÉœ ÁÈキ;ÂÌ ÈÔÏó 001\\nªぇÂó こまÏ ÁáÒぁÏÁÉぉ.",
        "importance": 0,
        "registrability": 0,
        "pocket": "POCKET_ITEMS",
@@ -1144,13 +1334,13 @@ index 0a87abb..70ac92e 100644
      },
      {
 -      "english": "NUGGET",
-+      "english": "ざª+ ÔごÈêè",
++      "english": "ぢùぎ ÙûÇçá",
        "itemId": "ITEM_NUGGET",
        "price": 10000,
        "holdEffect": "HOLD_EFFECT_NONE",
        "holdEffectParam": 0,
 -      "description_english": "A nugget of pure gold that gives\\noff a lustrous gleam.\\nIt can be sold at a high price.",
-+      "description_english": "{RTL}èêÈごÔ Éî ÀÂぢªざ ÀÂûÁÂÍ\\nÙÚËげ ÓêÊこ( èÁべげ.\\nÙêÁ% ÓヌËî ÉÊÙëげ.",
++      "description_english": "{RTL}áçÇûÙ Éœ ÁÈどùぢ ÁÈぁÀÈテ\\nŒÚÔび こçÊË% áÀぱび.\\nŒçÀぺ こヒÔœ ÉÊŒêび.",
        "importance": 0,
        "registrability": 0,
        "pocket": "POCKET_ITEMS",
@@ -1159,13 +1349,13 @@ index 0a87abb..70ac92e 100644
      },
      {
 -      "english": "OAK'S PARCEL",
-+      "english": "¡ÎŒ ÑÊべ",
++      "english": "だÎÑ ßÊぱ",
        "itemId": "ITEM_OAKS_PARCEL",
        "price": 0,
        "holdEffect": "HOLD_EFFECT_NONE",
        "holdEffectParam": 0,
 -      "description_english": "A parcel to be delivered to PROF.\\nOAK from VIRIDIAN CITY's POKéMON\\nMART.",
-+      "description_english": "{RTL}べÊÑ こぎざ ÙÇゃÈÚù\\nぉÂぇ ÀウèÏÁ+ ŒÎ¡\\nÉî ÉÏぎÊ òÈÊこÌこÁà.",
++      "description_english": "{RTL}ぱÊß Ëぅぢ ŒÂ+ÇÚぉ\\nゃÈじ ÁエáÒÀぎ ÑÎだ\\nÉœ ÉÒぅÊ èÇÊËÏËÀà.",
        "importance": 2,
        "registrability": 0,
        "pocket": "POCKET_KEY_ITEMS",
@@ -1183,7 +1373,7 @@ index 0a87abb..70ac92e 100644
      },
      {
 -      "english": "BICYCLE",
-+      "english": "ÔがÀÛÑ",
++      "english": "ÙわÁÌß",
        "itemId": "ITEM_BICYCLE",
        "price": 0,
        "holdEffect": "HOLD_EFFECT_NONE",
@@ -1192,16 +1382,657 @@ index 0a87abb..70ac92e 100644
      },
      {
 -      "english": "TOWN MAP",
-+      "english": "ÔぃこÊわ",
++      "english": "ÙぇËÊª",
        "itemId": "ITEM_TOWN_MAP",
        "price": 0,
        "holdEffect": "HOLD_EFFECT_NONE",
        "holdEffectParam": 0,
 -      "description_english": "A very convenient map that can be\\nviewed anytime. It even shows your \\npresent location.",
-+      "description_english": "{RTL}わÊこぃÔ ÉëÈÌç こËごî\\nÀÂÊがÇ% ぉÂÈぁÁ òú Œず\\nÎぅぴ わばぱ ÀÂËぞÁÉÊç.",
++      "description_english": "{RTL}ªÊËぇÙ ÉêÇÏó ËÔûœ\\nÁÈÊわÂぺ ゃÈÇ;À èë Ñべ\\nÎúぷ ªぶで ÁÈÔづÀÉÊó.",
        "importance": 1,
        "registrability": 1,
        "pocket": "POCKET_KEY_ITEMS",
+diff --git a/src/data/text/move_names.h b/src/data/text/move_names.h
+index d63ddb8..5ace1b4 100644
+--- a/src/data/text/move_names.h
++++ b/src/data/text/move_names.h
+@@ -1,170 +1,170 @@
+ const u8 gMoveNames[MOVES_COUNT][MOVE_NAME_LENGTH + 1] = {
+     [MOVE_NONE]          = _("-$$$$$$"),
+-    [MOVE_POUND]         = _("POUND"),
+-    [MOVE_KARATE_CHOP]   = _("KARATE CHOP"),
+-    [MOVE_DOUBLE_SLAP]   = _("DOUBLESLAP"),
++    [MOVE_POUND]         = _("Ùぇçª"),
++    [MOVE_KARATE_CHOP]   = _("ぉÇŒÁÌÀÓ"),
++    [MOVE_DOUBLE_SLAP]   = _("¿ÎßぜÉ びê+"),
+     [MOVE_COMET_PUNCH]   = _("COMET PUNCH"),
+-    [MOVE_MEGA_PUNCH]    = _("MEGA PUNCH"),
++    [MOVE_MEGA_PUNCH]    = _("ケÊçÓ ÙÔûÈ"),
+     [MOVE_PAY_DAY]       = _("PAY DAY"),
+     [MOVE_FIRE_PUNCH]    = _("FIRE PUNCH"),
+     [MOVE_ICE_PUNCH]     = _("ICE PUNCH"),
+     [MOVE_THUNDER_PUNCH] = _("THUNDERPUNCH"),
+-    [MOVE_SCRATCH]       = _("SCRATCH"),
+-    [MOVE_VICE_GRIP]     = _("VICEGRIP"),
++    [MOVE_SCRATCH]       = _("ツÏª"),
++    [MOVE_VICE_GRIP]     = _("Ùぼçú"),
+     [MOVE_GUILLOTINE]    = _("GUILLOTINE"),
+     [MOVE_RAZOR_WIND]    = _("RAZOR WIND"),
+     [MOVE_SWORDS_DANCE]  = _("SWORDS DANCE"),
+-    [MOVE_CUT]           = _("CUT"),
+-    [MOVE_GUST]          = _("GUST"),
+-    [MOVE_WING_ATTACK]   = _("WING ATTACK"),
+-    [MOVE_WHIRLWIND]     = _("WHIRLWIND"),
+-    [MOVE_FLY]           = _("FLY"),
+-    [MOVE_BIND]          = _("BIND"),
+-    [MOVE_SLAM]          = _("SLAM"),
+-    [MOVE_VINE_WHIP]     = _("VINE WHIP"),
+-    [MOVE_STOMP]         = _("STOMP"),
++    [MOVE_CUT]           = _("びぇú"),
++    [MOVE_GUST]          = _("¡ËÌ Ùçù"),
++    [MOVE_WING_ATTACK]   = _("チÀねわ がÊカ"),
++    [MOVE_WHIRLWIND]     = _("ÙまこÎば"),
++    [MOVE_FLY]           = _("àÁÊÇぱ"),
++    [MOVE_BIND]          = _("ÏÇÇºŒ"),
++    [MOVE_SLAM]          = _("ざÀぇŒÌÁ"),
++    [MOVE_VINE_WHIP]     = _("ずÀçÛ フÂá"),
++    [MOVE_STOMP]         = _(")ùß"),
+     [MOVE_DOUBLE_KICK]   = _("DOUBLE KICK"),
+-    [MOVE_MEGA_KICK]     = _("MEGA KICK"),
+-    [MOVE_JUMP_KICK]     = _("JUMP KICK"),
+-    [MOVE_ROLLING_KICK]  = _("ROLLING KICK"),
+-    [MOVE_SAND_ATTACK]   = _("SAND-ATTACK"),
+-    [MOVE_HEADBUTT]      = _("HEADBUTT"),
+-    [MOVE_HORN_ATTACK]   = _("HORN ATTACK"),
++    [MOVE_MEGA_KICK]     = _("ケÊçÓ ÙÚÓÌ"),
++    [MOVE_JUMP_KICK]     = _("ぜêú ÙÚÓÌ"),
++    [MOVE_ROLLING_KICK]  = _("óÌÁÎß ÙÚÓÌ"),
++    [MOVE_SAND_ATTACK]   = _("îÉÌ ëÉÌ"),
++    [MOVE_HEADBUTT]      = _("ÙïぇÛ"),
++    [MOVE_HORN_ATTACK]   = _("àÊú œまぱ"),
+     [MOVE_FURY_ATTACK]   = _("FURY ATTACK"),
+     [MOVE_HORN_DRILL]    = _("HORN DRILL"),
+-    [MOVE_TACKLE]        = _("TACKLE"),
+-    [MOVE_BODY_SLAM]     = _("BODY SLAM"),
+-    [MOVE_WRAP]          = _("WRAP"),
+-    [MOVE_TAKE_DOWN]     = _("TAKE DOWN"),
+-    [MOVE_THRASH]        = _("THRASH"),
+-    [MOVE_DOUBLE_EDGE]   = _("DOUBLE-EDGE"),
+-    [MOVE_TAIL_WHIP]     = _("TAIL WHIP"),
+-    [MOVE_POISON_STING]  = _("POISON STING"),
+-    [MOVE_TWINEEDLE]     = _("TWINEEDLE"),
+-    [MOVE_PIN_MISSILE]   = _("PIN MISSILE"),
+-    [MOVE_LEER]          = _("LEER"),
+-    [MOVE_BITE]          = _("BITE"),
+-    [MOVE_GROWL]         = _("GROWL"),
+-    [MOVE_ROAR]          = _("ROAR"),
+-    [MOVE_SING]          = _("SING"),
+-    [MOVE_SUPERSONIC]    = _("SUPERSONIC"),
+-    [MOVE_SONIC_BOOM]    = _("SONICBOOM"),
+-    [MOVE_DISABLE]       = _("DISABLE"),
+-    [MOVE_ACID]          = _("ACID"),
+-    [MOVE_EMBER]         = _("EMBER"),
+-    [MOVE_FLAMETHROWER]  = _("FLAMETHROWER"),
+-    [MOVE_MIST]          = _("MIST"),
+-    [MOVE_WATER_GUN]     = _("WATER GUN"),
+-    [MOVE_HYDRO_PUMP]    = _("HYDRO PUMP"),
+-    [MOVE_SURF]          = _("SURF"),
+-    [MOVE_ICE_BEAM]      = _("ICE BEAM"),
+-    [MOVE_BLIZZARD]      = _("BLIZZARD"),
+-    [MOVE_PSYBEAM]       = _("PSYBEAM"),
+-    [MOVE_BUBBLE_BEAM]   = _("BUBBLEBEAM"),
+-    [MOVE_AURORA_BEAM]   = _("AURORA BEAM"),
+-    [MOVE_HYPER_BEAM]    = _("HYPER BEAM"),
+-    [MOVE_PECK]          = _("PECK"),
+-    [MOVE_DRILL_PECK]    = _("DRILL PECK"),
+-    [MOVE_SUBMISSION]    = _("SUBMISSION"),
+-    [MOVE_LOW_KICK]      = _("LOW KICK"),
+-    [MOVE_COUNTER]       = _("COUNTER"),
+-    [MOVE_SEISMIC_TOSS]  = _("SEISMIC TOSS"),
+-    [MOVE_STRENGTH]      = _("STRENGTH"),
+-    [MOVE_ABSORB]        = _("ABSORB"),
+-    [MOVE_MEGA_DRAIN]    = _("MEGA DRAIN"),
+-    [MOVE_LEECH_SEED]    = _("LEECH SEED"),
+-    [MOVE_GROWTH]        = _("GROWTH"),
+-    [MOVE_RAZOR_LEAF]    = _("RAZOR LEAF"),
+-    [MOVE_SOLAR_BEAM]    = _("SOLARBEAM"),
+-    [MOVE_POISON_POWDER] = _("POISONPOWDER"),
+-    [MOVE_STUN_SPORE]    = _("STUN SPORE"),
+-    [MOVE_SLEEP_POWDER]  = _("SLEEP POWDER"),
+-    [MOVE_PETAL_DANCE]   = _("PETAL DANCE"),
+-    [MOVE_STRING_SHOT]   = _("STRING SHOT"),
+-    [MOVE_DRAGON_RAGE]   = _("DRAGON RAGE"),
+-    [MOVE_FIRE_SPIN]     = _("FIRE SPIN"),
+-    [MOVE_THUNDER_SHOCK] = _("THUNDERSHOCK"),
+-    [MOVE_THUNDERBOLT]   = _("THUNDERBOLT"),
+-    [MOVE_THUNDER_WAVE]  = _("THUNDER WAVE"),
+-    [MOVE_THUNDER]       = _("THUNDER"),
+-    [MOVE_ROCK_THROW]    = _("ROCK THROW"),
+-    [MOVE_EARTHQUAKE]    = _("EARTHQUAKE"),
+-    [MOVE_FISSURE]       = _("FISSURE"),
+-    [MOVE_DIG]           = _("DIG"),
+-    [MOVE_TOXIC]         = _("TOXIC"),
+-    [MOVE_CONFUSION]     = _("CONFUSION"),
+-    [MOVE_PSYCHIC]       = _("PSYCHIC"),
+-    [MOVE_HYPNOSIS]      = _("HYPNOSIS"),
+-    [MOVE_MEDITATE]      = _("MEDITATE"),
+-    [MOVE_AGILITY]       = _("AGILITY"),
+-    [MOVE_QUICK_ATTACK]  = _("QUICK ATTACK"),
+-    [MOVE_RAGE]          = _("RAGE"),
+-    [MOVE_TELEPORT]      = _("TELEPORT"),
+-    [MOVE_NIGHT_SHADE]   = _("NIGHT SHADE"),
+-    [MOVE_MIMIC]         = _("MIMIC"),
+-    [MOVE_SCREECH]       = _("SCREECH"),
+-    [MOVE_DOUBLE_TEAM]   = _("DOUBLE TEAM"),
+-    [MOVE_RECOVER]       = _("RECOVER"),
+-    [MOVE_HARDEN]        = _("HARDEN"),
+-    [MOVE_MINIMIZE]      = _("MINIMIZE"),
+-    [MOVE_SMOKESCREEN]   = _("SMOKESCREEN"),
+-    [MOVE_CONFUSE_RAY]   = _("CONFUSE RAY"),
+-    [MOVE_WITHDRAW]      = _("WITHDRAW"),
+-    [MOVE_DEFENSE_CURL]  = _("DEFENSE CURL"),
+-    [MOVE_BARRIER]       = _("BARRIER"),
+-    [MOVE_LIGHT_SCREEN]  = _("LIGHT SCREEN"),
+-    [MOVE_HAZE]          = _("HAZE"),
+-    [MOVE_REFLECT]       = _("REFLECT"),
+-    [MOVE_FOCUS_ENERGY]  = _("FOCUS ENERGY"),
+-    [MOVE_BIDE]          = _("BIDE"),
+-    [MOVE_METRONOME]     = _("METRONOME"),
+-    [MOVE_MIRROR_MOVE]   = _("MIRROR MOVE"),
+-    [MOVE_SELF_DESTRUCT] = _("SELFDESTRUCT"),
+-    [MOVE_EGG_BOMB]      = _("EGG BOMB"),
+-    [MOVE_LICK]          = _("LICK"),
+-    [MOVE_SMOG]          = _("SMOG"),
+-    [MOVE_SLUDGE]        = _("SLUDGE"),
+-    [MOVE_BONE_CLUB]     = _("BONE CLUB"),
+-    [MOVE_FIRE_BLAST]    = _("FIRE BLAST"),
+-    [MOVE_WATERFALL]     = _("WATERFALL"),
+-    [MOVE_CLAMP]         = _("CLAMP"),
+-    [MOVE_SWIFT]         = _("SWIFT"),
+-    [MOVE_SKULL_BASH]    = _("SKULL BASH"),
+-    [MOVE_SPIKE_CANNON]  = _("SPIKE CANNON"),
+-    [MOVE_CONSTRICT]     = _("CONSTRICT"),
+-    [MOVE_AMNESIA]       = _("AMNESIA"),
+-    [MOVE_KINESIS]       = _("KINESIS"),
+-    [MOVE_SOFT_BOILED]   = _("SOFTBOILED"),
+-    [MOVE_HI_JUMP_KICK]  = _("HI JUMP KICK"),
+-    [MOVE_GLARE]         = _("GLARE"),
+-    [MOVE_DREAM_EATER]   = _("DREAM EATER"),
+-    [MOVE_POISON_GAS]    = _("POISON GAS"),
+-    [MOVE_BARRAGE]       = _("BARRAGE"),
+-    [MOVE_LEECH_LIFE]    = _("LEECH LIFE"),
+-    [MOVE_LOVELY_KISS]   = _("LOVELY KISS"),
+-    [MOVE_SKY_ATTACK]    = _("SKY ATTACK"),
+-    [MOVE_TRANSFORM]     = _("TRANSFORM"),
+-    [MOVE_BUBBLE]        = _("BUBBLE"),
+-    [MOVE_DIZZY_PUNCH]   = _("DIZZY PUNCH"),
+-    [MOVE_SPORE]         = _("SPORE"),
+-    [MOVE_FLASH]         = _("FLASH"),
+-    [MOVE_PSYWAVE]       = _("PSYWAVE"),
+-    [MOVE_SPLASH]        = _("SPLASH"),
+-    [MOVE_ACID_ARMOR]    = _("ACID ARMOR"),
+-    [MOVE_CRABHAMMER]    = _("CRABHAMMER"),
+-    [MOVE_EXPLOSION]     = _("EXPLOSION"),
+-    [MOVE_FURY_SWIPES]   = _("FURY SWIPES"),
+-    [MOVE_BONEMERANG]    = _("BONEMERANG"),
+-    [MOVE_REST]          = _("REST"),
+-    [MOVE_ROCK_SLIDE]    = _("ROCK SLIDE"),
+-    [MOVE_HYPER_FANG]    = _("HYPER FANG"),
+-    [MOVE_SHARPEN]       = _("SHARPEN"),
+-    [MOVE_CONVERSION]    = _("CONVERSION"),
+-    [MOVE_TRI_ATTACK]    = _("TRI ATTACK"),
+-    [MOVE_SUPER_FANG]    = _("SUPER FANG"),
+-    [MOVE_SLASH]         = _("SLASH"),
+-    [MOVE_SUBSTITUTE]    = _("SUBSTITUTE"),
+-    [MOVE_STRUGGLE]      = _("STRUGGLE"),
++    [MOVE_TACKLE]        = _("ぺÀèÏÛÁ"),
++    [MOVE_BODY_SLAM]     = _("Ïìわ ÙこÊカ"),
++    [MOVE_WRAP]          = _("ÍÀêÒÈÁ"),
++    [MOVE_TAKE_DOWN]     = _("フÀºáゃ"),
++    [MOVE_THRASH]        = _("¿ÀÇù"),
++    [MOVE_DOUBLE_EDGE]   = _("¿ÎßぜÉ Ïô"),
++    [MOVE_TAIL_WHIP]     = _("îËどÈÁ ぜù"),
++    [MOVE_POISON_STING]  = _("ñá ÙまìÈ"),
++    [MOVE_TWINEEDLE]     = _("àÀŒÊこゃ"),
++    [MOVE_PIN_MISSILE]   = _("Êこゃ Íどú"),
++    [MOVE_LEER]          = _("%ËÏïŒ"),
++    [MOVE_BITE]          = _("Ùぼò"),
++    [MOVE_GROWL]         = _("óÊぅÉば"),
++    [MOVE_ROAR]          = _("ÊÇナば"),
++    [MOVE_SING]          = _("=Àねぐ"),
++    [MOVE_SUPERSONIC]    = _("ずÂ+ ÙわÂÉ"),
++    [MOVE_SONIC_BOOM]    = _("ëŒÂ+ べÎß"),
++    [MOVE_DISABLE]       = _("îÇぇまŒ"),
++    [MOVE_ACID]          = _("âÔô"),
++    [MOVE_EMBER]         = _("óÊÔわ"),
++    [MOVE_FLAMETHROWER]  = _("ぢ;È ÍぎÀú"),
++    [MOVE_MIST]          = _("がÀçカ"),
++    [MOVE_WATER_GUN]     = _("=ÀÉ ツÌ"),
++    [MOVE_HYDRO_PUMP]    = _("=ÀÉ ÙぁぼÉ"),
++    [MOVE_SURF]          = _("¿ÂÉ がÂÓÌ"),
++    [MOVE_ICE_BEAM]      = _("ÏÇÚわ ぺÀまげ"),
++    [MOVE_BLIZZARD]      = _("ラÚタ Ùê+Àò"),
++    [MOVE_PSYBEAM]       = _("ëìêÛ ぺÀまげ"),
++    [MOVE_BUBBLE_BEAM]   = _("ÙòÀºè ぺÀまげ"),
++    [MOVE_AURORA_BEAM]   = _("%êげ ぺÀまげ"),
++    [MOVE_HYPER_BEAM]    = _("ぽÌÀª ぺÀまげ"),
++    [MOVE_PECK]          = _("ÊºÛ"),
++    [MOVE_DRILL_PECK]    = _("がÀºヒÉ ÊºÛ"),
++    [MOVE_SUBMISSION]    = _("ぺÀぼªゃ"),
++    [MOVE_LOW_KICK]      = _("じÚêá ÙÚÓÌ"),
++    [MOVE_COUNTER]       = _("ßÀぼÉ Ï+"),
++    [MOVE_SEISMIC_TOSS]  = _("でÁぜÈば ÙÇÉÌ"),
++    [MOVE_STRENGTH]      = _("óÂú"),
++    [MOVE_ABSORB]        = _("メÀぞÒÉÁ"),
++    [MOVE_MEGA_DRAIN]    = _("ÍÁぜねÒáÁ"),
++    [MOVE_LEECH_SEED]    = _("Ù+ÀÉ óÌどこ"),
++    [MOVE_GROWTH]        = _("ÂÔÛ"),
++    [MOVE_RAZOR_LEAF]    = _("ßÀô ぽÌÎ"),
++    [MOVE_SOLAR_BEAM]    = _(")Ôげ ぺÀまげ"),
++    [MOVE_POISON_POWDER] = _("ざÀá ÌÀçぐ"),
++    [MOVE_STUN_SPORE]    = _("îぃÉ íÂこ"),
++    [MOVE_SLEEP_POWDER]  = _("ざÂねÉ ÌÀçぐ"),
++    [MOVE_PETAL_DANCE]   = _("ずぶÒこ テúÌ"),
++    [MOVE_STRING_SHOT]   = _("フÂÇª ëÉÌ"),
++    [MOVE_DRAGON_RAGE]   = _("œÇねŒ ぢぼぐ"),
++    [MOVE_FIRE_SPIN]     = _("ÌÀÛ ÙÉÁÎß"),
++    [MOVE_THUNDER_SHOCK] = _("Ùºま+"),
++    [MOVE_THUNDERBOLT]   = _("ÙºòÀ+"),
++    [MOVE_THUNDER_WAVE]  = _("ぽÊこ ÙわÂÉ"),
++    [MOVE_THUNDER]       = _("ÏòÌ"),
++    [MOVE_ROCK_THROW]    = _("Êぁ+ ëÉÌ"),
++    [MOVE_EARTHQUAKE]    = _("でÁぜÈば"),
++    [MOVE_FISSURE]       = _("ëカÌÑ %げ"),
++    [MOVE_DIG]           = _("Êêô"),
++    [MOVE_TOXIC]         = _("ñÇÔìŒ"),
++    [MOVE_CONFUSION]     = _("ニËÂぃŒ"),
++    [MOVE_PSYCHIC]       = _("ÙÇìêÛ óÂú"),
++    [MOVE_HYPNOSIS]      = _("ñËÂねŒ"),
++    [MOVE_MEDITATE]      = _("îÉオŒ"),
++    [MOVE_AGILITY]       = _("ÙúÀげÌ"),
++    [MOVE_QUICK_ATTACK]  = _("ウぱÀª ざÂぅù"),
++    [MOVE_RAGE]          = _("ぢぼぐ"),
++    [MOVE_TELEPORT]      = _("でÀºÒÛÁ"),
++    [MOVE_NIGHT_SHADE]   = _("îÇÚÈÁ îト"),
++    [MOVE_MIMIC]         = _("óÀÓÀïÉ"),
++    [MOVE_SCREECH]       = _("ÊËÊ+"),
++    [MOVE_DOUBLE_TEAM]   = _("ざÀìºÛÁ"),
++    [MOVE_RECOVER]       = _("ëèÀまŒ"),
++    [MOVE_HARDEN]        = _("ぢÚぞŒ"),
++    [MOVE_MINIMIZE]      = _("ÊぐÀぞŒ"),
++    [MOVE_SMOKESCREEN]   = _("àÀªß ÌÀÒá"),
++    [MOVE_CONFUSE_RAY]   = _("óÊÇô ぺÀまげ"),
++    [MOVE_WITHDRAW]      = _("ツÀÔûÛÁ"),
++    [MOVE_DEFENSE_CURL]  = _("ëòÀèß ÌÂûŒ"),
++    [MOVE_BARRIER]       = _("ぜわÀô"),
++    [MOVE_LIGHT_SCREEN]  = _("=Âカ ÌÀÒá"),
++    [MOVE_HAZE]          = _("ñËÏá"),
++    [MOVE_REFLECT]       = _("(ÀûまÛÁ"),
++    [MOVE_FOCUS_ENERGY]  = _("ÙúÀぱ ぜÇÓÊŒ"),
++    [MOVE_BIDE]          = _("ぢúÊŒ"),
++    [MOVE_METRONOME]     = _("でÎÏねこ"),
++    [MOVE_MIRROR_MOVE]   = _("óソÊÉ ÙÓÊô"),
++    [MOVE_SELF_DESTRUCT] = _("ëŒÁぎ ÊÇぅêŒ"),
++    [MOVE_EGG_BOMB]      = _("âÇこ ÙÚçねú"),
++    [MOVE_LICK]          = _("%まÈ"),
++    [MOVE_SMOG]          = _("ざÀá àÀªß"),
++    [MOVE_SLUDGE]        = _("îôÎ"),
++    [MOVE_BONE_CLUB]     = _("ñキò óÎÁÊù"),
++    [MOVE_FIRE_BLAST]    = _("ÌÀÛ ÌÀぅêÛÁ"),
++    [MOVE_WATERFALL]     = _("でぶげ"),
++    [MOVE_CLAMP]         = _("ぽÀçぱゃ"),
++    [MOVE_SWIFT]         = _("ÙêぱÀª ざÂぅÛ"),
++    [MOVE_SKULL_BASH]    = _("ÙÔぅÔわ ÙïぇÛ"),
++    [MOVE_SPIKE_CANNON]  = _("だÁÂげÑ びèÏÉ"),
++    [MOVE_CONSTRICT]     = _("Êぞò"),
++    [MOVE_AMNESIA]       = _("àÀÇìÛ"),
++    [MOVE_KINESIS]       = _("ëねùぎ ごËÊïŒ"),
++    [MOVE_SOFT_BOILED]   = _("ÙÇèÀげ ÙぼÇこ"),
++    [MOVE_HI_JUMP_KICK]  = _("ÙÇÈÀò ÙÚÓÌ"),
++    [MOVE_GLARE]         = _("ÙÚぃÉ óÊキÛ"),
++    [MOVE_DREAM_EATER]   = _("ざぶôÑ îÓソ"),
++    [MOVE_POISON_GAS]    = _("ざÀá ばÀぐ"),
++    [MOVE_BARRAGE]       = _("îこÁÎ"),
++    [MOVE_LEECH_LIFE]    = _("óÀÇô テÉ"),
++    [MOVE_LOVELY_KISS]   = _("ÙÉÂねÉ ÙÚçú"),
++    [MOVE_SKY_ATTACK]    = _("=ÀÔá ざÂぅù"),
++    [MOVE_TRANSFORM]     = _("でÂïŒ"),
++    [MOVE_BUBBLE]        = _("ÙòÀºè"),
++    [MOVE_DIZZY_PUNCH]   = _("ÙªÎÏÉ ÙÔûÈ"),
++    [MOVE_SPORE]         = _("íÁÂこÑ"),
++    [MOVE_FLASH]         = _("âÇÉÎ"),
++    [MOVE_PSYWAVE]       = _("ÙÇìêÛ ÙわÂÉ"),
++    [MOVE_SPLASH]        = _("ノçぁŒ"),
++    [MOVE_ACID_ARMOR]    = _("ëぼÔô ぺÌß"),
++    [MOVE_CRABHAMMER]    = _("àÂまぇÚá ÙúÊぇÉ"),
++    [MOVE_EXPLOSION]     = _("ÌÀぅêÛÁ"),
++    [MOVE_FURY_SWIPES]   = _("ÙçカÀぐ ツÎÏª"),
++    [MOVE_BONEMERANG]    = _("ÏŒÊÉ ñキò"),
++    [MOVE_REST]          = _("ずÀçá"),
++    [MOVE_ROCK_SLIDE]    = _("べÊぁ+ ÌÀÇ;ÛÁ"),
++    [MOVE_HYPER_FANG]    = _("ぽÌÀª がÀÛ"),
++    [MOVE_SHARPEN]       = _("どïげ"),
++    [MOVE_CONVERSION]    = _("îËÂïŒ"),
++    [MOVE_TRI_ATTACK]    = _("ëタぶタ ざÂぅù"),
++    [MOVE_SUPER_FANG]    = _("びぱÀú がÀÛ"),
++    [MOVE_SLASH]         = _("フÊげ"),
++    [MOVE_SUBSTITUTE]    = _("îËÏこ"),
++    [MOVE_STRUGGLE]      = _("チÀêÓ"),
+     [MOVE_SKETCH]        = _("SKETCH"),
+     [MOVE_TRIPLE_KICK]   = _("TRIPLE KICK"),
+     [MOVE_THIEF]         = _("THIEF"),
+diff --git a/src/data/text/species_names.h b/src/data/text/species_names.h
+index 25f2c9a..3301600 100644
+--- a/src/data/text/species_names.h
++++ b/src/data/text/species_names.h
+@@ -1,156 +1,156 @@
+ const u8 gSpeciesNames[][POKEMON_NAME_LENGTH + 1] = {
+     [SPECIES_NONE] = _("??????????"),
+-    [SPECIES_BULBASAUR] = _("BULBASAUR"),
+-    [SPECIES_IVYSAUR] = _("IVYSAUR"),
+-    [SPECIES_VENUSAUR] = _("VENUSAUR"),
+-    [SPECIES_CHARMANDER] = _("CHARMANDER"),
+-    [SPECIES_CHARMELEON] = _("CHARMELEON"),
+-    [SPECIES_CHARIZARD] = _("CHARIZARD"),
+-    [SPECIES_SQUIRTLE] = _("SQUIRTLE"),
+-    [SPECIES_WARTORTLE] = _("WARTORTLE"),
+-    [SPECIES_BLASTOISE] = _("BLASTOISE"),
+-    [SPECIES_CATERPIE] = _("CATERPIE"),
+-    [SPECIES_METAPOD] = _("METAPOD"),
+-    [SPECIES_BUTTERFREE] = _("BUTTERFREE"),
+-    [SPECIES_WEEDLE] = _("WEEDLE"),
+-    [SPECIES_KAKUNA] = _("KAKUNA"),
+-    [SPECIES_BEEDRILL] = _("BEEDRILL"),
+-    [SPECIES_PIDGEY] = _("PIDGEY"),
+-    [SPECIES_PIDGEOTTO] = _("PIDGEOTTO"),
+-    [SPECIES_PIDGEOT] = _("PIDGEOT"),
+-    [SPECIES_RATTATA] = _("RATTATA"),
+-    [SPECIES_RATICATE] = _("RATICATE"),
+-    [SPECIES_SPEAROW] = _("SPEAROW"),
+-    [SPECIES_FEAROW] = _("FEAROW"),
+-    [SPECIES_EKANS] = _("EKANS"),
+-    [SPECIES_ARBOK] = _("ARBOK"),
+-    [SPECIES_PIKACHU] = _("PIKACHU"),
+-    [SPECIES_RAICHU] = _("RAICHU"),
+-    [SPECIES_SANDSHREW] = _("SANDSHREW"),
+-    [SPECIES_SANDSLASH] = _("SANDSLASH"),
+-    [SPECIES_NIDORAN_F] = _("NIDORAN♀"),
+-    [SPECIES_NIDORINA] = _("NIDORINA"),
+-    [SPECIES_NIDOQUEEN] = _("NIDOQUEEN"),
+-    [SPECIES_NIDORAN_M] = _("NIDORAN♂"),
+-    [SPECIES_NIDORINO] = _("NIDORINO"),
+-    [SPECIES_NIDOKING] = _("NIDOKING"),
+-    [SPECIES_CLEFAIRY] = _("CLEFAIRY"),
+-    [SPECIES_CLEFABLE] = _("CLEFABLE"),
+-    [SPECIES_VULPIX] = _("VULPIX"),
+-    [SPECIES_NINETALES] = _("NINETALES"),
+-    [SPECIES_JIGGLYPUFF] = _("JIGGLYPUFF"),
+-    [SPECIES_WIGGLYTUFF] = _("WIGGLYTUFF"),
+-    [SPECIES_ZUBAT] = _("ZUBAT"),
+-    [SPECIES_GOLBAT] = _("GOLBAT"),
+-    [SPECIES_ODDISH] = _("ODDISH"),
+-    [SPECIES_GLOOM] = _("GLOOM"),
+-    [SPECIES_VILEPLUME] = _("VILEPLUME"),
+-    [SPECIES_PARAS] = _("PARAS"),
+-    [SPECIES_PARASECT] = _("PARASECT"),
+-    [SPECIES_VENONAT] = _("VENONAT"),
+-    [SPECIES_VENOMOTH] = _("VENOMOTH"),
+-    [SPECIES_DIGLETT] = _("DIGLETT"),
+-    [SPECIES_DUGTRIO] = _("DUGTRIO"),
+-    [SPECIES_MEOWTH] = _("MEOWTH"),
+-    [SPECIES_PERSIAN] = _("PERSIAN"),
+-    [SPECIES_PSYDUCK] = _("PSYDUCK"),
+-    [SPECIES_GOLDUCK] = _("GOLDUCK"),
+-    [SPECIES_MANKEY] = _("MANKEY"),
+-    [SPECIES_PRIMEAPE] = _("PRIMEAPE"),
+-    [SPECIES_GROWLITHE] = _("GROWLITHE"),
+-    [SPECIES_ARCANINE] = _("ARCANINE"),
+-    [SPECIES_POLIWAG] = _("POLIWAG"),
+-    [SPECIES_POLIWHIRL] = _("POLIWHIRL"),
+-    [SPECIES_POLIWRATH] = _("POLIWRATH"),
+-    [SPECIES_ABRA] = _("ABRA"),
+-    [SPECIES_KADABRA] = _("KADABRA"),
+-    [SPECIES_ALAKAZAM] = _("ALAKAZAM"),
+-    [SPECIES_MACHOP] = _("MACHOP"),
+-    [SPECIES_MACHOKE] = _("MACHOKE"),
+-    [SPECIES_MACHAMP] = _("MACHAMP"),
+-    [SPECIES_BELLSPROUT] = _("BELLSPROUT"),
+-    [SPECIES_WEEPINBELL] = _("WEEPINBELL"),
+-    [SPECIES_VICTREEBEL] = _("VICTREEBEL"),
+-    [SPECIES_TENTACOOL] = _("TENTACOOL"),
+-    [SPECIES_TENTACRUEL] = _("TENTACRUEL"),
+-    [SPECIES_GEODUDE] = _("GEODUDE"),
+-    [SPECIES_GRAVELER] = _("GRAVELER"),
+-    [SPECIES_GOLEM] = _("GOLEM"),
+-    [SPECIES_PONYTA] = _("PONYTA"),
+-    [SPECIES_RAPIDASH] = _("RAPIDASH"),
+-    [SPECIES_SLOWPOKE] = _("SLOWPOKE"),
+-    [SPECIES_SLOWBRO] = _("SLOWBRO"),
+-    [SPECIES_MAGNEMITE] = _("MAGNEMITE"),
+-    [SPECIES_MAGNETON] = _("MAGNETON"),
+-    [SPECIES_FARFETCHD] = _("FARFETCH'D"),
+-    [SPECIES_DODUO] = _("DODUO"),
+-    [SPECIES_DODRIO] = _("DODRIO"),
+-    [SPECIES_SEEL] = _("SEEL"),
+-    [SPECIES_DEWGONG] = _("DEWGONG"),
+-    [SPECIES_GRIMER] = _("GRIMER"),
+-    [SPECIES_MUK] = _("MUK"),
+-    [SPECIES_SHELLDER] = _("SHELLDER"),
+-    [SPECIES_CLOYSTER] = _("CLOYSTER"),
+-    [SPECIES_GASTLY] = _("GASTLY"),
+-    [SPECIES_HAUNTER] = _("HAUNTER"),
+-    [SPECIES_GENGAR] = _("GENGAR"),
+-    [SPECIES_ONIX] = _("ONIX"),
+-    [SPECIES_DROWZEE] = _("DROWZEE"),
+-    [SPECIES_HYPNO] = _("HYPNO"),
+-    [SPECIES_KRABBY] = _("KRABBY"),
+-    [SPECIES_KINGLER] = _("KINGLER"),
+-    [SPECIES_VOLTORB] = _("VOLTORB"),
+-    [SPECIES_ELECTRODE] = _("ELECTRODE"),
+-    [SPECIES_EXEGGCUTE] = _("EXEGGCUTE"),
+-    [SPECIES_EXEGGUTOR] = _("EXEGGUTOR"),
+-    [SPECIES_CUBONE] = _("CUBONE"),
+-    [SPECIES_MAROWAK] = _("MAROWAK"),
+-    [SPECIES_HITMONLEE] = _("HITMONLEE"),
+-    [SPECIES_HITMONCHAN] = _("HITMONCHAN"),
+-    [SPECIES_LICKITUNG] = _("LICKITUNG"),
+-    [SPECIES_KOFFING] = _("KOFFING"),
+-    [SPECIES_WEEZING] = _("WEEZING"),
+-    [SPECIES_RHYHORN] = _("RHYHORN"),
+-    [SPECIES_RHYDON] = _("RHYDON"),
+-    [SPECIES_CHANSEY] = _("CHANSEY"),
+-    [SPECIES_TANGELA] = _("TANGELA"),
+-    [SPECIES_KANGASKHAN] = _("KANGASKHAN"),
+-    [SPECIES_HORSEA] = _("HORSEA"),
+-    [SPECIES_SEADRA] = _("SEADRA"),
+-    [SPECIES_GOLDEEN] = _("GOLDEEN"),
+-    [SPECIES_SEAKING] = _("SEAKING"),
+-    [SPECIES_STARYU] = _("STARYU"),
+-    [SPECIES_STARMIE] = _("STARMIE"),
+-    [SPECIES_MR_MIME] = _("MR. MIME"),
+-    [SPECIES_SCYTHER] = _("SCYTHER"),
+-    [SPECIES_JYNX] = _("JYNX"),
+-    [SPECIES_ELECTABUZZ] = _("ELECTABUZZ"),
+-    [SPECIES_MAGMAR] = _("MAGMAR"),
+-    [SPECIES_PINSIR] = _("PINSIR"),
+-    [SPECIES_TAUROS] = _("TAUROS"),
+-    [SPECIES_MAGIKARP] = _("MAGIKARP"),
+-    [SPECIES_GYARADOS] = _("GYARADOS"),
+-    [SPECIES_LAPRAS] = _("LAPRAS"),
+-    [SPECIES_DITTO] = _("DITTO"),
+-    [SPECIES_EEVEE] = _("EEVEE"),
+-    [SPECIES_VAPOREON] = _("VAPOREON"),
+-    [SPECIES_JOLTEON] = _("JOLTEON"),
+-    [SPECIES_FLAREON] = _("FLAREON"),
+-    [SPECIES_PORYGON] = _("PORYGON"),
+-    [SPECIES_OMANYTE] = _("OMANYTE"),
+-    [SPECIES_OMASTAR] = _("OMASTAR"),
+-    [SPECIES_KABUTO] = _("KABUTO"),
+-    [SPECIES_KABUTOPS] = _("KABUTOPS"),
+-    [SPECIES_AERODACTYL] = _("AERODACTYL"),
+-    [SPECIES_SNORLAX] = _("SNORLAX"),
+-    [SPECIES_ARTICUNO] = _("ARTICUNO"),
+-    [SPECIES_ZAPDOS] = _("ZAPDOS"),
+-    [SPECIES_MOLTRES] = _("MOLTRES"),
+-    [SPECIES_DRATINI] = _("DRATINI"),
+-    [SPECIES_DRAGONAIR] = _("DRAGONAIR"),
+-    [SPECIES_DRAGONITE] = _("DRAGONITE"),
+-    [SPECIES_MEWTWO] = _("MEWTWO"),
+-    [SPECIES_MEW] = _("MEW"),
++    [SPECIES_BULBASAUR] = _("ÌÂ+ÀçÈÂこ"),
++    [SPECIES_IVYSAUR] = _("ÌÂぞÇêËゃ"),
++    [SPECIES_VENUSAUR] = _("ÌÂ+ÂねÇè"),
++    [SPECIES_CHARMANDER] = _("ÌÏÛÀÉÌÀぃŒ"),
++    [SPECIES_CHARMELEON] = _("àÂÇÚÇÉÌÀぃŒ"),
++    [SPECIES_CHARIZARD] = _("ßÌÁぜËÌÀぃŒ"),
++    [SPECIES_SQUIRTLE] = _("îŒÊËÂûá"),
++    [SPECIES_WARTORTLE] = _("îŒÌÂŒÌÁÎ"),
++    [SPECIES_BLASTOISE] = _("ぜËÂÒáぶこ"),
++    [SPECIES_CATERPIE] = _("ëこÊŒÀÓ"),
++    [SPECIES_METAPOD] = _("ßÂこÀÒÇÉ"),
++    [SPECIES_BUTTERFREE] = _("べÊèÊŒÀこ"),
++    [SPECIES_WEEDLE] = _("でÏËÎ"),
++    [SPECIES_KAKUNA] = _("ÀÛÂÓÀÓ"),
++    [SPECIES_BEEDRILL] = _("îËÌÏÇこ"),
++    [SPECIES_PIDGEY] = _("ëわÏÇこ"),
++    [SPECIES_PIDGEOTTO] = _("ÂŒÂÇわÏÇこ"),
++    [SPECIES_PIDGEOT] = _("ずÂÇわÏÇこ"),
++    [SPECIES_RATTATA] = _("ÀŒÀŒÁÌ"),
++    [SPECIES_RATICATE] = _("ぷÇûÇŒÁÌ"),
++    [SPECIES_SPEAROW] = _("ÎÊÇçá"),
++    [SPECIES_FEAROW] = _("ÎÊÇè"),
++    [SPECIES_EKANS] = _("ぜÛÀûËゃ"),
++    [SPECIES_ARBOK] = _("だÂこÌÑ"),
++    [SPECIES_PIKACHU] = _("ÂぃŒÀûÇこ"),
++    [SPECIES_RAICHU] = _("ÂぃÒËÁÌ"),
++    [SPECIES_SANDSHREW] = _("ÎÊげÏÛÀá"),
++    [SPECIES_SANDSLASH] = _("ツぶáÏÛÀá"),
++    [SPECIES_NIDORAN_F] = _("♀àÁÌÎÏÇÛ"),
++    [SPECIES_NIDORINA] = _("ÀねËÌÎÏÇÛ"),
++    [SPECIES_NIDOQUEEN] = _("œËÂÓÎÏÇÛ"),
++    [SPECIES_NIDORAN_M] = _("♂àÁÌÎÏÇÛ"),
++    [SPECIES_NIDORINO] = _("ÂねËÌÎÏÇÛ"),
++    [SPECIES_NIDOKING] = _("ヌねÇÓÎÏÇÛ"),
++    [SPECIES_CLEFAIRY] = _("べÊÇêÇÚÓ"),
++    [SPECIES_CLEFABLE] = _("îこÀêÇÚÓ"),
++    [SPECIES_VULPIX] = _(")ûÇçÈÂè"),
++    [SPECIES_NINETALES] = _("ぜÚÇÒねËÀÛ"),
++    [SPECIES_JIGGLYPUFF] = _("ÍÀçÇÚづÇわ"),
++    [SPECIES_WIGGLYTUFF] = _("ÍÂÒÇÚづËÎ"),
++    [SPECIES_ZUBAT] = _("ずÀこÎば"),
++    [SPECIES_GOLBAT] = _("ずÀçÈÂぐ"),
++    [SPECIES_ODDISH] = _("ニËßÎÑ"),
++    [SPECIES_GLOOM] = _("ざÂÚぐ"),
++    [SPECIES_VILEPLUME] = _("ざÂÇÚÇè"),
++    [SPECIES_PARAS] = _("(ÁÌÀこ"),
++    [SPECIES_PARASECT] = _("ぷûáÁÌÀこ"),
++    [SPECIES_VENONAT] = _("ずÀÛÂねÇè"),
++    [SPECIES_VENOMOTH] = _("ハÂÉÂねÇè"),
++    [SPECIES_DIGLETT] = _("ぷÇÚづËß"),
++    [SPECIES_DUGTRIO] = _("ÂËÊÒぐÎß"),
++    [SPECIES_MEOWTH] = _("ハÂÇÉ"),
++    [SPECIES_PERSIAN] = _("àÀげÊÇこ"),
++    [SPECIES_PSYDUCK] = _("だÏËÀìこ"),
++    [SPECIES_GOLDUCK] = _("だÏÈÂぐ"),
++    [SPECIES_MANKEY] = _("ëûÛÀÉ"),
++    [SPECIES_PRIMEAPE] = _("ぢÇÔËÁÊこ"),
++    [SPECIES_GROWLITHE] = _("ホËぴÎÁÊぐ"),
++    [SPECIES_ARCANINE] = _("œÇÛÀÓÌÑ"),
++    [SPECIES_POLIWAG] = _("íÁÂÇÈÂこ"),
++    [SPECIES_POLIWHIRL] = _("でÊËÂÇÈÂこ"),
++    [SPECIES_POLIWRATH] = _("ハÁÌÂÇÈÂこ"),
++    [SPECIES_ABRA] = _("ÁÊこÑ"),
++    [SPECIES_KADABRA] = _("ÁÊこÁßÀÓ"),
++    [SPECIES_ALAKAZAM] = _("ざÁばÀÓぴÑ"),
++    [SPECIES_MACHOP] = _("がÂぃŒÀÉ"),
++    [SPECIES_MACHOKE] = _("だÂぃŒÀÉ"),
++    [SPECIES_MACHAMP] = _("ぢÉÀぃŒÀÉ"),
++    [SPECIES_BELLSPROUT] = _("ずÎÁÊçìÚÇこ"),
++    [SPECIES_WEEPINBELL] = _("îÇçねÇçËÎ"),
++    [SPECIES_VICTREEBEL] = _("îçËÊÒûÇè"),
++    [SPECIES_TENTACOOL] = _("でÂÓÀÒねŒ"),
++    [SPECIES_TENTACRUEL] = _("でÎÊÓÀÒねŒ"),
++    [SPECIES_GEODUDE] = _("ßÎßÂÇわ"),
++    [SPECIES_GRAVELER] = _("ÊÚÇèÁÊぐ"),
++    [SPECIES_GOLEM] = _("ñÈÂぐ"),
++    [SPECIES_PONYTA] = _("ÀÒÇÛÂこ"),
++    [SPECIES_RAPIDASH] = _("ツÁÏÇこÁÌ"),
++    [SPECIES_SLOWPOKE] = _("だÂこÂÚá"),
++    [SPECIES_SLOWBRO] = _("ÎÊこÂÚá"),
++    [SPECIES_MAGNEMITE] = _("ぷËÀÔねぐÀÉ"),
++    [SPECIES_MAGNETON] = _("àÂÒÇねぐÀÉ"),
++    [SPECIES_FARFETCHD] = _("ÏぃÒÇèÌÀè"),
++    [SPECIES_DODUO] = _("ÎßÎß"),
++    [SPECIES_DODRIO] = _("ÂËÌßÎß"),
++    [SPECIES_SEEL] = _("îÇá"),
++    [SPECIES_DEWGONG] = _("ヌÛÂぐÂËß"),
++    [SPECIES_GRIMER] = _("ÊÔËÁÊぐ"),
++    [SPECIES_MUK] = _("だÂÉ"),
++    [SPECIES_SHELLDER] = _("ÌÏÚÇげ"),
++    [SPECIES_CLOYSTER] = _("ÊÒìËÂÚÓ"),
++    [SPECIES_GASTLY] = _("ëÚÒáÀぐ"),
++    [SPECIES_HAUNTER] = _("ÊÒÛÂù"),
++    [SPECIES_GENGAR] = _("ÌÀづねÇぐ"),
++    [SPECIES_ONIX] = _(")ûÛÎÑ"),
++    [SPECIES_DROWZEE] = _("べばÎÌß"),
++    [SPECIES_HYPNO] = _("ÂねçÇù"),
++    [SPECIES_KRABBY] = _("ëこÁÊÓ"),
++    [SPECIES_KINGLER] = _("ÊÚづねÇÓ"),
++    [SPECIES_VOLTORB] = _("がÌÂÒÈÂè"),
++    [SPECIES_ELECTRODE] = _("ßÎÊÒûÈゃ"),
++    [SPECIES_EXEGGCUTE] = _("ずÂÇûづËぜÓゃ"),
++    [SPECIES_EXEGGUTOR] = _("ÌÂŒÂÇづËぜÓゃ"),
++    [SPECIES_CUBONE] = _("àÂこÂÇÓ"),
++    [SPECIES_MAROWAK] = _("だÁÎÎÌÀÉ"),
++    [SPECIES_HITMONLEE] = _("ëÚÛÂÔÒÇù"),
++    [SPECIES_HITMONCHAN] = _("àÀぃÛÂÔÒÇù"),
++    [SPECIES_LICKITUNG] = _("ヌÛÂÒÇûÇÈ"),
++    [SPECIES_KOFFING] = _("ヌねÇèÂÓ"),
++    [SPECIES_WEEZING] = _("ヌねËぜËÎ"),
++    [SPECIES_RHYHORN] = _("àÌÂ;ËÁÌ"),
++    [SPECIES_RHYDON] = _("àÎÏËÁÌ"),
++    [SPECIES_CHANSEY] = _("ëìÛÀぃŒ"),
++    [SPECIES_TANGELA] = _("ぶÇぅÛÀŒ"),
++    [SPECIES_KANGASKHAN] = _("àÀぁáÀづÛÀÓ"),
++    [SPECIES_HORSEA] = _("ëáÌÂù"),
++    [SPECIES_SEADRA] = _("ÁÌÏÇá"),
++    [SPECIES_GOLDEEN] = _("œËÏÈÂぐ"),
++    [SPECIES_SEAKING] = _("ヌねÇûÇá"),
++    [SPECIES_STARYU] = _("ÂËÌÀÒá"),
++    [SPECIES_STARMIE] = _("ëÉÌÀÒá"),
++    [SPECIES_MR_MIME] = _("ñËÀÉ ÊÒìÉ"),
++    [SPECIES_SCYTHER] = _("ÌどËÀá"),
++    [SPECIES_JYNX] = _(")ûねÇわ"),
++    [SPECIES_ELECTABUZZ] = _("ぜこÀÒûÈゃ"),
++    [SPECIES_MAGMAR] = _("ÌÀÔぐÀÉ"),
++    [SPECIES_PINSIR] = _("ÊÇìねÇこ"),
++    [SPECIES_TAUROS] = _("(ÎÌÂŒ"),
++    [SPECIES_MAGIKARP] = _("がÌÀûÇわÀÉ"),
++    [SPECIES_GYARADOS] = _("(ÎßÁÌÀÇぐ"),
++    [SPECIES_LAPRAS] = _("(ÁÊこぴ"),
++    [SPECIES_DITTO] = _("ÂÒËß"),
++    [SPECIES_EEVEE] = _("ëêËゃ"),
++    [SPECIES_VAPOREON] = _("àÂËÌÂこÀè"),
++    [SPECIES_JOLTEON] = _("àÂÇÒÈÂわ"),
++    [SPECIES_FLAREON] = _("àÂËÊÇÚè"),
++    [SPECIES_PORYGON] = _("àÂづËÌÂこ"),
++    [SPECIES_OMANYTE] = _("ぷËÀÛÀÉÎÑ"),
++    [SPECIES_OMASTAR] = _("ÌÀÒáÀÉÎÑ"),
++    [SPECIES_KABUTO] = _("ÂŒÂこÀÓ"),
++    [SPECIES_KABUTOPS] = _(")こÂŒÂこÀÓ"),
++    [SPECIES_AERODACTYL] = _("îÒÓÁßÎÊËÑ"),
++    [SPECIES_SNORLAX] = _(")ÓぴÌÂねá"),
++    [SPECIES_ARTICUNO] = _("ÂÛÂûÇŒÌÑ"),
++    [SPECIES_ZAPDOS] = _("(ÎÏこÁば"),
++    [SPECIES_MOLTRES] = _(")ËÊÒÈÂÉ"),
++    [SPECIES_DRATINI] = _("ëねÇŒÁÌß"),
++    [SPECIES_DRAGONAIR] = _("ÊÇÛÂぐÁÌß"),
++    [SPECIES_DRAGONITE] = _("ぷËÀÛÂぐÁÌß"),
++    [SPECIES_MEWTWO] = _("ÂŒÂÇÉ"),
++    [SPECIES_MEW] = _("ÂÇÉ"),
+     [SPECIES_CHIKORITA] = _("CHIKORITA"),
+     [SPECIES_BAYLEEF] = _("BAYLEEF"),
+     [SPECIES_MEGANIUM] = _("MEGANIUM"),
 diff --git a/src/string_util.c b/src/string_util.c
 index 5c26d15..439c4ff 100644
 --- a/src/string_util.c
@@ -1215,7 +2046,7 @@ index 5c26d15..439c4ff 100644
  
      u8 length = 0;
 diff --git a/src/strings.c b/src/strings.c
-index c099555..ceccec5 100644
+index c099555..1e8a4d3 100644
 --- a/src/strings.c
 +++ b/src/strings.c
 @@ -15,25 +15,25 @@ const u8 gExpandedPlaceholder_Groudon[] = _("GROUDON");
@@ -1225,13 +2056,13 @@ index c099555..ceccec5 100644
 -const u8 gText_MenuPokemon[] = _("POKéMON");
 -const u8 gText_NewGame[] = _("NEW GAME");
 -const u8 gText_Continue[] = _("CONTINUE");
-+const u8 gText_MenuPokemon[] = _("{RTL}ÓÇÒÈËÇà");
-+const u8 gText_NewGame[] = _("{RTL}ÂねêÔ がÌこÌç");
-+const u8 gText_Continue[] = _("{RTL}ÉÏÁÓねÔ");
++const u8 gText_MenuPokemon[] = _("{RTL}こÂÓÇÔÂà");
++const u8 gText_NewGame[] = _("{RTL}ÈまçÙ わÏËÏó");
++const u8 gText_Continue[] = _("{RTL}ÉÒÀこまÙ");
  const u8 gTextJP_Options[] = _("せっていを かえる");
  const u8 gUnusedText_MysteryGift[] = _("MYSTERY GIFT");
 -const u8 gText_MysteryGift[] = _("MYSTERY GIFT");
-+const u8 gText_MysteryGift[] = _("{RTL}ªÌこÔ ケÁÉキÔ");
++const u8 gText_MysteryGift[] = _("{RTL}ùÏËÙ ぐÀÉぼÙ");
  const u8 gText_WirelessNotConnected[] = _("The Wireless Adapter is not\nconnected.");
  const u8 gText_MysteryGiftCantUse[] = _("MYSTERY GIFT can't be used while\nthe Wireless Adapter is attached.");
  const u8 gText_UpdatingSaveExternalData[] = _("がいぶデ-タにより レポ-トを こうしんします\nしばらく おまちください");
@@ -1240,14 +2071,14 @@ index c099555..ceccec5 100644
  const u8 gText_FailedUpdateSwapBackup[] = _("レポ-トの こうしんは\nしっぱいしました!\pバックアップカ-トリッジを\nこうかんしてください!\pくわしくは\nにんてんどう サ-ビスセンタ- まで\lおといあわせ ください");
 -const u8 gText_SaveFileCorrupted[] = _("The save file is corrupted.\pThe previous save file will be\nloaded.");
 -const u8 gText_SaveFileHasBeenDeleted[] = _("The save file has been\ndeleted...");
-+const u8 gText_SaveFileCorrupted[] = _("{RTL}ÉÚで ÀÂáë¿ ÙÁÂで.\pèÈÏœ ÙáËÈì ÉÚで ÀÂáë¿\nÀÂßÁÓ(.");
-+const u8 gText_SaveFileHasBeenDeleted[] = _("{RTL}Ùœ まぢセ ÉÚで\nÀÂáë¿…");
++const u8 gText_SaveFileCorrupted[] = _("{RTL}ÉÚウ ÁÈïêセ ŒÀÈウ.\páÇÒñ ŒïÔÇî ÉÚウ ÁÈïêセ\nÁÈìÀこ%.");
++const u8 gText_SaveFileHasBeenDeleted[] = _("{RTL}Œñ ôどÍ ÉÚウ\nÁÈïêセ…");
  const u8 gText_1MSubCircuitBoardNotInstalled[] = _("The 1M sub-circuit board is\nnot installed.");
  const u8 gTextJP_InternalBatteryHasRunDry[] = _("でんちぎれの ために\nとけいが うごかなくなりました\pとけいに かんけいする できごとは おきませんが\nゲ-ムを つづけて あそぶことは できます");
  const u8 gText_PlayerUnused[] = _("しゅじんこう");
  const u8 gText_PokedexUnused[] = _("ポケモンずかん");
 -const u8 gText_MainMenuTime[] = _("TIME");
-+const u8 gText_MainMenuTime[] = _("ぴぅÇÂÀ");
++const u8 gText_MainMenuTime[] = _("ぷúÂÈÁ");
  const u8 gText_BadgesUnused[] = _("もっているバッジ");
  const u8 gText_AButton[] = _("Aボタン");
  const u8 gText_BButton[] = _("Bボタン");
@@ -1259,17 +2090,17 @@ index c099555..ceccec5 100644
 -const u8 gOtherText_Toss[] = _("TOSS");
 -const u8 gOtherText_Register[] = _("REGISTER");
 -const u8 gOtherText_Give[] = _("GIVE");
-+const u8 gOtherText_Use[] = _("{RTL}ÀèÏûÌÀだ");
-+const u8 gOtherText_Toss[] = _("{RTL}ÛÉú");
-+const u8 gOtherText_Register[] = _("{RTL}ÙßぎÈì");
-+const u8 gOtherText_Give[] = _("{RTL}ぉïぃÁñ");
++const u8 gOtherText_Use[] = _("{RTL}ÁáÒぁÏÁざ");
++const u8 gOtherText_Toss[] = _("{RTL}ÌÉë");
++const u8 gOtherText_Register[] = _("{RTL}ŒìぅÇî");
++const u8 gOtherText_Give[] = _("{RTL}ゃòぇÀ=");
  const u8 gMenuText_Confirm[] = _("けってい");
 -const u8 gOtherText_Walk[] = _("WALK");
 -const u8 gFameCheckerText_Cancel[] = _("CANCEL");
 -const u8 gOtherText_Exit[] = _("EXIT");
-+const u8 gOtherText_Walk[] = _("{RTL}É=ú");
-+const u8 gFameCheckerText_Cancel[] = _("{RTL}ぉÂぞÁñ");
-+const u8 gOtherText_Exit[] = _("{RTL}わÊÎぽ");
++const u8 gOtherText_Walk[] = _("{RTL}Éぃë");
++const u8 gFameCheckerText_Cancel[] = _("{RTL}ゃÈづÀ=");
++const u8 gOtherText_Exit[] = _("{RTL}ªÊÎ¿");
  const u8 gString_Dummy[] = _("");
  const u8 gText_Cancel7[] = _("キャンセル");
 -const u8 gText_Item[] = _("ITEM");
@@ -1277,11 +2108,11 @@ index c099555..ceccec5 100644
 -const u8 gText_Take[] = _("TAKE");
 -const u8 gText_Store[] = _("STORE");
 -const u8 gOtherText_Check[] = _("CHECK");
-+const u8 gText_Item[] = _("{RTL}ŒÑÀç");
-+const u8 gText_Mail[] = _("{RTL}ÓÊこÌ");
-+const u8 gText_Take[] = _("{RTL}Œわぢ");
-+const u8 gText_Store[] = _("{RTL}Ùûっこî");
-+const u8 gOtherText_Check[] = _("{RTL}òáÍ");
++const u8 gText_Item[] = _("{RTL}ÑßÁó");
++const u8 gText_Mail[] = _("{RTL}こÊËÏ");
++const u8 gText_Take[] = _("{RTL}Ñªど");
++const u8 gText_Store[] = _("{RTL}ŒぁぜËœ");
++const u8 gOtherText_Check[] = _("{RTL}èïテ");
  const u8 gText_PokeSum_Item_None[] = _("NONE");
  const u8 gOtherText_Open[] = _("OPEN");
  const u8 gOtherText_Deselect[] = _("DESELECT");
@@ -1292,17 +2123,17 @@ index c099555..ceccec5 100644
 -const u8 gText_WhatWouldYouLikeToDo[] = _("What would you like to do?");
 -const u8 gText_MenuPokedex[] = _("POKéDEX");
 -const u8 gText_MenuBag[] = _("BAG");
-+const u8 gText_WhatWouldYouLikeToDo[] = _("{RTL}ÉÁ+À ÙÊこÌ Œà Ùëねìづ");
-+const u8 gText_MenuPokedex[] = _("{RTL}ÀÂëぁÊツ");
-+const u8 gText_MenuBag[] = _("{RTL}ÀÂáºÈêÔ");
++const u8 gText_WhatWouldYouLikeToDo[] = _("{RTL}ÉÀぎÁ ŒÊËÏ Ñà Œêまîっ");
++const u8 gText_MenuPokedex[] = _("{RTL}ÁÈê;Ê(");
++const u8 gText_MenuBag[] = _("{RTL}ÁÈïºÇçÙ");
  const u8 gText_MenuPokenav[] = _("ポケナビ");
  const u8 gText_MenuPlayer[] = _("{PLAYER}");
 -const u8 gText_MenuSave[] = _("SAVE");
 -const u8 gText_MenuOption[] = _("OPTION");
 -const u8 gText_MenuExit[] = _("EXIT");
-+const u8 gText_MenuSave[] = _("{RTL}まë¿");
-+const u8 gText_MenuOption[] = _("{RTL}ÀÂûÈÁÛÀぜ");
-+const u8 gText_MenuExit[] = _("{RTL}わÊÎぽ");
++const u8 gText_MenuSave[] = _("{RTL}ôêセ");
++const u8 gText_MenuOption[] = _("{RTL}ÁÈぁÇÀÌÁず");
++const u8 gText_MenuExit[] = _("{RTL}ªÊÎ¿");
  const u8 gText_MenuRetire[] = _("RETIRE");
  const u8 gText_MenuSafariStats[] = _("{STR_VAR_1}/{STR_VAR_2}\nBALLS  {STR_VAR_3}");
  const u8 gText_TimesStrVar1[] = _("×{STR_VAR_1}");
@@ -1313,11 +2144,11 @@ index c099555..ceccec5 100644
 -const u8 gText_KeyItems2[] = _("KEY ITEMS");
 -const u8 gText_DepositItem[] = _("DEPOSIT ITEM");
 -const u8 gText_CloseBag[] = _("CLOSE BAG");
-+const u8 gText_Items2[] = _("{RTL}ŒÑÎÀぜ");
-+const u8 gText_PokeBalls2[] = _("{RTL}ÒÊÀぜ ÓÇÒÈù");
-+const u8 gText_KeyItems2[] = _("{RTL}ŒÑÎÀぜ ÉぁËÔ");
-+const u8 gText_DepositItem[] = _("{RTL}ぉこÌÀ% ŒÑÀç");
-+const u8 gText_CloseBag[] = _("{RTL}ぉケばぼ ÀÂáºÈêÔ");
++const u8 gText_Items2[] = _("{RTL}ÑßÎÁず");
++const u8 gText_PokeBalls2[] = _("{RTL}ÓÊÁず こÂÓÇぉ");
++const u8 gText_KeyItems2[] = _("{RTL}ÑßÎÁず É;ÔÙ");
++const u8 gText_DepositItem[] = _("{RTL}ゃËÏÁぺ ÑßÁó");
++const u8 gText_CloseBag[] = _("{RTL}ゃぐぶぽ ÁÈïºÇçÙ");
  const u8 gText_Var1IsSelected[] = _("{STR_VAR_1} is\nselected.");
  const u8 gText_CantWriteMailHere[] = _("You can't write\nMAIL here.");
  const u8 gText_ThereIsNoPokemon[] = _("There is no\nPOKéMON.");
@@ -1325,7 +2156,7 @@ index c099555..ceccec5 100644
  const u8 gText_ItemCantBeHeld[] = _("The {STR_VAR_1} can't be held.");
  const u8 gText_TheStrVar1CantBeHeldHere[] = _("The {STR_VAR_1} can't be held\nhere.");
 -const u8 gText_DepositHowManyStrVars1[] = _("Deposit how many\n{STR_VAR_1}(s)?");
-+const u8 gText_DepositHowManyStrVars1[] = _("îÉ %ÑÇÙ œÒ\nづ{STR_VAR_1}");
++const u8 gText_DepositHowManyStrVars1[] = _("œÉ ぺßÂŒ ñÓ\nっ{STR_VAR_1}");
  const u8 gText_DepositedStrVar2StrVar1s[] = _("Deposited {STR_VAR_2}\n{STR_VAR_1}(s).");
  const u8 gText_NoRoomToStoreItems[] = _("There's no room to\nstore items.");
  const u8 gText_TossOutHowManyStrVar1s[] = _("Toss out how many\n{STR_VAR_1}(s)?");
@@ -1337,19 +2168,19 @@ index c099555..ceccec5 100644
 -const u8 gText_SendOut[] = _("SEND OUT");
 -const u8 gText_Switch2[] = _("SWITCH");
 -const u8 gText_Summary5[] = _("SUMMARY");
-+const u8 gText_Shift[] = _("{RTL}ÙêÌこì");
-+const u8 gText_SendOut[] = _("{RTL}ぉÛèÁぱ");
-+const u8 gText_Switch2[] = _("{RTL}ÙêÌこì");
-+const u8 gText_Summary5[] = _("{RTL}ÉÚûÍ");
++const u8 gText_Shift[] = _("{RTL}ŒçÏËî");
++const u8 gText_SendOut[] = _("{RTL}ゃÌáÀで");
++const u8 gText_Switch2[] = _("{RTL}ŒçÏËî");
++const u8 gText_Summary5[] = _("{RTL}ÉÚぁテ");
  const u8 gText_Moves[] = _("つかえるわざ");
 -const u8 gText_Enter[] = _("ENTER");
 -const u8 gText_NoEntry[] = _("NO ENTRY");
 -const u8 gText_Take2[] = _("TAKE");
 -const u8 gText_Read2[] = _("READ");
-+const u8 gText_Enter[] = _("{RTL}ÑわÇぱ");
-+const u8 gText_NoEntry[] = _("{RTL}ÉËóÇ% ÀÂÌわÇぱ");
-+const u8 gText_Take2[] = _("{RTL}Œわぢ");
-+const u8 gText_Read2[] = _("{RTL}ぅÊÀñç");
++const u8 gText_Enter[] = _("{RTL}ßªÂで");
++const u8 gText_NoEntry[] = _("{RTL}ÉÔねÂぺ ÁÈÏªÂで");
++const u8 gText_Take2[] = _("{RTL}Ñªど");
++const u8 gText_Read2[] = _("{RTL}úÊÁ=ó");
  const u8 gText_Trade4[] = _("TRADE");
  const u8 gText_ItemEffect_HP[] = _("HP");
  const u8 gText_ItemEffect_SpAtk[] = _("SP. ATK");
@@ -1358,7 +2189,7 @@ index c099555..ceccec5 100644
  const u8 gText_SendMailToPC[] = _("Send the removed MAIL to\nyour PC?");
  const u8 gText_MailSentToPC[] = _("The MAIL was sent to your PC.{PAUSE_UNTIL_PRESS}");
 -const u8 gText_PCMailboxFull[] = _("Your PC's MAILBOX is full.{PAUSE_UNTIL_PRESS}");
-+const u8 gText_PCMailboxFull[] = _("{RTL}ゃóÌÎぼ ÓÊこÌ まÁèÇÓじ ÉËÏÚホ.{PAUSE_UNTIL_PRESS}");
++const u8 gText_PCMailboxFull[] = _("{RTL}+ねÏÎぽ こÊËÏ ôÀáÂこご ÉÔÒÚヨ.{PAUSE_UNTIL_PRESS}");
  const u8 gText_MailMessageWillBeLost[] = _("If the MAIL is removed, the\nmessage will be lost. Okay?");
  const u8 gText_RemoveMailBeforeItem[] = _("MAIL must be removed before\nholding an item.{PAUSE_UNTIL_PRESS}");
  const u8 gText_PkmnWasGivenItem[] = _("{STR_VAR_1} was given the\n{STR_VAR_2} to hold.{PAUSE_UNTIL_PRESS}");
@@ -1367,7 +2198,7 @@ index c099555..ceccec5 100644
  ALIGNED(4) const u8 gText_NotPkmnOtherTrainerWants[] = _("That isn't the type of POKéMON\nthat the other TRAINER wants.");
  ALIGNED(4) const u8 gText_ThatIsntAnEgg[] = _("That isn't an EGG.");
 -const u8 gText_ChoosePokemon[] = _("Choose a POKéMON.");
-+const u8 gText_ChoosePokemon[] = _("{RTL}ÀわÏÊ ÓÇÒÈËÇà.");
++const u8 gText_ChoosePokemon[] = _("{RTL}ÁªÒÊ こÂÓÇÔÂà.");
  const u8 gText_MoveToWhere[] = _("Move to where?");
  const u8 gText_TeachWhichPokemon[] = _("Teach which POKéMON?");
  const u8 gText_UseOnWhichPokemon[] = _("Use on which POKéMON?");
@@ -1376,7 +2207,7 @@ index c099555..ceccec5 100644
  const u8 gText_DoWhatWithItem[] = _("Do what with an item?");
  const u8 gText_NoPokemonForBattle[] = _("No battling this way!");
 -const u8 gText_ChoosePokemon2[] = _("Choose a POKéMON.");
-+const u8 gText_ChoosePokemon2[] = _("{RTL}ÀわÏÊ ÓÇÒÈËÇà.");
++const u8 gText_ChoosePokemon2[] = _("{RTL}ÁªÒÊ こÂÓÇÔÂà.");
  const u8 gText_NotEnoughHp[] = _("Not enough HP‥");
  const u8 gText_ThreePkmnAreNeeded[] = _("Three {PKMN} are needed.");
  const u8 gText_PokemonCantBeSame[] = _("{PKMN} can't be the same.");
@@ -1385,32 +2216,32 @@ index c099555..ceccec5 100644
  const u8 gText_Empty12[] = _("");
  const u8 gText_CancelBattle[] = _("Cancel the battle?");
 -const u8 gText_TurnOff[] = _("TURN OFF");
-+const u8 gText_TurnOff[] = _("{RTL}ぉこºÁセ ÀÂÏ=ぞÈì");
++const u8 gText_TurnOff[] = _("{RTL}ゃËºÀÍ ÁÈÒぃづÇî");
  const u8 gText_Decoration[] = _("もようがえ");
 -const u8 gText_ItemStorage[] = _("ITEM STORAGE");
 -const u8 gText_Mailbox[] = _("MAILBOX");
 -const u8 gText_DepositItem2[] = _("DEPOSIT ITEM");
 -const u8 gText_WithdrawItem2[] = _("WITHDRAW ITEM");
-+const u8 gText_ItemStorage[] = _("{RTL}Ùûっこî ÀウÑÎÀぜ");
-+const u8 gText_Mailbox[] = _("{RTL}ゃóÌÎぼ ÀÂêÊこÌ");
-+const u8 gText_DepositItem2[] = _("{RTL}ぉこÌÀ% ŒÑÀç");
-+const u8 gText_WithdrawItem2[] = _("{RTL}èáざ ŒÑÀç");
++const u8 gText_ItemStorage[] = _("{RTL}ŒぁぜËœ ÁエßÎÁず");
++const u8 gText_Mailbox[] = _("{RTL}+ねÏÎぽ ÁÈçÊËÏ");
++const u8 gText_DepositItem2[] = _("{RTL}ゃËÏÁぺ ÑßÁó");
++const u8 gText_WithdrawItem2[] = _("{RTL}áïぢ ÑßÁó");
  const u8 gText_TossItem[] = _("どうぐを すてる");
 -const u8 gText_StoreItemsInThePC[] = _("Store items in the PC.");
 -const u8 gText_TakeOutItemsFromThePC[] = _("Take out items from the PC.");
-+const u8 gText_StoreItemsInThePC[] = _("{RTL}Ùûっこî ÀウÑÎÀぜ òú ÀÂáÁèÇ;.");
-+const u8 gText_TakeOutItemsFromThePC[] = _("{RTL}ぉわÊÀぽ ÀウÑÎÀぜ Éî ÀÂáÁèÇ;.");
++const u8 gText_StoreItemsInThePC[] = _("{RTL}ŒぁぜËœ ÁエßÎÁず èë ÁÈïÀáÂが.");
++const u8 gText_TakeOutItemsFromThePC[] = _("{RTL}ゃªÊÁ¿ ÁエßÎÁず Éœ ÁÈïÀáÂが.");
  const u8 gText_ThrowAwayItemsInPC[] = _("パソコンに あずけている\nどうぐを すてます");
  const u8 gText_ThereAreNoItems[] = _("There are no items.{PAUSE_UNTIL_PRESS}");
  const u8 gText_NoMoreRoomInBag[] = _("There is no more\nroom in the BAG.");
 -const u8 gText_WithdrawHowMany[] = _("Withdraw how many\n{STR_VAR_1}(s)?");
 -const u8 gText_WithdrewQuantItem[] = _("Withdrew {STR_VAR_2}\n{STR_VAR_1}(s).");
-+const u8 gText_WithdrawHowMany[] = _("îÉ ざáßÙ œÒ\nづ{STR_VAR_1}");
-+const u8 gText_WithdrewQuantItem[] = _("{STR_VAR_2} ぴêáè\n.{STR_VAR_1} îÉ");
++const u8 gText_WithdrawHowMany[] = _("œÉ ぢïìŒ ñÓ\nっ{STR_VAR_1}");
++const u8 gText_WithdrewQuantItem[] = _("{STR_VAR_2} ぷçïá\n.{STR_VAR_1} œÉ");
  const u8 gOtherText_Read[] = _("READ");
  const u8 gOtherText_MoveToBag[] = _("MOVE TO BAG");
 -const u8 gOtherText_Give2[] = _("GIVE");
-+const u8 gOtherText_Give2[] = _("{RTL}ぉïぃÁñ");
++const u8 gOtherText_Give2[] = _("{RTL}ゃòぇÀ=");
  const u8 gText_TheresNoMailHere[] = _("There's no MAIL here.{PAUSE_UNTIL_PRESS}");
  const u8 gText_WhatWouldYouLikeToDoWithPlayersMail[] = _("What would you like to do with\n{STR_VAR_1}'s MAIL?");
  const u8 gText_MessageWillBeLost[] = _("The message will be lost.\nIs that okay?");
@@ -1418,8 +2249,8 @@ index c099555..ceccec5 100644
  const u8 gText_MailReturnedToBagMessageErased[] = _("The MAIL was returned to the BAG\nwith its message erased.{PAUSE_UNTIL_PRESS}");
 -const u8 gText_WithdrawItem[] = _("WITHDRAW\nITEM");
 -const u8 gText_Withdraw[] = _("WITHDRAW");
-+const u8 gText_WithdrawItem[] = _("{RTL}èáざ\nŒÑÀç");
-+const u8 gText_Withdraw[] = _("{RTL}èáざ");
++const u8 gText_WithdrawItem[] = _("{RTL}áïぢ\nÑßÁó");
++const u8 gText_Withdraw[] = _("{RTL}áïぢ");
  const u8 gText_ReturnToPC[] = _("Return to the PC.");
  const u8 gText_LtSurge[] = _("LT. SURGE");
  const u8 gText_Koga[] = _("KOGA");
@@ -1429,8 +2260,8 @@ index c099555..ceccec5 100644
  const u8 gText_NotYet[] = _("これから");
 -const u8 gText_Yes[] = _("YES");
 -const u8 gText_No[] = _("NO");
-+const u8 gText_Yes[] = _("{RTL}ôねœ");
-+const u8 gText_No[] = _("{RTL}ど");
++const u8 gText_Yes[] = _("{RTL}Ûまñ");
++const u8 gText_No[] = _("{RTL}ぴ");
  const u8 gText_Info4[] = _("せつめい");
  const u8 gText_SingleBattle[] = _("SINGLE BATTLE");
  const u8 gText_DoubleBattle[] = _("DOUBLE BATTLE");
@@ -1441,9 +2272,9 @@ index c099555..ceccec5 100644
 -const u8 gText_Items[] = _("ITEMS");
 -const u8 gText_KeyItems[] = _("KEY ITEMS");
 -const u8 gText_PokeBalls[] = _("POKé BALLS");
-+const u8 gText_Items[] = _("{RTL}ŒÑÎÀぜ");
-+const u8 gText_KeyItems[] = _("{RTL}ŒÑÎÀぜ ÉぁËÔ");
-+const u8 gText_PokeBalls[] = _("{RTL}ÒÊÀぜ ÓÇÒÈù");
++const u8 gText_Items[] = _("{RTL}ÑßÎÁず");
++const u8 gText_KeyItems[] = _("{RTL}ÑßÎÁず É;ÔÙ");
++const u8 gText_PokeBalls[] = _("{RTL}ÓÊÁず こÂÓÇぉ");
  const u8 gText_TMsAndHMs[] = _("TMs & HMs");
  const u8 gText_Berries[] = _("BERRIES");
  const u8 gText_Boulderbadge[] = _("BOULDERBADGE");
@@ -1452,7 +2283,7 @@ index c099555..ceccec5 100644
  const u8 gText_ChangedToNewItem[] = _("Changed to {DYNAMIC 0x00}.");
  const u8 gText_MailCantBeStored[] = _("MAIL can't be stored!");
 -const u8 gPCText_Cancel[] = _("CANCEL");
-+const u8 gPCText_Cancel[] = _("{RTL}ぉÂぞÁñ");
++const u8 gPCText_Cancel[] = _("{RTL}ゃÈづÀ=");
  const u8 gPCText_Store[] = _("STORE");
  const u8 gPCText_Withdraw[] = _("WITHDRAW");
  const u8 gPCText_Shift[] = _("SHIFT");
@@ -1461,7 +2292,7 @@ index c099555..ceccec5 100644
  const u8 gText_NoSaveFileCantSetTime[] = _("レポ-トが ないので\nじかんの せっていは できません!");
  const u8 gText_InGameClockUsable[] = _("ゲ-ムない じかんの しゅうせい システムが\nつかえる ように なりました!");
 -const u8 gText_SavingDontTurnOffThePower2[] = _("SAVING…\nDON'T TURN OFF THE POWER.");
-+const u8 gText_SavingDontTurnOffThePower2[] = _("{RTL}がÁÛ ÀÂáë¿…\nど Ùëぐì ÀÂぃÁぅÔ.");
++const u8 gText_SavingDontTurnOffThePower2[] = _("{RTL}わÀÌ ÁÈïêセ…\nぴ Œêぞî ÁÈぇÀúÙ.");
  
  // Start menu option descriptions
  const u8 gStartMenuDesc_Pokedex[] = _("A device that records POKéMON secrets\nupon meeting or catching them.");
@@ -1470,7 +2301,7 @@ index c099555..ceccec5 100644
  const u8 gText_Symbols[] = _("SYMBOLS");
  const u8 gText_Register2[] = _("REGISTER");
 -const u8 gText_Exit[] = _("EXIT");
-+const u8 gText_Exit[] = _("{RTL}わÊÎぽ");
++const u8 gText_Exit[] = _("{RTL}ªÊÎ¿");
  const u8 gText_QuitChatting[] = _("Quit chatting?");
  const u8 gText_RegisterTextWhere[] = _("Register text where?");
  const u8 gText_RegisterTextHere[] = _("Register text here?");
@@ -1480,8 +2311,8 @@ index c099555..ceccec5 100644
  const u8 gText_RegisteredTextChanged_OKtoSave[] = _("The registered text has been changed.\nIs it okay to save the game?");
 -const u8 gText_RegisteredTextChanged_AlreadySavedFile[] = _("There is already a saved file.\nIs it okay to overwrite it?");
 -const u8 gText_RegisteredTextChanged_SavingDontTurnOff[] = _("SAVING‥\nDON'T TURN OFF THE POWER.");
-+const u8 gText_RegisteredTextChanged_AlreadySavedFile[] = _("{RTL}こÇがÌ ÉÚで ÉáëÇí ÓÁÂëねì.\nªì ÙÊこÌ ÀÂごÏÁÓÔ òÇぅùづ");
-+const u8 gText_RegisteredTextChanged_SavingDontTurnOff[] = _("{RTL}がÁÛ ÀÂáë¿…\nど Ùëぐì ÀÂぃÁぅÔ.");
++const u8 gText_RegisteredTextChanged_AlreadySavedFile[] = _("{RTL}ËÂわÏ ÉÚウ ÉïêÂギ こÀÈêまî.\nùî ŒÊËÏ ÁÈûÒÀこÙ èÂúぉっ");
++const u8 gText_RegisteredTextChanged_SavingDontTurnOff[] = _("{RTL}わÀÌ ÁÈïêセ…\nぴ Œêぞî ÁÈぇÀúÙ.");
  const u8 gText_RegisteredTextChanged_SavedTheGame[] = _("{DYNAMIC 0x00} saved the game.");
  const u8 gText_IfLeaderLeavesChatWillEnd[] = _("If the LEADER leaves, the chat\nwill end. Is that okay?");
  const u8 gText_Hello[] = _("HELLO");
@@ -1490,7 +2321,7 @@ index c099555..ceccec5 100644
  const u8 gText_WantToPlayAgain2[] = _("Want to play again?");
  const u8 gText_SomeoneDroppedOut2[] = _("Somebody dropped out.\nThe link will be canceled.");
 -const u8 gText_SavingDontTurnOffPower[] = _("SAVING…\nDON'T TURN OFF THE POWER.");
-+const u8 gText_SavingDontTurnOffPower[] = _("{RTL}がÁÛ ÀÂáë¿…\nど Ùëぐì ÀÂぃÁぅÔ.");
++const u8 gText_SavingDontTurnOffPower[] = _("{RTL}わÀÌ ÁÈïêセ…\nぴ Œêぞî ÁÈぇÀúÙ.");
  const u8 gText_CommunicationStandby4[] = _("Communication standby…");
  const u8 gText_SavingDontTurnOffPower2[] = _("SAVING...\nDON'T TURN OFF THE POWER."); // Unused
  const u8 gText_BerryPickingRecords[] = _("DODRIO BERRY-PICKING RECORDS");
@@ -1499,13 +2330,13 @@ index c099555..ceccec5 100644
  const u8 gText_Receive[] = _("RECEIVE");
  const u8 gText_Send[] = _("SEND");
 -const u8 gText_Toss[] = _("TOSS");
-+const u8 gText_Toss[] = _("{RTL}ÛÉú");
++const u8 gText_Toss[] = _("{RTL}ÌÉë");
  const u8 gText_DelAllCancelOk[] = _("DEL. ALL{CLEAR_TO 0x57}CANCEL{CLEAR_TO 0xA4}OK");
 diff --git a/src/text.c b/src/text.c
-index f3eef07..9d409b4 100644
+index f3eef07..8ff039d 100644
 --- a/src/text.c
 +++ b/src/text.c
-@@ -100,15 +100,15 @@ const u8 gKeypadIconTiles[] = INCBIN_U8("graphics/fonts/keypad_icons.4bpp");
+@@ -100,16 +100,16 @@ const u8 gKeypadIconTiles[] = INCBIN_U8("graphics/fonts/keypad_icons.4bpp");
  static const u16 sFontSmallLatinGlyphs[] = INCBIN_U16("graphics/fonts/latin_small.hwlatfont");
  static const u8 sFontSmallLatinGlyphWidths[] = 
  {
@@ -1518,18 +2349,20 @@ index f3eef07..9d409b4 100644
 -     8,  8,  8,  8,  8,  8,  4,  7,  5,  5,  5,  5,  5,  5,
 -     5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  4,
 -     5,  5,  5,  5,  5,  5,  5,  5,  5,  8,  8,  8,  8,  5,
-+     5,  3,  4,  4,  8,  4,  6,  8,  7,  7,  4,  8,  4,  6,
-+     3,  6,  4,  4,  4,  8,  6,  8,  8,  7,  6,  6,  8,  5,
-+     4,  6,  8,  7,  8,  7,  6,  4,  3,  8,  6,  8,  7,  5,
-+     6,  6,  7,  7,  6,  5,  8,  6,  8,  4,  8,  8,  8,  7,
-+     7,  8,  8,  6,  8,  8,  8,  8,  6,  8,  7,  6,  8,  6,
-+     7,  8,  8,  8,  8,  8,  8,  8,  5,  8,  8,  8,  8,  7,
-+     7,  4,  8,  8,  8,  7,  8,  8,  8,  8,  8,  6,  3,  4,
-+     8,  8,  8,  4,  8,  4,  8,  8,  8,  8,  6,  8,  8,  8,
-+     6,  8,  7,  8,  5,  5,  5,  5,  5,  8,  8,  8,  8,  5,
-      5,  5,  5,  5,  5,  5,  5,  7,  7,  5,  5,  5,  5,  5,
+-     5,  5,  5,  5,  5,  5,  5,  7,  7,  5,  5,  5,  5,  5,
++     5,  4,  3,  8,  4,  4,  6,  8,  4,  8,  3,  8,  7,  4,
++     6,  7,  4,  6,  4,  3,  4,  6,  8,  8,  4,  4,  6,  5,
++     6,  8,  8,  6,  8,  7,  7,  6,  7,  8,  6,  6,  6,  8,
++     6,  7,  7,  7,  8,  7,  8,  7,  8,  6,  4,  5,  5,  8,
++     6,  7,  8,  8,  8,  8,  8,  8,  8,  8,  8,  6,  8,  7,
++     8,  8,  7,  8,  8,  8,  6,  8,  8,  8,  6,  8,  7,  8,
++     7,  5,  8,  8,  4,  8,  8,  8,  8,  8,  8,  6,  4,  8,
++     8,  8,  8,  3,  8,  8,  8,  8,  8,  4,  8,  4,  8,  8,
++     6,  8,  8,  6,  5,  8,  8,  7,  5,  8,  8,  8,  8,  5,
++     5,  5,  5,  5,  5,  5,  5,  7,  7,  8,  8,  8,  7,  8,
       5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,
       5,  5,  5,  5,  5,  5,  8,  5,  5,  5,  5,  5,  5,  5,
+      5,  5,  5,  4,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,
 @@ -136,7 +136,7 @@ static const u8 sFontSmallLatinGlyphWidths[] =
       5,  5,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,
       8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,
@@ -1539,7 +2372,7 @@ index f3eef07..9d409b4 100644
  };
  static const u16 sFontSmallJapaneseGlyphs[] = INCBIN_U16("graphics/fonts/japanese_small.fwjpnfont");
  
-@@ -186,15 +186,15 @@ static const u16 sFontTallJapaneseGlyphs[] = INCBIN_U16("graphics/fonts/japanese
+@@ -186,16 +186,16 @@ static const u16 sFontTallJapaneseGlyphs[] = INCBIN_U16("graphics/fonts/japanese
  static const u16 sFontNormalLatinGlyphs[] = INCBIN_U16("graphics/fonts/latin_normal.fwlatfont");
  static const u8 sFontNormalLatinGlyphWidths[] =
  {
@@ -1552,18 +2385,20 @@ index f3eef07..9d409b4 100644
 -     8,  8,  8,  8,  8,  4,  6,  8,  5,  5,  6,  6,  6,  6,
 -     6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,
 -     6,  6,  6,  6,  6,  6,  6,  6,  6, 12, 12, 12, 12,  6,
-+     6,  3,  4,  4,  8,  4,  6,  8,  7,  7,  4,  8,  4,  6,
-+     3,  6,  4,  4,  4,  8,  6, 10,  8,  7,  6,  6, 10,  6,
-+     4,  6,  9,  7,  9,  7,  6,  4,  3,  9,  6, 11,  7,  5,
-+     6,  6,  7,  8,  6,  5,  9,  6, 11,  4, 10, 10, 11,  7,
-+     7, 10,  8,  6, 11, 10, 10, 11,  6,  8,  7,  6, 13,  6,
-+     7,  8, 10,  9, 10,  8, 11, 10,  5,  8,  8, 11,  9,  7,
-+     7,  4, 10, 10,  9,  7, 15,  9, 11,  8, 13,  6,  3,  4,
-+    15, 11,  9,  4, 15,  4, 15, 15, 15,  8,  6,  8, 11, 11,
-+     6,  8,  7,  8,  6,  6,  6,  6,  6, 12, 12, 12, 12,  6,
-      6,  6,  6,  6,  6,  6,  8,  8,  8,  6,  6,  6,  6,  6,
+-     6,  6,  6,  6,  6,  6,  8,  8,  8,  6,  6,  6,  6,  6,
++     6,  4,  3,  8,  4,  4,  6,  8,  4,  8,  3,  8,  7,  4,
++     6,  7,  4,  6,  4,  3,  4,  6,  8, 10,  4,  4,  6,  6,
++     6, 11, 10,  6,  9,  7,  7,  6,  7,  9,  6,  6,  6,  9,
++     6,  7,  7,  8, 10,  7, 10,  7,  9,  6,  4,  5,  5, 11,
++     6,  7, 10, 10,  8, 11, 11,  8, 10,  9, 11,  6,  8,  7,
++     8,  8,  7, 10, 10,  9,  6, 11,  9, 10,  6,  8,  7, 13,
++     7,  5, 10,  9,  4, 10, 13, 11, 15, 15, 11,  6,  4,  8,
++    15, 15,  9,  3, 15,  8, 15, 11, 11,  4, 11,  4, 11,  9,
++     6,  8, 15,  6,  5,  8, 11,  7,  6, 12, 12, 12, 12,  6,
++     6,  6,  6,  6,  6,  6,  8,  8,  8, 15, 11,  8,  7,  8,
       6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,
       6,  6,  6,  6,  6,  6,  8,  6,  6,  6,  6,  6,  6,  6,
+      6,  6,  6,  6,  6,  5,  6,  5,  6,  6,  6,  3,  3,  6,
 @@ -222,7 +222,7 @@ static const u8 sFontNormalLatinGlyphWidths[] =
       6,  6,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,
       8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,
@@ -1573,7 +2408,7 @@ index f3eef07..9d409b4 100644
  };
  static const u16 sFontNormalJapaneseGlyphs[] = INCBIN_U16("graphics/fonts/japanese_normal.fwjpnfont");
  static const u8 sFontNormalJapaneseGlyphWidths[] =
-@@ -252,15 +252,15 @@ static const u8 sFontNormalJapaneseGlyphWidths[] =
+@@ -252,16 +252,16 @@ static const u8 sFontNormalJapaneseGlyphWidths[] =
  static const u16 sFontMaleLatinGlyphs[] = INCBIN_U16("graphics/fonts/latin_male.fwlatfont");
  static const u8 sFontMaleLatinGlyphWidths[] =
  {
@@ -1586,18 +2421,20 @@ index f3eef07..9d409b4 100644
 -     8,  8,  8,  8,  8,  4,  6,  8,  5,  5,  6,  6,  6,  6,
 -     6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,
 -     6,  6,  6,  6,  6,  6,  6,  6,  6, 12, 12, 12, 12,  6,
-+     6,  3,  4,  4,  8,  4,  6,  8,  7,  7,  4,  8,  4,  6,
-+     3,  6,  4,  4,  4,  8,  6, 10,  8,  7,  6,  6, 10,  6,
-+     4,  6,  9,  7,  9,  7,  6,  4,  3,  9,  6, 11,  7,  5,
-+     6,  6,  7,  8,  6,  5,  9,  6, 11,  4, 10, 10, 11,  7,
-+     7, 10,  8,  6, 11, 10, 10, 11,  6,  8,  7,  6, 13,  6,
-+     7,  8, 10,  9, 10,  8, 11, 10,  5,  8,  8, 11,  9,  7,
-+     7,  4, 10, 10,  9,  7, 15,  9, 11,  8, 13,  6,  3,  4,
-+    15, 11,  9,  4, 15,  4, 15, 15, 15,  8,  6,  8, 11, 11,
-+     6,  8,  7,  8,  6,  6,  6,  6,  6, 12, 12, 12, 12,  6,
-      6,  6,  6,  6,  6,  6,  8,  8,  8,  6,  6,  6,  6,  6,
+-     6,  6,  6,  6,  6,  6,  8,  8,  8,  6,  6,  6,  6,  6,
++     6,  4,  3,  8,  4,  4,  6,  8,  4,  8,  3,  8,  7,  4,
++     6,  7,  4,  6,  4,  3,  4,  6,  8, 10,  4,  4,  6,  6,
++     6, 11, 10,  6,  9,  7,  7,  6,  7,  9,  6,  6,  6,  9,
++     6,  7,  7,  8, 10,  7, 10,  7,  9,  6,  4,  5,  5, 11,
++     6,  7, 10, 10,  8, 11, 11,  8, 10,  9, 11,  6,  8,  7,
++     8,  8,  7, 10, 10,  9,  6, 11,  9, 10,  6,  8,  7, 13,
++     7,  5, 10,  9,  4, 10, 13, 11, 15, 15, 11,  6,  4,  8,
++    15, 15,  9,  3, 15,  8, 15, 11, 11,  4, 11,  4, 11,  9,
++     6,  8, 15,  6,  5,  8, 11,  7,  6, 12, 12, 12, 12,  6,
++     6,  6,  6,  6,  6,  6,  8,  8,  8, 15, 11,  8,  7,  8,
       6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,
       6,  6,  6,  6,  6,  6,  8,  6,  6,  6,  6,  6,  6,  6,
+      6,  6,  6,  6,  6,  5,  6,  5,  6,  6,  6,  3,  3,  6,
 @@ -288,7 +288,7 @@ static const u8 sFontMaleLatinGlyphWidths[] =
       6,  6,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,
       8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,
@@ -1607,7 +2444,7 @@ index f3eef07..9d409b4 100644
  };
  static const u16 sFontMaleJapaneseGlyphs[] = INCBIN_U16("graphics/fonts/japanese_male.fwjpnfont");
  static const u8 sFontMaleJapaneseGlyphWidths[] = 
-@@ -318,15 +318,15 @@ static const u8 sFontMaleJapaneseGlyphWidths[] =
+@@ -318,16 +318,16 @@ static const u8 sFontMaleJapaneseGlyphWidths[] =
  static const u16 sFontFemaleLatinGlyphs[] = INCBIN_U16("graphics/fonts/latin_female.fwlatfont");
  static const u8 sFontFemaleLatinGlyphWidths[] =
  {
@@ -1620,18 +2457,20 @@ index f3eef07..9d409b4 100644
 -     8,  8,  8,  8,  8,  4,  6,  8,  5,  5,  6,  6,  6,  6,
 -     6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,
 -     6,  6,  6,  6,  6,  6,  6,  6,  6, 12, 12, 12, 12,  6,
-+     6,  3,  4,  4,  8,  4,  6,  8,  7,  7,  4,  8,  4,  6,
-+     3,  6,  4,  4,  4,  8,  6, 10,  8,  7,  6,  6, 10,  6,
-+     4,  6,  9,  7,  9,  7,  6,  4,  3,  9,  6, 11,  7,  5,
-+     6,  6,  7,  8,  6,  5,  9,  6, 11,  4, 10, 10, 11,  7,
-+     7, 10,  8,  6, 11, 10, 10, 11,  6,  8,  7,  6, 13,  6,
-+     7,  8, 10,  9, 10,  8, 11, 10,  5,  8,  8, 11,  9,  7,
-+     7,  4, 10, 10,  9,  7, 15,  9, 11,  8, 13,  6,  3,  4,
-+    15, 11,  9,  4, 15,  4, 15, 15, 15,  8,  6,  8, 11, 11,
-+     6,  8,  7,  8,  6,  6,  6,  6,  6, 12, 12, 12, 12,  6,
-      6,  6,  6,  6,  6,  6,  8,  8,  8,  6,  6,  6,  6,  6,
+-     6,  6,  6,  6,  6,  6,  8,  8,  8,  6,  6,  6,  6,  6,
++     6,  4,  3,  8,  4,  4,  6,  8,  4,  8,  3,  8,  7,  4,
++     6,  7,  4,  6,  4,  3,  4,  6,  8, 10,  4,  4,  6,  6,
++     6, 11, 10,  6,  9,  7,  7,  6,  7,  9,  6,  6,  6,  9,
++     6,  7,  7,  8, 10,  7, 10,  7,  9,  6,  4,  5,  5, 11,
++     6,  7, 10, 10,  8, 11, 11,  8, 10,  9, 11,  6,  8,  7,
++     8,  8,  7, 10, 10,  9,  6, 11,  9, 10,  6,  8,  7, 13,
++     7,  5, 10,  9,  4, 10, 13, 11, 15, 15, 11,  6,  4,  8,
++    15, 15,  9,  3, 15,  8, 15, 11, 11,  4, 11,  4, 11,  9,
++     6,  8, 15,  6,  5,  8, 11,  7,  6, 12, 12, 12, 12,  6,
++     6,  6,  6,  6,  6,  6,  8,  8,  8, 15, 11,  8,  7,  8,
       6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,
       6,  6,  6,  6,  6,  6,  8,  6,  6,  6,  6,  6,  6,  6,
+      6,  6,  6,  6,  6,  5,  6,  5,  6,  6,  6,  3,  3,  6,
 @@ -354,7 +354,7 @@ static const u8 sFontFemaleLatinGlyphWidths[] =
       6,  6,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,
       8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,
