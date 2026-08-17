@@ -422,17 +422,63 @@ def test_glyph_advance_is_narrower_than_the_cell(font_path):
     glyphs = fontgen.render([ALEF, MEEM_MEDIAL], font_path, spec)
     # Alef is a bare vertical stroke; meem is a wider bowl. Neither may claim
     # the whole cell, or letters render spaced out with the joins broken.
-    alef_w = fontgen.glyph_width(glyphs[ALEF], spec)
-    meem_w = fontgen.glyph_width(glyphs[MEEM_MEDIAL], spec)
+    alef_w = fontgen.glyph_width(glyphs[ALEF], spec, ALEF)
+    meem_w = fontgen.glyph_width(glyphs[MEEM_MEDIAL], spec, MEEM_MEDIAL)
     assert 0 < alef_w < meem_w < spec.cell_w
 
 
+def test_form_of_covers_forms_and_ligatures():
+    assert shaping.form_of(0xFE91) == shaping.INITIAL     # beh
+    assert shaping.form_of(0xFEE4) == shaping.MEDIAL      # meem
+    assert shaping.form_of(0xFE8E) == shaping.FINAL       # alef
+    assert shaping.form_of(0xFE8D) == shaping.ISOLATED    # alef
+    assert shaping.form_of(0xFEFB) == shaping.ISOLATED    # lam-alef
+    assert shaping.form_of(0xFEFC) == shaping.FINAL       # lam-alef
+    assert shaping.form_of(ord("A")) is None
+
+
+def test_visual_bearings_follow_the_joining_sides():
+    # Drawn coordinates: forward-join side is visual LEFT (text is
+    # pre-reversed), backward-join side is visual RIGHT.
+    assert fontgen.visual_bearings(0xFEE4) == (0, 0)      # medial: butts both
+    assert fontgen.visual_bearings(0xFE8E) == (1, 0)      # final: right joins
+    assert fontgen.visual_bearings(0xFE91) == (0, 1)      # initial: left joins
+    assert fontgen.visual_bearings(0xFE8D) == (1, 1)      # isolated
+    assert fontgen.visual_bearings(0x061F) == (1, 1)      # Arabic punctuation
+
+
 @pil
-def test_rendered_ink_starts_at_the_left_edge(font_path):
-    # The engine advances by the width table, so a glyph with a side bearing
-    # would drift away from its neighbour.
-    glyphs = fontgen.render([MEEM_MEDIAL], font_path, fontgen.FontSpec())
-    assert fontgen.ink_bbox(glyphs[MEEM_MEDIAL])[0] == 0
+def test_isolated_alef_is_not_swallowed(font_path):
+    # Alef's ink is a ~1px stroke. With zero bearings its advance was 1px and
+    # it vanished into the neighbouring letters -- e.g. in "دار", where drawn
+    # order is reh, alef, dal and nothing joins. Bearings on both sides give
+    # it breathing room and a >=3px advance.
+    spec = fontgen.FontSpec()
+    glyphs = fontgen.render([0xFE8D], font_path, spec)
+    assert fontgen.ink_bbox(glyphs[0xFE8D])[0] == 1       # inset from the left
+    assert fontgen.glyph_width(glyphs[0xFE8D], spec, 0xFE8D) >= 3
+
+
+@pil
+def test_joining_edges_stay_flush(font_path):
+    # A medial form must keep its ink at both cell edges of its advance, or
+    # every cursive join in the word gains a visible 1px break.
+    spec = fontgen.FontSpec()
+    glyphs = fontgen.render([MEEM_MEDIAL], font_path, spec)
+    bbox = fontgen.ink_bbox(glyphs[MEEM_MEDIAL])
+    assert bbox[0] == 0
+    assert fontgen.glyph_width(glyphs[MEEM_MEDIAL], spec, MEEM_MEDIAL) == bbox[2]
+
+
+@pil
+def test_final_form_joins_right_but_not_left(font_path):
+    # Final alef joins the preceding letter, drawn to its right: ink must end
+    # exactly at the advance (right edge flush) but start one column in.
+    spec = fontgen.FontSpec()
+    glyphs = fontgen.render([0xFE8E], font_path, spec)
+    bbox = fontgen.ink_bbox(glyphs[0xFE8E])
+    assert bbox[0] == 1
+    assert fontgen.glyph_width(glyphs[0xFE8E], spec, 0xFE8E) == bbox[2]
 
 
 @pil
@@ -682,6 +728,6 @@ def test_preview_width_equals_sum_of_advances(font_path):
     glyphs = fontgen.render(order, font_path, spec)
     data = pipeline.encode("مرحبا", table, alloc, terminate=False)
     img = fontgen.preview(data, glyphs, alloc.glyph_to_byte, spec, scale=1)
-    expected = sum(fontgen.glyph_width(glyphs[ord(c)], spec)
+    expected = sum(fontgen.glyph_width(glyphs[ord(c)], spec, ord(c))
                    for c in shaping.shape("مرحبا"))
     assert img.width == expected

@@ -206,6 +206,23 @@ def shape(
     return "".join(out)
 
 
+# Reverse lookup: shaped glyph -> the form it is. Ligatures are FINAL when the
+# slot is the even (joining) variant, ISOLATED otherwise.
+_FORM_OF: dict[int, str] = {}
+for _cp, _table in FORMS.items():
+    for _name, _slot in _table.items():
+        _FORM_OF[_slot] = _name
+for _iso, _fin in LAM_ALEF.values():
+    _FORM_OF[_iso] = ISOLATED
+    _FORM_OF[_fin] = FINAL
+del _cp, _table, _name, _slot, _iso, _fin
+
+
+def form_of(cp: int) -> str | None:
+    """Form of a Presentation Forms-B glyph, or None for anything else."""
+    return _FORM_OF.get(cp)
+
+
 def describe(text: str) -> list[tuple[str, str, str]]:
     """(source char, shaped glyph, form name) triples -- for CLI inspection."""
     shaped = shape(text)

@@ -93,8 +93,12 @@ def render(
         cell = blank(spec)
         bbox = ink_bbox(quantised)
         if bbox is not None:
-            right = min(bbox[2], bbox[0] + spec.cell_w)
-            cell.paste(quantised.crop((bbox[0], 0, right, spec.cell_h)), (0, 0))
+            # Inset the ink by the glyph's left bearing: joining sides stay
+            # flush so cursive strokes meet, non-joining sides keep a spacing
+            # column so narrow letters (alef!) are not swallowed by neighbours.
+            lb = visual_bearings(cp)[0]
+            right = min(bbox[2], bbox[0] + spec.cell_w - lb)
+            cell.paste(quantised.crop((bbox[0], 0, right, spec.cell_h)), (lb, 0))
         out[cp] = cell
     return out
 
@@ -249,18 +253,50 @@ def to_sheet_cell(
     return out
 
 
-def glyph_width(img: "Image.Image", spec: FontSpec = FontSpec()) -> int:
-    """Advance width for a glyph: its inked extent plus right padding.
+def visual_bearings(cp: int) -> tuple[int, int]:
+    """(left, right) spacing columns for a glyph, in drawn coordinates.
 
-    Keep ``pad_right`` at 0 for Arabic unless you have a reason not to: a
-    connecting script wants adjacent glyphs to butt together so the cursive
-    stroke of one meets the next, and every padding column is a visible break
-    in the join.
+    A single per-glyph advance cannot distinguish a joining edge from a
+    non-joining one, so the spacing is decided by the glyph's *form*. Text is
+    drawn pre-reversed, so a letter's forward-join side (toward the next
+    logical letter) is its visual LEFT, and its backward-join side its visual
+    RIGHT:
+
+      medial    joins both sides            -> no gaps: strokes must butt
+      final     joins backward (right)      -> gap on the left only
+      initial   joins forward (left)        -> gap on the right only
+      isolated  joins nothing               -> gap on both sides
+
+    Without this, a narrow non-joining letter -- alef is a 1px vertical stroke
+    at this size -- sits flush against its neighbours and is swallowed by them.
+    """
+    from . import shaping
+
+    form = shaping.form_of(cp)
+    if form == shaping.MEDIAL:
+        return (0, 0)
+    if form == shaping.FINAL:
+        return (1, 0)
+    if form == shaping.INITIAL:
+        return (0, 1)
+    return (1, 1)       # isolated, and any non-form glyph (Arabic punctuation)
+
+
+def glyph_width(img: "Image.Image", spec: FontSpec = FontSpec(),
+                cp: int | None = None) -> int:
+    """Advance width for a glyph: left bearing + ink + right bearing.
+
+    ``render`` positions the ink ``visual_bearings(cp)[0]`` columns in from the
+    left edge, so the ink bbox's right extent already includes the left gap;
+    only the right bearing is added here. Without ``cp`` the ``pad_right``
+    fallback applies -- fine for Latin, wrong for Arabic, so pass it whenever
+    the glyph is a shaped form.
     """
     bbox = ink_bbox(img)
     if bbox is None:
         return max(2, spec.cell_w // 4)     # a space-like blank
-    return min(spec.cell_w, (bbox[2] - bbox[0]) + spec.pad_right)
+    right = visual_bearings(cp)[1] if cp is not None else spec.pad_right
+    return min(spec.cell_w, bbox[2] + right)
 
 
 def width_table(
@@ -270,7 +306,7 @@ def width_table(
 ) -> dict[int, int]:
     """byte value -> pixel advance, for line measurement and alignment."""
     return {
-        byte_of[cp]: glyph_width(img, spec)
+        byte_of[cp]: glyph_width(img, spec, cp)
         for cp, img in glyphs.items()
         if cp in byte_of
     }
@@ -314,7 +350,7 @@ def preview(text_bytes: bytes, glyphs: dict[int, "Image.Image"],
     from . import charmap as cm
 
     cp_of = {b: cp for cp, b in byte_of.items()}
-    cells: list[Image.Image | None] = []
+    cells: list[tuple["Image.Image | None", int | None]] = []
     i = 0
     while i < len(text_bytes):
         b = text_bytes[i]
@@ -329,10 +365,13 @@ def preview(text_bytes: bytes, glyphs: dict[int, "Image.Image"],
         if b in cm.CONTROL_BYTES:
             i += 1
             continue
-        cells.append(glyphs.get(cp_of.get(b, -1)))
+        cp = cp_of.get(b)
+        cells.append((glyphs.get(cp) if cp is not None else None, cp))
         i += 1
 
-    widths = [glyph_width(c, spec) if c is not None else spec.cell_w // 3 for c in cells]
+    widths = [glyph_width(c, spec, cp) if c is not None else spec.cell_w // 3
+              for c, cp in cells]
+    cells = [c for c, _ in cells]
     out = Image.new("P", (max(1, sum(widths)), spec.cell_h), 0)
     out.putpalette(_palette())
     x = 0

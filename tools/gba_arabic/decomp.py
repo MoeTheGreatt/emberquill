@@ -170,8 +170,10 @@ def install(
         box = sheet.cell_box(byte)
         # Convert into the sheet's own index convention, then clear the cell
         # first so leftover pixels from the accented Latin glyph underneath do
-        # not bleed into the Arabic one.
-        prepared = to_sheet_cell(cell, glyph_width(cell, sheet.spec), sheet.spec)
+        # not bleed into the Arabic one. The codepoint matters: the advance
+        # (and so the background box) includes form-aware side bearings.
+        prepared = to_sheet_cell(cell, glyph_width(cell, sheet.spec, codepoint),
+                                 sheet.spec)
         sheet.image.paste(blank(sheet.spec), box[:2])
         sheet.image.paste(prepared, box[:2])
         written += 1
