@@ -297,6 +297,75 @@ def cmd_decomp(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_translate(args: argparse.Namespace) -> int:
+    """Full decomp translation pass: allocate, install fonts, patch sources."""
+    from . import decomp, decompsrc, fontgen
+
+    repo = Path(args.repo)
+    charmap_path = Path(args.charmap) if args.charmap else repo / "charmap.txt"
+    if not charmap_path.exists():
+        print(f"{charmap_path} not found", file=sys.stderr)
+        return 1
+
+    table = cm.load_decomp_charmap(str(charmap_path))
+    table.placeholders = dict(profiles.get(args.profile).placeholders)
+    byte_chars = decompsrc.load_byte_chars(charmap_path)
+
+    translations = {k: v for k, v in json.loads(
+        Path(args.translations).read_text(encoding="utf-8")).items()
+        if not k.startswith("_")}
+    print(f"{len(translations)} translated string(s) loaded")
+
+    # One allocation over the WHOLE corpus, so every string shares the map.
+    corpus = [decompsrc.plain_runs(t) for t in translations.values()]
+    alloc = gl.allocate(corpus, table=table, free_ranges=_ranges(args))
+    print(f"glyphs: {alloc.slots_used} new + {len(alloc.reused)} reused, "
+          f"{alloc.slots_total - alloc.slots_used} slot(s) spare")
+    if not alloc.ok:
+        print(gl.report(alloc), file=sys.stderr)
+        return 1
+    if args.map:
+        Path(args.map).write_text(alloc.to_json(), encoding="utf-8")
+
+    # Install the Arabic glyphs into every Latin font sheet + width tables.
+    if args.font:
+        order = [g for g, _ in sorted(alloc.glyph_to_byte.items(), key=lambda kv: kv[1])]
+        sheets = decomp.find_sheets(repo)
+        for name, path in sheets.items():
+            sheet = decomp.load_sheet(path, profiles.get(args.profile).font)
+            try:
+                sheet.spec = decomp.detect_spec(sheet.image, table,
+                                                profiles.get(args.profile).font)
+            except ValueError as exc:
+                print(f"  {name}: {exc} -- skipped", file=sys.stderr)
+                continue
+            rendered, sheet.spec = _fitted_render(order, args.font, sheet.spec,
+                                                  label=name)
+            written, _ = decomp.install(sheet, rendered, alloc.glyph_to_byte)
+            decomp.save(sheet)
+            print(f"  {name}: {written} glyph(s) installed")
+            array = decomp.WIDTH_ARRAYS.get(name)
+            src = repo / "src" / "text.c"
+            if array and src.exists():
+                widths = fontgen.width_table(rendered, alloc.glyph_to_byte, sheet.spec)
+                src.write_text(decomp.patch_width_table(src, array, widths),
+                               encoding="utf-8")
+                print(f"  {name}: {array} widths patched")
+
+    # Patch the string sources.
+    report = decompsrc.patch_tree(repo, translations, table, alloc, byte_chars)
+    print(f"\npatched {len(report.patched)} string(s) across "
+          f"{len(report.files)} file(s)")
+    for f in sorted(report.files):
+        print(f"  {f}")
+    if report.missing:
+        print(f"\nNOT FOUND ({len(report.missing)}) -- symbol names to fix:",
+              file=sys.stderr)
+        for s in report.missing:
+            print(f"  {s}", file=sys.stderr)
+    return 0
+
+
 def cmd_verify(args: argparse.Namespace) -> int:
     path = Path(args.charmap)
     real = (cm.load_pokeemerald_charmap(str(path)) if path.suffix.lower() == ".txt"
@@ -465,6 +534,16 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--force", action="store_true",
                    help="write even if the sheet layout check fails")
     p.set_defaults(fn=cmd_decomp)
+
+    p = sub.add_parser("translate",
+                       help="full pass: allocate, install fonts, patch decomp strings")
+    p.add_argument("repo", help="path to a pokefirered/pokeemerald checkout")
+    p.add_argument("-t", "--translations", required=True,
+                   help="JSON of {decomp symbol: Arabic text}")
+    p.add_argument("-f", "--font", help="TTF to rasterise (omit to skip fonts)")
+    p.add_argument("-m", "--map", help="also write the glyph map here")
+    p.add_argument("--free-ranges", help="override the profile's free byte ranges")
+    p.set_defaults(fn=cmd_translate)
 
     p = sub.add_parser("verify", help="diff a real charmap against the built-in table")
     p.add_argument("charmap")

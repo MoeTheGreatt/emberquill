@@ -399,6 +399,96 @@ def test_cli_verify_reports_no_conflict_when_only_coverage_differs(tmp_path):
     assert r.returncode == 0 and "0 conflict(s)" in r.stdout
 
 
+# -- decomp source injection ----------------------------------------------
+
+from tools.gba_arabic import decompsrc     # noqa: E402
+
+
+def _mini_charmap(tmp_path):
+    p = tmp_path / "charmap.txt"
+    p.write_text(
+        "'À' = 01\n'Á' = 02\n'Â' = 03\n'Ç' = 04\n'È' = 05\n'É' = 06\n"
+        "'A' = BB\n' ' = 00\n'!' = AB\n'x' = 03\n",
+        encoding="utf-8",
+    )
+    return p
+
+
+def test_load_byte_chars_prefers_ascii(tmp_path):
+    chars = decompsrc.load_byte_chars(_mini_charmap(tmp_path))
+    assert chars[0x03] == "x"        # ASCII beats 'Â'
+    assert chars[0x01] == "À"        # only option
+    assert chars[0x00] == " "
+
+
+def test_decomp_tokenise_passes_all_macros_through():
+    lines = decompsrc.tokenise("اب{B_BUFF1}ج{COLOR RED}د\\pبعد")
+    atoms = [t for t in lines[0].tokens if isinstance(t, cm.Atom)]
+    assert [a.name for a in atoms] == ["B_BUFF1", "COLOR RED"]
+    assert atoms[0].width and not atoms[1].width
+    assert lines[0].separator == cm.PARAGRAPH
+    assert len(lines) == 2
+
+
+def test_convert_emits_charmap_chars_in_visual_order(tmp_path):
+    table = cm.Charmap()
+    alloc = gl.allocate(["ابج"], table=table)
+    chars = decompsrc.load_byte_chars(_mini_charmap(tmp_path))
+    out = decompsrc.convert("ابج", table, alloc, chars)
+    # Three glyphs -> three charmap chars; visually first char is jeem's byte.
+    assert len(out) == 3
+    jeem_shaped = ord(shaping.shape("ابج")[2])
+    assert chars[alloc.byte_for(jeem_shaped)] == out[0]
+
+
+def test_convert_keeps_macros_and_separators(tmp_path):
+    table = cm.Charmap()
+    alloc = gl.allocate(["مرحبا"], table=table)
+    chars = decompsrc.load_byte_chars(_mini_charmap(tmp_path))
+    src = "مرحبا {B_BUFF1}!\\pمرحبا"
+    out = decompsrc.convert(src, table, alloc, chars)
+    assert "{B_BUFF1}" in out
+    assert "\\p" in out
+    assert out.count("{") == 1
+
+
+def test_convert_errors_on_unallocated_glyph(tmp_path):
+    table = cm.Charmap()
+    alloc = gl.allocate(["اب"], table=table)      # jeem not in corpus
+    chars = decompsrc.load_byte_chars(_mini_charmap(tmp_path))
+    with pytest.raises(cm.EncodeError):
+        decompsrc.convert("جج", table, alloc, chars)
+
+
+def test_patch_c_string_handles_multiline_literals():
+    src = ('static const u8 sText_A[] = _("first line\\n"\n'
+           '                              "second line");\n'
+           'const u8 gText_B[] = _("other");\n')
+    out = decompsrc.patch_c_string(src, "sText_A", "XY\\pZ")
+    assert '_("XY\\pZ")' in out
+    assert '_("other")' in out                    # untouched
+    assert decompsrc.patch_c_string(src, "sText_Missing", "x") is None
+
+
+def test_patch_inc_string_replaces_block_and_keeps_terminator():
+    src = ("gText_One::\n"
+           '    .string "hello\\n"\n'
+           '    .string "world$"\n'
+           "\n"
+           "gText_Two::\n"
+           '    .string "keep$"\n')
+    out = decompsrc.patch_inc_string(src, "gText_One", "ABC\\nDEF")
+    assert '.string "ABC\\nDEF$"' in out
+    assert out.count(".string") == 2
+    assert '.string "keep$"' in out
+
+
+def test_plain_runs_strips_markup():
+    out = decompsrc.plain_runs("اب{B_BUFF1}ج\\pد")
+    assert "{" not in out and "\\" not in out
+    assert "اب" in out and "د" in out
+
+
 # -- font generation -------------------------------------------------------
 
 from tools.gba_arabic import fontgen     # noqa: E402
