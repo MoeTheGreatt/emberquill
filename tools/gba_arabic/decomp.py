@@ -356,6 +356,49 @@ def enable_rtl_printer(repo: str | Path) -> list[str]:
           "        if (textPrinter->minLetterSpacing)")
     done.append("text.c: RTL draw step")
 
+    # The waiting cursor. Both the arrow draw and its clear paint a 10x12
+    # rect at currentX -- which in RTL is the LEFT edge of the last glyph, so
+    # the fill erased the sentence's final word before stamping the arrow on
+    # top of it. In RTL the arrow belongs 10px to the left of the pen instead.
+    # The blit is edited FIRST: its 0x80/0x10 prefix is unique, and rewriting
+    # its currentX line is what disambiguates the fill's identical 4-line tail.
+    blit_x = ("                0x80,\n"
+              "                0x10,\n"
+              "                textPrinter->printerTemplate.currentX,")
+    _edit(text_c, blit_x,
+          "                0x80,\n"
+          "                0x10,\n"
+          "                textPrinter->subUnion.sub.rtl\n"
+          "                    ? textPrinter->printerTemplate.currentX - 10\n"
+          "                    : textPrinter->printerTemplate.currentX,")
+    done.append("text.c: down-arrow blit position")
+
+    arrow_x = ("                textPrinter->printerTemplate.currentX,\n"
+               "                textPrinter->printerTemplate.currentY,\n"
+               "                10,\n"
+               "                12);")
+    rtl_arrow_x = ("                textPrinter->subUnion.sub.rtl\n"
+                   "                    ? textPrinter->printerTemplate.currentX - 10\n"
+                   "                    : textPrinter->printerTemplate.currentX,\n"
+                   "                textPrinter->printerTemplate.currentY,\n"
+                   "                10,\n"
+                   "                12);")
+    _edit(text_c, arrow_x, rtl_arrow_x)          # fill in TextPrinterDrawDownArrow
+    done.append("text.c: down-arrow fill position")
+
+    clear_x = ("        textPrinter->printerTemplate.currentX,\n"
+               "        textPrinter->printerTemplate.currentY,\n"
+               "        10,\n"
+               "        12);")
+    _edit(text_c, clear_x,
+          "        textPrinter->subUnion.sub.rtl\n"
+          "            ? textPrinter->printerTemplate.currentX - 10\n"
+          "            : textPrinter->printerTemplate.currentX,\n"
+          "        textPrinter->printerTemplate.currentY,\n"
+          "        10,\n"
+          "        12);")
+    done.append("text.c: down-arrow clear position")
+
     # String utilities must know the code is one byte long.
     st = strutil.read_text(encoding="utf-8")
     m = re.search(r"(GetExtCtrlCodeLength.*?lengths\[\]\s*=\s*\{)(.*?)(\};)", st, re.S)

@@ -818,7 +818,7 @@ index c099555..fa8d1f9 100644
  const u8 gText_SavingDontTurnOffPower2[] = _("SAVING...\nDON'T TURN OFF THE POWER."); // Unused
  const u8 gText_BerryPickingRecords[] = _("DODRIO BERRY-PICKING RECORDS");
 diff --git a/src/text.c b/src/text.c
-index f3eef07..d7c2d85 100644
+index f3eef07..b0f057d 100644
 --- a/src/text.c
 +++ b/src/text.c
 @@ -100,14 +100,14 @@ const u8 gKeypadIconTiles[] = INCBIN_U8("graphics/fonts/keypad_icons.4bpp");
@@ -949,7 +949,40 @@ index f3eef07..d7c2d85 100644
  };
  static const u16 sFontFemaleJapaneseGlyphs[] = INCBIN_U16("graphics/fonts/japanese_female.fwjpnfont");
  static const u8 sFontFemaleJapaneseGlyphWidths[] =
-@@ -626,6 +626,12 @@ void DrawDownArrow(u8 windowId, u16 x, u16 y, u8 bgColor, bool8 drawArrow, u8 *c
+@@ -484,7 +484,9 @@ void TextPrinterDrawDownArrow(struct TextPrinter *textPrinter)
+             FillWindowPixelRect(
+                 textPrinter->printerTemplate.windowId,
+                 textPrinter->printerTemplate.bgColor << 4 | textPrinter->printerTemplate.bgColor,
+-                textPrinter->printerTemplate.currentX,
++                textPrinter->subUnion.sub.rtl
++                    ? textPrinter->printerTemplate.currentX - 10
++                    : textPrinter->printerTemplate.currentX,
+                 textPrinter->printerTemplate.currentY,
+                 10,
+                 12);
+@@ -507,7 +509,9 @@ void TextPrinterDrawDownArrow(struct TextPrinter *textPrinter)
+                 0,
+                 0x80,
+                 0x10,
+-                textPrinter->printerTemplate.currentX,
++                textPrinter->subUnion.sub.rtl
++                    ? textPrinter->printerTemplate.currentX - 10
++                    : textPrinter->printerTemplate.currentX,
+                 textPrinter->printerTemplate.currentY,
+                 10,
+                 12);
+@@ -524,7 +528,9 @@ void TextPrinterClearDownArrow(struct TextPrinter *textPrinter)
+     FillWindowPixelRect(
+         textPrinter->printerTemplate.windowId,
+         textPrinter->printerTemplate.bgColor << 4 | textPrinter->printerTemplate.bgColor,
+-        textPrinter->printerTemplate.currentX,
++        textPrinter->subUnion.sub.rtl
++            ? textPrinter->printerTemplate.currentX - 10
++            : textPrinter->printerTemplate.currentX,
+         textPrinter->printerTemplate.currentY,
+         10,
+         12);
+@@ -626,6 +632,12 @@ void DrawDownArrow(u8 windowId, u16 x, u16 y, u8 bgColor, bool8 drawArrow, u8 *c
      }
  }
  
@@ -962,7 +995,7 @@ index f3eef07..d7c2d85 100644
  u16 RenderText(struct TextPrinter *textPrinter)
  {
      struct TextPrinterSubStruct *subStruct = &textPrinter->subUnion.sub;
-@@ -661,7 +667,8 @@ u16 RenderText(struct TextPrinter *textPrinter)
+@@ -661,7 +673,8 @@ u16 RenderText(struct TextPrinter *textPrinter)
          switch (currChar)
          {
          case CHAR_NEWLINE:
@@ -972,7 +1005,7 @@ index f3eef07..d7c2d85 100644
              textPrinter->printerTemplate.currentY += gFonts[textPrinter->printerTemplate.fontId].maxLetterHeight + textPrinter->printerTemplate.lineSpacing;
              return RENDER_REPEAT;
          case PLACEHOLDER_BEGIN:
-@@ -737,6 +744,10 @@ u16 RenderText(struct TextPrinter *textPrinter)
+@@ -737,6 +750,10 @@ u16 RenderText(struct TextPrinter *textPrinter)
                  textPrinter->printerTemplate.currentChar++;
                  currChar = *textPrinter->printerTemplate.currentChar;
                  break;
@@ -983,7 +1016,7 @@ index f3eef07..d7c2d85 100644
              case EXT_CTRL_CODE_SHIFT_RIGHT:
                  textPrinter->printerTemplate.currentX = textPrinter->printerTemplate.x + *textPrinter->printerTemplate.currentChar;
                  textPrinter->printerTemplate.currentChar++;
-@@ -836,6 +847,13 @@ u16 RenderText(struct TextPrinter *textPrinter)
+@@ -836,6 +853,13 @@ u16 RenderText(struct TextPrinter *textPrinter)
              break;
          }
  
@@ -997,7 +1030,7 @@ index f3eef07..d7c2d85 100644
          CopyGlyphToWindow(textPrinter);
  
          if (textPrinter->minLetterSpacing)
-@@ -864,7 +882,8 @@ u16 RenderText(struct TextPrinter *textPrinter)
+@@ -864,7 +888,8 @@ u16 RenderText(struct TextPrinter *textPrinter)
          if (TextPrinterWaitWithDownArrow(textPrinter))
          {
              FillWindowPixelBuffer(textPrinter->printerTemplate.windowId, PIXEL_FILL(textPrinter->printerTemplate.bgColor));
@@ -1007,7 +1040,7 @@ index f3eef07..d7c2d85 100644
              textPrinter->printerTemplate.currentY = textPrinter->printerTemplate.y;
              textPrinter->state = RENDER_STATE_HANDLE_CHAR;
          }
-@@ -874,7 +893,8 @@ u16 RenderText(struct TextPrinter *textPrinter)
+@@ -874,7 +899,8 @@ u16 RenderText(struct TextPrinter *textPrinter)
          {
              TextPrinterClearDownArrow(textPrinter);
              textPrinter->scrollDistance = gFonts[textPrinter->printerTemplate.fontId].maxLetterHeight + textPrinter->printerTemplate.lineSpacing;
