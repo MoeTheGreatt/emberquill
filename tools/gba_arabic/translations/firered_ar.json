@@ -6398,5 +6398,22 @@
  "sText_YouThrowABallNowRight": "سترمي كرة الآن، صحيح؟\\nسـ… سأبذل جهدي!",
  "sText_YoureToughFemale": "ذلك البوكيمون…\\nلقد ربي بشكل رائع!\\p",
  "sText_YoureToughMale": "واو!\\nأرى أنك قوي حقا!\\p",
- "stext_DeclineChatFemale": "أوه…\\nتفضل بالزيارة في أي وقت.\\p"
+ "stext_DeclineChatFemale": "أوه…\\nتفضل بالزيارة في أي وقت.\\p",
+ "gText_Cheat_Walls": "عبور الحوائط",
+ "gText_Cheat_Money": "مال لا نهائي",
+ "gText_Cheat_Items": "أدوات لا نهائية",
+ "gText_Cheat_Catch": "صيد مضمون",
+ "gText_Cheat_NoEnc": "بلا مواجهات",
+ "gText_Cheat_ForceEnc": "مواجهة فورية",
+ "gText_Cheat_Shiny": "بوكيمون لامع",
+ "gText_Cheat_Hatch": "فقس فوري",
+ "gText_Cheat_Miss": "بلا إخفاق",
+ "gText_Cheat_Ohko": "ضربة قاضية",
+ "gText_Cheat_Pp": "نقاط لا نهائية",
+ "gText_Cheat_NoFaint": "بلا إغماء",
+ "gText_Cheat_Exp": "مضاعف الخبرة",
+ "gText_Cheat_SpawnOn": "مولّد بوكيمون",
+ "gText_Cheat_Species": "النوع",
+ "gText_Cheat_On": "مفعّل",
+ "gText_Cheat_Off": "معطّل"
 }

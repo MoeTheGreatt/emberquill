@@ -390,9 +390,13 @@ def cmd_translate(args: argparse.Namespace) -> int:
     if args.shared_exp:
         print("shared EXP: " + "; ".join(decomp.enable_shared_exp(repo)))
 
-    if args.scroll_options:
+    if args.scroll_options or args.cheats:
         print("scrolling options: "
               + "; ".join(decomp.enable_scrolling_options(repo)))
+
+    if args.cheats:
+        from . import cheats as _cheats
+        print("cheats: " + "; ".join(_cheats.enable_cheats(repo)))
 
     # Optionally teach the engine to draw right-to-left, so the typewriter
     # reveals Arabic from the right and lines right-align.
@@ -645,6 +649,9 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--scroll-options", action="store_true",
                    help="make the options list scroll, so it can hold more "
                         "rows than the window shows")
+    p.add_argument("--cheats", action="store_true",
+                   help="add in-game cheat toggles and a wild-Pokemon spawner "
+                        "to the options menu (implies --scroll-options)")
     p.add_argument("--shared-exp", action="store_true",
                    help="every party member AND every boxed Pokemon gains the "
                         "full EXP from each battle (eggs excluded)")

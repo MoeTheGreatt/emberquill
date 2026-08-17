@@ -190,6 +190,7 @@ _FIXED_COLUMN_TABLES = (
     "sLevelUpWindowStatNames",
     "sOptionMenuItemsNames", "sTextSpeedOptions", "sBattleSceneOptions",
     "sBattleStyleOptions", "sSoundOptions", "sButtonTypeOptions",
+    "sCheatToggleOptions", "sCheatExpOptions",
 )
 # Individually fixed-column strings that are not table members:
 #   * gText_FrameType -- copied into a local buffer, then the frame number is
