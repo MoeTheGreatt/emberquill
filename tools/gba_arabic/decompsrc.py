@@ -116,6 +116,108 @@ def rtl_eligible(text: str) -> bool:
     )
 
 
+# A fragment is a string spliced into a buffer that is printed as PART of
+# another line -- glued onto other content ("<foe> <SPECIES> used <MOVE>").
+# It must never carry {RTL}: the code turns the printer right-to-left
+# mid-buffer, so everything drawn after it comes out reversed. The signal is
+# always the destination, never the string's own length:
+#
+#   * StringAppend(dst, X)                -- X is concatenated after content.
+#   * StringCopy/CopyN(gStringVar1..3, X) -- X fills a {STR_VARn} placeholder
+#     that a template later embeds mid-line. (gStringVar4 is the FINAL
+#     printed buffer, so a copy into it is a standalone message -- keep it.)
+#
+# A string printed on its own (StringCopy into gStringVar4, or a table entry
+# handed straight to a text printer) is NOT a fragment: it keeps {RTL} so it
+# reveals right-to-left and right-aligns, which is the whole point.
+_APPEND_RE = re.compile(
+    r"\bStringAppend(?:N)?\s*\(\s*[^,]+,\s*([A-Za-z_]\w*)")
+_COPY_TO_VAR_RE = re.compile(
+    r"\bStringCopy(?:N)?\s*\(\s*(?:gStringVar[123]|textBuff)\s*,\s*([A-Za-z_]\w*)")
+# Same two destinations, but indexing a pointer table: StringAppend(dst,
+# tbl[i]) / StringCopy(gStringVar2, tbl[i]). Every member of such a table is
+# a fragment (stat names, etc.).
+_APPEND_TABLE_RE = re.compile(
+    r"\bStringAppend(?:N)?\s*\(\s*[^,]+,\s*(\w+)\s*\[")
+_COPY_TABLE_RE = re.compile(
+    r"\bStringCopy(?:N)?\s*\(\s*gStringVar[123]\s*,\s*(\w+)\s*\[")
+_PTR_TABLE_RE = re.compile(
+    r"const\s+u8\s*\*\s*const\s+(\w+)\s*\[[^\]]*\]\s*=\s*\{([^;]*?)\}\s*;", re.S)
+# A designated-initialiser row inside a pointer table: `[STRINGID_X - Y] = sym,`
+_TABLE_ROW_RE = re.compile(r"\[\s*(\w+)\b[^\]]*\]\s*=\s*(\w+)")
+# The battle placeholder expander copies fragments inline through a scratch
+# pointer (`toCpy = sText_FoePkmnPrefix2; ... while (*toCpy != EOS) ...`),
+# which no String* call would reveal. Capture every symbol assigned to it,
+# including the arms of `toCpy = cond ? A : B;`.
+_INLINE_COPY_RE = re.compile(r"\btoCpy\s*=\s*([^;]+);")
+_SYMBOL_RE = re.compile(r"\b((?:sText|gText|gBattleText|g[A-Z]\w*Text)\w*)\b")
+# A stringId packed (low + high byte) into a battle scratch buffer:
+# `gBattleTextBuff2[i++] = STRINGID_STATROSE;` / `... = STRINGID_X >> 8;` /
+# `i = STRINGID_ABOOSTED;`. Its dispatch-table entry is later StringAppend'd
+# as a B_BUFF fragment, so that one row must lose {RTL} even though the rest
+# of the big table it lives in holds standalone messages that keep it.
+_BUFFER_STORE_RE = re.compile(
+    r"(?:gBattleTextBuff\d\s*\[[^\]]*\]|\bi)\s*=\s*(STRINGID_\w+)")
+# Above this many members, a pointer table indexed by an append/var-copy is
+# a dispatch table (mostly standalone messages), handled row-by-row; at or
+# below, it is a pure fragment table and every member is a fragment.
+_FRAGMENT_TABLE_MAX = 64
+# Fixed-grid column labels: drawn at a hard-coded x next to a value at
+# another hard-coded x (the level-up box: stat name at x=0, the +N change at
+# x=56 in a 10-tile/80px window). Right-aligning them with {RTL} would slide
+# the label into the value column, so every member of such a table stays
+# left-anchored in plain visual order -- exactly like the battle action menu.
+_FIXED_COLUMN_TABLES = ("sLevelUpWindowStatNames",)
+
+
+def buffer_source_symbols(repo: str | Path) -> set[str]:
+    """Symbols whose bytes get spliced into a buffer and reprinted mid-line.
+
+    See the regex comments above for the exact, destination-based rules. The
+    search is deliberately narrow: it excludes genuine fragments (so a name
+    drawn after them is not reversed) while leaving every standalone message
+    on the RTL printer (so it reveals right-to-left). Purely structural, so
+    new fragments are covered without editing a hand list.
+    """
+    repo = Path(repo)
+    files = [p for sub in ("src", "data") if (repo / sub).is_dir()
+             for p in (repo / sub).rglob("*.c")]
+    texts = {p: p.read_text(encoding="utf-8", errors="replace") for p in files}
+
+    symbols: set[str] = set()
+    fragment_tables: set[str] = set()
+    buffered_ids: set[str] = set()
+    id_to_symbol: dict[str, str] = {}
+    for txt in texts.values():
+        symbols.update(_APPEND_RE.findall(txt))
+        symbols.update(_COPY_TO_VAR_RE.findall(txt))
+        fragment_tables.update(_APPEND_TABLE_RE.findall(txt))
+        fragment_tables.update(_COPY_TABLE_RE.findall(txt))
+        for rhs in _INLINE_COPY_RE.findall(txt):
+            symbols.update(_SYMBOL_RE.findall(rhs))
+        buffered_ids.update(_BUFFER_STORE_RE.findall(txt))
+
+    for txt in texts.values():
+        for tname, body in _PTR_TABLE_RE.findall(txt):
+            rows = _TABLE_ROW_RE.findall(body)
+            members = re.findall(r"\b([A-Za-z_]\w*)\b", body)
+            # A small table indexed by an append/var-copy is a pure fragment
+            # table (stat names, card colours): every member is a fragment.
+            # A big one is a dispatch table that is only occasionally indexed
+            # as a fragment (gBattleStringsTable), so its members are handled
+            # one row at a time by the buffered-STRINGID rule below -- never
+            # wholesale, which would strip {RTL} from its standalone messages.
+            if tname in _FIXED_COLUMN_TABLES:
+                symbols.update(members)
+            elif tname in fragment_tables and len(members) <= _FRAGMENT_TABLE_MAX:
+                symbols.update(members)
+            id_to_symbol.update(rows)
+
+    symbols.update(id_to_symbol[i] for i in buffered_ids if i in id_to_symbol)
+    symbols.discard("")
+    return symbols
+
+
 def convert(
     text: str,
     table: cm.Charmap,

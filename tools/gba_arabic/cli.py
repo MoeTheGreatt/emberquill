@@ -393,10 +393,20 @@ def cmd_translate(args: argparse.Namespace) -> int:
         import re as _re
         done = decomp.enable_rtl_printer(repo)
         print("RTL printer: " + "; ".join(done))
+        speed = decomp.set_default_text_speed(repo, "FAST")
+        if speed:
+            print("text speed: " + speed)
         exclude = _re.compile(args.rtl_exclude) if args.rtl_exclude else None
-        # Data-like strings (name presets) must never carry the control code:
-        # their bytes are copied into buffers and reprinted elsewhere.
-        rtl_pred = (lambda sym: not (exclude and exclude.search(sym)))
+        # Fragments copied into a buffer and reprinted elsewhere must never
+        # carry the control code -- it turns the printer right-to-left
+        # mid-buffer, so a species/move name spliced after it draws reversed.
+        # Found structurally (StringCopy/Append + battle inline-copy idiom),
+        # so new fragments are covered without editing a hand list.
+        buffers = decompsrc.buffer_source_symbols(repo)
+        print(f"RTL exclude: {len(buffers)} buffer-source fragment(s) "
+              f"+ regex {args.rtl_exclude!r}")
+        rtl_pred = (lambda sym: sym not in buffers
+                    and not (exclude and exclude.search(sym)))
 
     # Patch the string sources.
     report = decompsrc.patch_tree(repo, translations, table, alloc, byte_chars,

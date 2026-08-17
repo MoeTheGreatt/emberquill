@@ -489,6 +489,31 @@ def test_plain_runs_strips_markup():
     assert "اب" in out and "د" in out
 
 
+def test_buffer_source_symbols_excludes_fragments_keeps_standalone(tmp_path):
+    (tmp_path / "src").mkdir()
+    (tmp_path / "src" / "a.c").write_text(
+        # a standalone message printed on its own -- must KEEP {RTL}
+        'static const u8 sMsg_Hurt[] = _("was hurt");\n'
+        'static const u8 sFrag_Prefix[] = _("the foe ");\n'
+        'static const u8 sFrag_Suffix[] = _(" is");\n'
+        'static const u8 sFrag_Effect[] = _("ATTACK");\n'
+        'static const u8 sStat_HP[] = _("HP");\n'
+        'static const u8 sStat_Atk[] = _("ATK");\n'
+        'const u8 *const sStatNames[] = { sStat_HP, sStat_Atk };\n'
+        'void f(u8 *dst, u8 *textBuff) {\n'
+        '    PrintOnWindow(sMsg_Hurt);\n'            # standalone -> keep
+        '    StringAppend(dst, sFrag_Prefix);\n'     # append -> fragment
+        '    StringCopy(textBuff, sFrag_Suffix);\n'  # battle buffer -> fragment
+        '    StringCopy(gStringVar2, sFrag_Effect);\n'  # STR_VARn -> fragment
+        '    StringAppend(dst, sStatNames[i]);\n'    # table -> members fragment
+        '}\n',
+        encoding="utf-8")
+    syms = decompsrc.buffer_source_symbols(tmp_path)
+    assert {"sFrag_Prefix", "sFrag_Suffix", "sFrag_Effect",
+            "sStat_HP", "sStat_Atk"} <= syms
+    assert "sMsg_Hurt" not in syms          # standalone message keeps {RTL}
+
+
 # -- font generation -------------------------------------------------------
 
 from tools.gba_arabic import fontgen     # noqa: E402

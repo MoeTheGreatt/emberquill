@@ -431,6 +431,27 @@ def enable_rtl_printer(repo: str | Path) -> list[str]:
     return done
 
 
+def set_default_text_speed(repo: str | Path, speed: str = "FAST") -> str | None:
+    """Make new games start on the given text speed (default the fastest).
+
+    Only touches the new-game default in SetDefaultOptions; a player can still
+    change it in the options menu, and existing saves keep their setting.
+    Returns a status line, or None if the source was already on that speed.
+    """
+    repo = Path(repo)
+    new_game = repo / "src" / "new_game.c"
+    want = f"OPTIONS_TEXT_SPEED_{speed}"
+    src = new_game.read_text(encoding="utf-8")
+    m = re.search(r"(optionsTextSpeed\s*=\s*)OPTIONS_TEXT_SPEED_(\w+)(\s*;)", src)
+    if not m:
+        raise RtlPatchError("new_game.c: default optionsTextSpeed not found")
+    if m.group(2) == speed:
+        return None
+    src = src[:m.start()] + m.group(1) + want + m.group(3) + src[m.end():]
+    new_game.write_text(src, encoding="utf-8")
+    return f"new_game.c: default text speed -> {speed}"
+
+
 def verify_sheet_indexing(sheet: Sheet, table) -> list[str]:
     """Sanity-check that cell index really equals character byte.
 
