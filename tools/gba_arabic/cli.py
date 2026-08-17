@@ -426,6 +426,11 @@ def cmd_translate(args: argparse.Namespace) -> int:
           f"{len(report.files)} file(s)")
     for f in sorted(report.files):
         print(f"  {f}")
+    if report.errors:
+        print(f"\nENCODE ERRORS ({len(report.errors)}):", file=sys.stderr)
+        for e in report.errors[:20]:
+            print(f"  {e}", file=sys.stderr)
+
     if report.missing:
         print(f"\nNOT FOUND ({len(report.missing)}) -- symbol names to fix:",
               file=sys.stderr)

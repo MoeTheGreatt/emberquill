@@ -217,6 +217,7 @@ def plain_runs(text: str) -> str:
 class PatchReport:
     patched: list[str] = field(default_factory=list)
     missing: list[str] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
     files: set[str] = field(default_factory=set)
 
 
@@ -393,8 +394,13 @@ def patch_tree(
         changed = False
         for symbol in hits:
             want_rtl = rtl(symbol) if callable(rtl) else rtl
-            converted = convert(remaining[symbol], table, alloc, byte_chars,
-                                rtl=want_rtl)
+            try:
+                converted = convert(remaining[symbol], table, alloc, byte_chars,
+                                    rtl=want_rtl)
+            except cm.EncodeError as exc:
+                report.errors.append(f"{symbol}: {exc}")
+                del remaining[symbol]
+                continue
             patched = (patch_inc_string(text, symbol, converted)
                        if path.suffix in (".inc", ".s")
                        else patch_c_string(text, symbol, converted))
