@@ -120,8 +120,12 @@ def measure(data: bytes, widths: dict[int, int], default: int = 6) -> int:
     i = 0
     while i < len(data):
         b = data[i]
-        if b in (cm.SPECIAL, cm.PLACEHOLDER):
-            i += 2                      # code/ID byte is not drawn
+        if b == cm.SPECIAL and i + 1 < len(data):
+            # Variable length -- 0xFC 0x04 spans five bytes, not two.
+            i += 1 + cm.ext_ctrl_code_length(data[i + 1])
+            continue
+        if b == cm.PLACEHOLDER:
+            i += 2                      # ID byte is not drawn
             continue
         if b in cm.CONTROL_BYTES:
             i += 1

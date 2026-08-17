@@ -188,20 +188,65 @@ def to_4bpp(img: "Image.Image") -> bytes:
     return bytes(out)
 
 
-def ink_bbox(img: "Image.Image") -> tuple[int, int, int, int] | None:
-    """Bounding box of the non-background pixels.
+# Gen 3 sheet convention, read off pokefirered's latin_normal.png:
+#   0 = transparent, 1 = glyph ink, 2 = shadow, 3 = the background box drawn
+#   behind the glyph, spanning (advance width) x (BOX_HEIGHT) pixels.
+BG, INK, SHADOW, BOX = 0, 1, 2, 3
+INK_INDICES = frozenset({INK, SHADOW})
+BOX_HEIGHT = 14         # gGlyphInfo.height in src/text.c
 
-    Measured on palette *indices*, deliberately. Converting a paletted glyph to
-    "L" first would resolve index 0 to its palette colour -- which is a visible
-    magenta here -- and every cell would then measure as full-width ink.
+
+def ink_bbox(img: "Image.Image",
+             ink: frozenset[int] = INK_INDICES) -> tuple[int, int, int, int] | None:
+    """Bounding box of the glyph's ink.
+
+    Measured on palette *indices*, deliberately: converting to "L" first would
+    resolve indices to colours, and a non-black background would then measure
+    as full-cell ink.
+
+    Only ink and shadow count. Index 3 -- the white box the real sheets draw
+    behind every glyph, including the space -- is background, not ink, so
+    including it would make every cell look occupied.
     """
     _require_pil()
     idx = img.convert("P")
-    return Image.frombytes("L", idx.size, idx.tobytes()).getbbox()
+    mask = bytes(0xFF if v in ink else 0 for v in idx.tobytes())
+    return Image.frombytes("L", idx.size, mask).getbbox()
 
 
-def is_blank(img: "Image.Image") -> bool:
-    return ink_bbox(img) is None
+def is_blank(img: "Image.Image", ink: frozenset[int] = INK_INDICES) -> bool:
+    return ink_bbox(img, ink) is None
+
+
+def to_sheet_cell(
+    glyph: "Image.Image",
+    width: int,
+    spec: FontSpec = FontSpec(),
+    box_height: int = BOX_HEIGHT,
+) -> "Image.Image":
+    """Rewrite a rendered glyph into the decomp sheet's index convention.
+
+    Rendering produces 0/1/2 with 0 as background. The sheets instead expect
+    the glyph's advance box to be filled with index 3 and only the area outside
+    it left as index 0, which is what the engine's palette expects. Writing
+    index 0 where index 3 belongs loses the glyph's background and can show
+    through as transparent in-game.
+    """
+    _require_pil()
+    out = blank(spec)
+    src, dst = glyph.convert("P").load(), out.load()
+    w = min(width, spec.cell_w)
+    h = min(box_height, spec.cell_h)
+    for y in range(spec.cell_h):
+        for x in range(spec.cell_w):
+            v = src[x, y]
+            if v in INK_INDICES:
+                dst[x, y] = v
+            elif x < w and y < h:
+                dst[x, y] = BOX
+            else:
+                dst[x, y] = BG
+    return out
 
 
 def glyph_width(img: "Image.Image", spec: FontSpec = FontSpec()) -> int:
@@ -275,7 +320,10 @@ def preview(text_bytes: bytes, glyphs: dict[int, "Image.Image"],
         b = text_bytes[i]
         if b == cm.EOS:
             break
-        if b in (cm.SPECIAL, cm.PLACEHOLDER):
+        if b == cm.SPECIAL and i + 1 < len(text_bytes):
+            i += 1 + cm.ext_ctrl_code_length(text_bytes[i + 1])
+            continue
+        if b == cm.PLACEHOLDER:
             i += 2
             continue
         if b in cm.CONTROL_BYTES:

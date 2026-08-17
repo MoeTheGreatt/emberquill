@@ -204,25 +204,135 @@ def cmd_preview(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_decomp(args: argparse.Namespace) -> int:
+    from . import decomp, fontgen
+
+    alloc = _load_alloc(args.map)
+    prof = profiles.get(args.profile)
+    spec = prof.font
+    order = [g for g, _ in sorted(alloc.glyph_to_byte.items(), key=lambda kv: kv[1])]
+
+    sheets = decomp.find_sheets(args.repo)
+    if not sheets:
+        print(f"no Latin font sheets under {args.repo}/graphics/fonts", file=sys.stderr)
+        return 1
+
+    table = _table(args)
+    targets = [n for n in args.sheets.split(",") if n.strip()] if args.sheets else list(sheets)
+
+    for name in targets:
+        path = sheets.get(name)
+        if path is None:
+            print(f"  {name}: not found, skipped", file=sys.stderr)
+            continue
+        sheet = decomp.load_sheet(path, spec)
+
+        # Geometry differs per sheet, so detect it rather than trust the profile.
+        try:
+            sheet.spec = decomp.detect_spec(sheet.image, table, spec)
+        except ValueError as exc:
+            print(f"  {name}: {exc}", file=sys.stderr)
+            continue
+        if (sheet.spec.cell_w, sheet.spec.cell_h) != (spec.cell_w, spec.cell_h):
+            print(f"  {name}: {sheet.spec.cell_w}x{sheet.spec.cell_h} cells "
+                  f"(profile says {spec.cell_w}x{spec.cell_h}) - using detected")
+
+        problems = decomp.verify_sheet_indexing(sheet, table)
+        if problems:
+            print(f"  {name}: layout check failed -- {'; '.join(problems)}",
+                  file=sys.stderr)
+            if not args.force:
+                print("  refusing to write; pass --force to override", file=sys.stderr)
+                continue
+
+        # Glyphs must be rasterised at this sheet's cell size.
+        rendered = (fontgen.load_sheet(args.edit, order, sheet.spec) if args.edit
+                    else fontgen.render(order, args.font, sheet.spec))
+
+        written, skipped = decomp.install(sheet, rendered, alloc.glyph_to_byte)
+        if args.dry_run:
+            print(f"  {name}: would write {written} glyph(s)"
+                  + (f", {len(skipped)} outside the sheet" if skipped else ""))
+            continue
+        decomp.save(sheet)
+        print(f"  {name}: wrote {written} glyph(s) into {path}"
+              + (f", {len(skipped)} outside the sheet" if skipped else ""))
+
+        if args.widths:
+            array = decomp.WIDTH_ARRAYS.get(name)
+            src = Path(args.repo) / "src" / "text.c"
+            if array and src.exists():
+                widths = fontgen.width_table(rendered, alloc.glyph_to_byte, spec)
+                patched = decomp.patch_width_table(src, array, widths)
+                src.write_text(patched, encoding="utf-8")
+                print(f"  {name}: updated {array} in {src}")
+    return 0
+
+
 def cmd_verify(args: argparse.Namespace) -> int:
     path = Path(args.charmap)
     real = (cm.load_pokeemerald_charmap(str(path)) if path.suffix.lower() == ".txt"
             else cm.load_tbl(str(path)))
     builtin = cm.Charmap()
 
-    diffs = 0
+    # Two kinds of real danger, and one harmless difference, so they are
+    # reported separately.
+    #
+    #  * a byte that means a different character in each table
+    #  * a character that lives at a different byte in each table -- just as
+    #    dangerous, because encoding it would emit the wrong byte, and invisible
+    #    to a byte-by-byte comparison
+    #
+    # Anything else is only a coverage difference.
+    reassigned, relocated, only_real, only_builtin, agree = [], [], [], [], 0
     for byte in sorted(set(real.to_char) | set(builtin.to_char)):
         a, b = builtin.to_char.get(byte), real.to_char.get(byte)
-        if a != b:
-            diffs += 1
-            print(f"  0x{byte:02X}  built-in {a!r:>8}  actual {b!r}")
+        if a == b:
+            agree += 1
+        elif a is None:
+            only_real.append((byte, b))
+        elif b is None:
+            only_builtin.append((byte, a))
+        else:
+            reassigned.append((byte, a, b))
+
+    for char, mine in sorted(builtin.to_byte.items()):
+        theirs = real.to_byte.get(char)
+        if theirs is not None and theirs != mine:
+            relocated.append((char, mine, theirs))
+
+    conflicts = len(reassigned) + len(relocated)
+
+    if reassigned:
+        print(f"CONFLICTS - byte reassigned ({len(reassigned)}):")
+        for byte, a, b in reassigned:
+            print(f"  0x{byte:02X}  built-in {a!r:>6}  actual {b!r}")
+    if relocated:
+        print(f"CONFLICTS - character moved ({len(relocated)}) - encoding these "
+              f"would emit the wrong byte:")
+        for char, mine, theirs in relocated:
+            print(f"  {char!r:>6}  built-in 0x{mine:02X}  actual 0x{theirs:02X}")
+    if only_builtin:
+        print(f"\nIn the built-in table but not {path.name} ({len(only_builtin)}) "
+              f"- suspect:")
+        for byte, a in only_builtin:
+            print(f"  0x{byte:02X}  {a!r}")
+    if only_real:
+        print(f"\nOnly in {path.name} ({len(only_real)}) - glyphs the built-in "
+              f"table does not name, free to reuse if your script has no need "
+              f"of them:")
+        print("  " + " ".join(f"{byte:02X}={c}" for byte, c in only_real[:48])
+              + (" ..." if len(only_real) > 48 else ""))
 
     print()
-    if diffs:
-        print(f"{diffs} difference(s). Pass --charmap {path} to every command, "
-              f"or treat the actual table as authoritative.")
+    print(f"{agree} entr{'y' if agree == 1 else 'ies'} agree, "
+          f"{conflicts} conflict(s)")
+    if not conflicts:
+        print("No conflicts: the built-in table is safe for this target, though "
+              f"passing --charmap {path.name} is still better.")
     else:
-        print(f"built-in table matches {path} for all {len(real.to_char)} entries")
+        print(f"Pass --charmap {path} to every command and treat the actual "
+              f"table as authoritative.")
 
     used = set(real.to_char) | cm.CONTROL_BYTES
     free = [b for b in range(0x100) if b not in used]
@@ -315,6 +425,18 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("-o", "--out", default="preview.png")
     p.add_argument("--scale", type=int, default=3)
     p.set_defaults(fn=cmd_preview)
+
+    p = sub.add_parser("decomp", help="install Arabic glyphs into a decomp's font sheets")
+    p.add_argument("repo", help="path to a pokefirered/pokeemerald checkout")
+    p.add_argument("-m", "--map", required=True)
+    p.add_argument("-f", "--font", help="TTF to rasterise")
+    p.add_argument("--edit", help="use a hand-edited sheet instead")
+    p.add_argument("--sheets", help="comma-separated subset, e.g. latin_normal")
+    p.add_argument("--widths", action="store_true", help="also patch src/text.c widths")
+    p.add_argument("--dry-run", action="store_true")
+    p.add_argument("--force", action="store_true",
+                   help="write even if the sheet layout check fails")
+    p.set_defaults(fn=cmd_decomp)
 
     p = sub.add_parser("verify", help="diff a real charmap against the built-in table")
     p.add_argument("charmap")

@@ -27,22 +27,54 @@ class Profile:
     notes: str = ""
 
 
+# --- FireRed, verified against the ROM and pokefirered ---------------------
+#
+# Everything below was checked rather than assumed, against BPRE rev 1
+# (sha1 dd5945db9b930750cb39d00c84da8571feebf417, the base ROM pokefirered
+# expects) and against the decomp itself:
+#
+#   * 0x01-0x77 is accented Latin and symbols in graphics/fonts/latin_normal.png
+#     (À Á Â Ç È É ... œ ù ú û ñ, plus Lv, ♪, PK, PM and friends). Scanning every
+#     string in the ROM found no English text using any of it, with two
+#     exceptions below, so the region is reusable.
+#   * 0x1B is 'é' -- the é in POKéMON, in 1234 strings. Confirmed three ways:
+#     charmap.txt line 26, cell (1,11) of the font sheet, and the ROM's own text.
+#   * 0x2D appears in three real strings ("R & D Room", "Skip ... Chomp!").
+#     Cheap to leave alone, so it is excluded too.
+#   * Bytes seen after 0xFC (0x02..0x09 and similar) are control-code arguments,
+#     never font lookups, so they do not cost a glyph slot.
+FIRERED_FREE = ((0x01, 0x1A), (0x1C, 0x2C), (0x2E, 0x77))
+
+FIRERED_PLACEHOLDERS = {
+    "PLAYER": 0x01, "STR_VAR_1": 0x02, "STR_VAR_2": 0x03, "STR_VAR_3": 0x04,
+    "KUN": 0x05, "RIVAL": 0x06,
+}
+
 PROFILES: dict[str, Profile] = {
     "emerald": Profile(
         key="emerald",
         name="Pokemon Emerald (U)",
         game_code="BPEE",
         decomp="pokeemerald",
-        notes="Best-supported decomp. Strongly the easiest target: edit the "
-              "string sources and rebuild rather than patching bytes.",
+        notes="Defaults are UNVERIFIED -- run `verify` against pokeemerald's "
+              "charmap.txt before building. Edit string sources and rebuild "
+              "rather than patching bytes.",
     ),
     "firered": Profile(
         key="firered",
-        name="Pokemon FireRed (U)",
+        name="Pokemon FireRed (U/E) rev 1",
         game_code="BPRE",
+        free_ranges=FIRERED_FREE,
+        placeholders=FIRERED_PLACEHOLDERS,
+        # 16x16 glyph cells, 16 per row, indexed directly by byte value --
+        # measured from latin_normal.png (256x512). The engine draws 14 rows
+        # of it (gGlyphInfo.height = 14 in src/text.c).
+        font=FontSpec(cell_w=16, cell_h=16, columns=16, size=15, baseline=13),
         decomp="pokefirered",
-        notes="Placeholder IDs differ from Emerald's -- override placeholders "
-              "from the decomp's charmap before encoding.",
+        notes="Verified against BPRE rev 1 and pokefirered. 117 free glyph "
+              "slots in 0x01-0x77 with Latin kept, which fits full Arabic. "
+              "Note the font is near-monospace: most glyphs are 6px, so 'm' "
+              "and 'w' are no wider than 'A'.",
     ),
     "ruby": Profile(
         key="ruby",

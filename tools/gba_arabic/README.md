@@ -67,6 +67,10 @@ python -m tools.gba_arabic encode script.pks -m glyphmap.json -o text.json
 # 7. Check a line renders correctly without booting an emulator.
 python -m tools.gba_arabic preview "مرحبا!" -m glyphmap.json \
     -f NotoNaskhArabic.ttf -o preview.png
+
+# 8. Install into a decomp checkout (see "Working in a decomp" below).
+python -m tools.gba_arabic --profile firered decomp pokefirered \
+    -m glyphmap.json -f NotoNaskhArabic.ttf --widths
 ```
 
 `preview` is the highest-value step in that list. If the PNG reads correctly
@@ -100,9 +104,9 @@ This is the binding constraint on the project. Run `scan` early.
 
 Fully shaped Arabic is ~130 glyphs: 22 dual-joining letters × 4 forms, 12
 right-joining × 2, hamza forms, teh marbuta, alef maksura, the four mandatory
-lam-alef ligatures, and Arabic punctuation. The default free pool
-(`0x01–0x77`, the accented-Latin and symbol region) holds ~119 usable slots
-with the Latin alphabet kept.
+lam-alef ligatures, and Arabic punctuation. On FireRed the free pool
+(`0x01–0x77`, the accented-Latin and symbol region, less `0x1B` and `0x2D`)
+holds **117 verified slots** with the Latin alphabet kept.
 
 Levers, cheapest first:
 
@@ -118,37 +122,86 @@ Levers, cheapest first:
 
 Overflow is reported, never silently truncated.
 
+## FireRed: verified
+
+The `firered` profile is not guesswork. It was checked against **BPRE rev 1**
+(sha1 `dd5945db9b930750cb39d00c84da8571feebf417`, the base ROM `pokefirered`
+expects) and against the decomp itself:
+
+| Fact | How it was established |
+|---|---|
+| Built-in charmap is correct | `verify` against `pokefirered/charmap.txt`: 80 shared entries, **0 conflicts** |
+| `0x01–0x77` is accented Latin, unused by English | Every string in the ROM decoded and searched; the font sheet inspected |
+| `0x1B` is `é` (POKéMON, 1234 strings) | `charmap.txt` line 26, cell (1,11) of the sheet, and the ROM's own text |
+| `0x2D` is `&` ("R & D Room") | Same three ways; excluded from the free pool |
+| **117 free glyph slots**, Latin kept | `0x01–0x77` minus `0x1B` and `0x2D` |
+| Placeholders `PLAYER=FD 01` … `RIVAL=FD 06` | `charmap.txt` — *identical* to Emerald, contrary to folklore |
+| Sheet is 16×16 cells, indexed by byte | `latin_normal.png`, 256×512; cell 0xBB really is `A` |
+| Control-code arg lengths | `GetExtCtrlCodeLength` in `src/string_util.c` |
+
+Full Arabic needs ~130 glyphs and a real translation needs fewer, so **Arabic
+fits in FireRed with the entire Latin alphabet preserved**. The bundled
+`examples/firered_intro.pks` uses 67 slots for 12 strings, leaving 50 spare.
+
+Two caveats found by doing it:
+
+- Bytes seen *after* `0xFC` (`0x02`–`0x09` and friends) are control-code
+  arguments, never font lookups. They cost no glyph slot.
+- The font is near-monospace — almost every glyph is 6px, so `m` and `w` are no
+  wider than `A`. Don't use "m is wide" as a heuristic on this target.
+
 ## Verify before you build
 
-The built-in charmap covers the international (English) Gen 3 table, and the
-per-game defaults in `profiles.py` — free byte ranges, placeholder IDs, font
-cell size — are **defaults, not verified constants**. Hacks move glyphs,
-repoint text and change font sheets. FireRed's placeholder IDs differ from
-Emerald's.
-
-So, before trusting a build:
+For any other target, treat the built-in charmap and the `profiles.py` defaults
+as **defaults, not verified constants**. Hacks move glyphs, repoint text and
+change font sheets.
 
 ```bash
 python -m tools.gba_arabic verify path/to/charmap.txt   # decomp charmap
 python -m tools.gba_arabic verify path/to/table.tbl     # or a .tbl
 ```
 
-`verify` diffs the real table against the built-in one and lists bytes with no
-glyph assigned — your candidates for `--free-ranges`. Pass `--charmap` to every
-command to use the real table instead of the built-in one.
+`verify` separates the two dangerous cases — a byte that means a different
+character, and a character that *moved to a different byte* (invisible to a
+byte-by-byte diff, but it would make you emit the wrong byte) — from harmless
+coverage differences. It also lists bytes with no glyph, your candidates for
+`--free-ranges`. Pass `--charmap` to every command to use the real table.
 
-## Which target to pick
+## Working in a decomp
 
-Strongly prefer a **decomp** (`pokeemerald`, `pokefirered`, `pokeruby`) over
-patching a ROM binary. In a decomp you edit string sources and rebuild, which
-means no repointing, no fixed-length text regions, and the charmap and font
-sheets are files you can read rather than offsets you have to guess. The font
-sheet is a PNG the repo's own graphics converter turns into tiles — which is
-why `font` emits PNG as its primary output.
+Strongly prefer a **decomp** (`pokefirered`, `pokeemerald`, `pokeruby`) over
+patching a ROM binary: you edit string sources and rebuild, so there is no
+repointing and no fixed-length text region, and the charmap, font sheets and
+width tables are files you can read rather than offsets you have to guess.
 
-Patching a raw ROM works, but Gen 3 text lives in fixed regions: an Arabic
+```bash
+git clone https://github.com/pret/pokefirered
+python -m tools.gba_arabic --profile firered --charmap pokefirered/charmap.txt \
+    alloc script.pks -o glyphmap.json
+python -m tools.gba_arabic --profile firered --charmap pokefirered/charmap.txt \
+    decomp pokefirered -m glyphmap.json -f font.ttf --widths
+```
+
+`decomp` installs the Arabic glyphs into every Latin font sheet and patches the
+matching width array in `src/text.c`. It:
+
+- **auto-detects cell geometry per sheet** and validates it against the charmap.
+  This matters: `latin_normal.png` uses 16×16 cells but `latin_small.png` uses
+  8×16, and writing at the wrong stride corrupts the sheet. It refuses to write
+  if the check fails, rather than guessing.
+- reproduces the sheets' own palette convention — index 3 fills the glyph's
+  advance box, 1 is ink, 2 is shadow, 0 is outside. Writing index 0 where 3
+  belongs loses the glyph's background.
+- touches only the cells the allocator assigned. On the bundled example that is
+  67 cells changed out of 512, with `é`, `&`, A–Z, a–z, digits and space
+  byte-identical afterwards.
+
+Use `--dry-run` first, and `--sheets latin_normal` to limit the blast radius.
+
+Patching a raw ROM also works, but Gen 3 text lives in fixed regions: an Arabic
 string that encodes longer than the English one it replaces needs the pointer
-table updated too. That part is not implemented here.
+table updated too. **That part is not implemented here** — it is the main reason
+to prefer the decomp.
 
 ## Right alignment
 

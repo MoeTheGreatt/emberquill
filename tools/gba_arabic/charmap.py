@@ -26,6 +26,24 @@ SPACE = 0x00
 
 CONTROL_BYTES = frozenset({EOS, NEWLINE, SCROLL, PARAGRAPH, PLACEHOLDER, SPECIAL})
 
+# Bytes consumed by an extended control code, INCLUDING its own code byte but
+# not the leading 0xFC. Indexed by the code byte. Transcribed from
+# GetExtCtrlCodeLength in pokefirered's src/string_util.c, so these are the
+# engine's own numbers rather than an assumption: 0xFC 0x04
+# (COLOR_HIGHLIGHT_SHADOW) really does take three arguments, and 0xFC 0x0B
+# (PLAY_BGM) and 0xFC 0x10 (PLAY_SE) each take two.
+EXT_CTRL_CODE_LENGTHS: tuple[int, ...] = (
+    1, 2, 2, 2, 4, 2, 2, 1, 2, 1, 1, 3, 2, 2, 2, 1,
+    3, 2, 2, 2, 2, 1, 1, 1, 1,
+)
+
+
+def ext_ctrl_code_length(code: int) -> int:
+    """Bytes after 0xFC that belong to control ``code`` (code byte included)."""
+    if 0 <= code < len(EXT_CTRL_CODE_LENGTHS):
+        return EXT_CTRL_CODE_LENGTHS[code]
+    return 1        # unknown code: consume the code byte only
+
 # Byte -> character for the international charmap.
 _DEFAULT: dict[int, str] = {SPACE: " "}
 for _i, _c in enumerate("0123456789"):
@@ -177,8 +195,10 @@ class Charmap:
                 i += 2
                 continue
             if b == SPECIAL and i + 1 < len(data):
-                out.append(f"{{FC {data[i + 1]:02X}}}")
-                i += 2
+                span = ext_ctrl_code_length(data[i + 1])
+                seq = data[i + 1:i + 1 + span]
+                out.append("{FC " + " ".join(f"{v:02X}" for v in seq) + "}")
+                i += 1 + span
                 continue
             out.append({NEWLINE: "\\n", SCROLL: "\\l", PARAGRAPH: "\\p"}.get(
                 b, self.to_char.get(b, f"[{b:02X}]")))
@@ -205,11 +225,18 @@ def load_tbl(path: str) -> Charmap:
     return Charmap(to_char=table, verified=True)
 
 
-def load_pokeemerald_charmap(path: str) -> Charmap:
+def load_decomp_charmap(path: str, *, prefer: str = "first") -> Charmap:
     """Load a decomp ``charmap.txt`` (``'A' = BB`` / ``SYMBOL = XX`` lines).
 
     Reading the table straight out of the decomp is the only way to be certain
     it matches what you are building.
+
+    A Gen 3 ``charmap.txt`` defines the *same byte twice*: once for the
+    international font and again, further down, for the Japanese one. In
+    pokefirered, ``'é' = 1B`` on line 26 and ``'ひ' = 1B`` on line 185. Which
+    one is real depends on which font sheet the ROM carries, so the default
+    ``prefer="first"`` keeps the international mapping -- correct for an
+    English base ROM. Pass ``prefer="last"`` for a Japanese one.
     """
     table: dict[int, str] = {}
     pat = re.compile(r"^\s*(?:'(?P<q>.)'|(?P<n>[A-Za-z0-9_]+))\s*=\s*(?P<bytes>[0-9A-Fa-f ]+)")
@@ -224,6 +251,14 @@ def load_pokeemerald_charmap(path: str) -> Charmap:
                 continue        # multi-byte macro, not a plain glyph
             byte = int(parts[0], 16)
             char = m.group("q")
-            if char:
+            if not char:
+                continue
+            if prefer == "first":
+                table.setdefault(byte, char)
+            else:
                 table[byte] = char
     return Charmap(to_char=table, verified=True)
+
+
+# Kept for callers written against the old name.
+load_pokeemerald_charmap = load_decomp_charmap

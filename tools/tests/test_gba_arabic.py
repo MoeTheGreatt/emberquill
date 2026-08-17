@@ -18,6 +18,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from tools.gba_arabic import bidi, charmap as cm, glyphs as gl, pipeline, scriptio, shaping
+from tools.gba_arabic import profiles as profiles_mod
 
 
 # -- shaping ---------------------------------------------------------------
@@ -381,11 +382,21 @@ def test_cli_encode_without_map_fails_cleanly(tmp_path):
     assert r.returncode == 1 and "glyph slot" in r.stderr
 
 
-def test_cli_verify_reports_differences(tmp_path):
+def test_cli_verify_reports_a_conflict(tmp_path):
     p = tmp_path / "charmap.txt"
     p.write_text("'A' = 42\n", encoding="utf-8")
     r = _run("verify", str(p))
-    assert r.returncode == 0 and "difference" in r.stdout
+    # 'A' is 0xBB in the built-in table; a real conflict must be called one,
+    # not lumped in with glyphs the built-in table merely does not name.
+    assert r.returncode == 0
+    assert "CONFLICT" in r.stdout and "1 conflict" in r.stdout
+
+
+def test_cli_verify_reports_no_conflict_when_only_coverage_differs(tmp_path):
+    p = tmp_path / "charmap.txt"
+    p.write_text("'A' = BB\n'é' = 1B\n", encoding="utf-8")
+    r = _run("verify", str(p))
+    assert r.returncode == 0 and "0 conflict(s)" in r.stdout
 
 
 # -- font generation -------------------------------------------------------
@@ -463,6 +474,203 @@ def test_width_table_is_keyed_by_byte(font_path):
     widths = fontgen.width_table(glyphs, alloc.glyph_to_byte, fontgen.FontSpec())
     assert set(widths) == set(alloc.glyph_to_byte.values())
     assert all(0 < w <= 16 for w in widths.values())
+
+
+@pil
+def test_ink_bbox_ignores_the_background_box():
+    # Index 3 is the white box the real sheets draw behind every glyph,
+    # including the space. Counting it as ink makes every cell look occupied.
+    spec = fontgen.FontSpec()
+    img = fontgen.blank(spec)
+    px = img.load()
+    for y in range(fontgen.BOX_HEIGHT):
+        for x in range(6):
+            px[x, y] = fontgen.BOX
+    assert fontgen.is_blank(img)
+    px[2, 3] = fontgen.INK
+    assert not fontgen.is_blank(img)
+
+
+@pil
+def test_to_sheet_cell_reproduces_the_decomp_convention():
+    spec = fontgen.FontSpec()
+    src = fontgen.blank(spec)
+    src.load()[1, 2] = fontgen.INK
+    out = fontgen.to_sheet_cell(src, width=6, spec=spec)
+    px = out.load()
+    assert px[1, 2] == fontgen.INK                       # ink survives
+    assert px[0, 0] == fontgen.BOX                       # inside advance box
+    assert px[5, fontgen.BOX_HEIGHT - 1] == fontgen.BOX  # last box pixel
+    assert px[6, 0] == fontgen.BG                        # right of the advance
+    assert px[0, fontgen.BOX_HEIGHT] == fontgen.BG       # below the box
+
+
+# -- control code lengths --------------------------------------------------
+
+def test_ext_ctrl_code_lengths_match_the_engine():
+    # From GetExtCtrlCodeLength in pokefirered's src/string_util.c.
+    assert cm.ext_ctrl_code_length(0x01) == 2   # COLOR: code + 1 arg
+    assert cm.ext_ctrl_code_length(0x04) == 4   # COLOR_HIGHLIGHT_SHADOW: 3 args
+    assert cm.ext_ctrl_code_length(0x09) == 1   # PAUSE_UNTIL_PRESS: no args
+    assert cm.ext_ctrl_code_length(0x0B) == 3   # PLAY_BGM: 2 args
+    assert cm.ext_ctrl_code_length(0xEE) == 1   # unknown: consume code only
+
+
+def test_decode_consumes_full_control_sequences():
+    table = cm.Charmap()
+    data = bytes([cm.SPECIAL, 0x04, 0x01, 0x02, 0x03]) + bytes([table.to_byte["A"], cm.EOS])
+    # A naive 2-byte assumption would emit the three colour arguments as text.
+    assert table.decode(data) == "{FC 04 01 02 03}A"
+
+
+def test_measure_skips_variable_length_control_codes():
+    widths = {0xBB: 6}
+    data = bytes([cm.SPECIAL, 0x04, 0x01, 0x02, 0x03, 0xBB, cm.EOS])
+    assert pipeline.measure(data, widths, default=0) == 6
+
+
+# -- decomp charmap precedence --------------------------------------------
+
+def test_decomp_charmap_prefers_the_international_mapping(tmp_path):
+    # A Gen 3 charmap.txt defines the same byte twice: international first,
+    # Japanese later. For an English base ROM the first one is the real one.
+    p = tmp_path / "charmap.txt"
+    p.write_text("'e' = 1B\n'A' = BB\n'x' = 1B\n", encoding="utf-8")
+    assert cm.load_decomp_charmap(str(p)).to_char[0x1B] == "e"
+    assert cm.load_decomp_charmap(str(p), prefer="last").to_char[0x1B] == "x"
+
+
+# -- decomp integration ----------------------------------------------------
+
+from tools.gba_arabic import decomp     # noqa: E402
+
+
+def _fake_sheet(tmp_path, cell_w=16, cell_h=16, cols=16, rows=16, name="latin_normal.png"):
+    """A synthetic sheet following the real convention: ink for letters and
+    digits, a bare background box for the space."""
+    from PIL import Image
+    table = cm.Charmap()
+    img = Image.new("P", (cols * cell_w, rows * cell_h), fontgen.BG)
+    img.putpalette([144, 200, 255, 56, 56, 56, 216, 216, 216, 255, 255, 255] + [0] * 756)
+    px = img.load()
+    cells = cols * rows
+    for ch in "AZaz09":
+        b = table.to_byte[ch]
+        if b >= cells:
+            continue                    # sheet too small for this probe
+        cx, cy = (b % cols) * cell_w, (b // cols) * cell_h
+        px[cx + 1, cy + 1] = fontgen.INK
+    b = table.to_byte[" "]
+    if b < cells:
+        cx, cy = (b % cols) * cell_w, (b // cols) * cell_h
+        for y in range(min(fontgen.BOX_HEIGHT, cell_h)):
+            px[cx, cy + y] = fontgen.BOX
+    d = tmp_path / "graphics" / "fonts"
+    d.mkdir(parents=True, exist_ok=True)
+    img.save(d / name)
+    return d / name
+
+
+@pil
+def test_detect_spec_finds_16x16(tmp_path):
+    from PIL import Image
+    p = _fake_sheet(tmp_path)
+    spec = decomp.detect_spec(Image.open(p).convert("P"), cm.Charmap())
+    assert (spec.cell_w, spec.cell_h) == (16, 16)
+
+
+@pil
+def test_detect_spec_finds_8x16(tmp_path):
+    from PIL import Image
+    p = _fake_sheet(tmp_path, cell_w=8, cols=32, rows=16, name="latin_small.png")
+    spec = decomp.detect_spec(Image.open(p).convert("P"), cm.Charmap())
+    assert (spec.cell_w, spec.cell_h) == (8, 16)
+
+
+@pil
+def test_detect_spec_rejects_an_unrecognisable_sheet(tmp_path):
+    from PIL import Image
+    img = Image.new("P", (100, 37), 0)
+    with pytest.raises(ValueError):
+        decomp.detect_spec(img, cm.Charmap())
+
+
+@pil
+def test_install_touches_only_allocated_cells(tmp_path, font_path):
+    p = _fake_sheet(tmp_path)
+    original = decomp.load_sheet(p)
+    sheet = decomp.load_sheet(p)
+    alloc = gl.allocate(["مرحبا"], free_ranges=((0x01, 0x0F),))
+    order = list(alloc.glyph_to_byte)
+    glyphs = fontgen.render(order, font_path, sheet.spec)
+
+    written, skipped = decomp.install(sheet, glyphs, alloc.glyph_to_byte)
+    assert written == len(order) and not skipped
+
+    changed = {
+        i for i in range(original.cells)
+        if sheet.cell(i).tobytes() != original.cell(i).tobytes()
+    }
+    assert changed == set(alloc.glyph_to_byte.values())
+
+
+@pil
+def test_install_reports_bytes_outside_the_sheet(tmp_path, font_path):
+    p = _fake_sheet(tmp_path, rows=1)          # only 16 cells
+    sheet = decomp.load_sheet(p, fontgen.FontSpec())
+    glyphs = fontgen.render([0xFE8D], font_path, sheet.spec)
+    written, skipped = decomp.install(sheet, glyphs, {0xFE8D: 0xC0})
+    assert written == 0 and skipped == [0xC0]
+
+
+@pil
+def test_verify_sheet_indexing_flags_a_shifted_layout(tmp_path):
+    p = _fake_sheet(tmp_path)
+    sheet = decomp.load_sheet(p, fontgen.FontSpec(cell_w=8, columns=32))
+    assert decomp.verify_sheet_indexing(sheet, cm.Charmap())
+
+
+@pil
+def test_blank_cells_excludes_glyphs(tmp_path):
+    p = _fake_sheet(tmp_path)
+    sheet = decomp.load_sheet(p)
+    blanks = set(decomp.blank_cells(sheet))
+    table = cm.Charmap()
+    assert table.to_byte["A"] not in blanks
+    assert table.to_byte[" "] in blanks        # a bare box counts as blank
+
+
+def test_read_and_patch_width_table(tmp_path):
+    src = tmp_path / "text.c"
+    src.write_text(
+        "static const u8 sFontNormalLatinGlyphWidths[] =\n{\n"
+        "     6,  6,  6,  6,\n     6,  6,  6,  6,\n};\n"
+        "static const u8 other[] = { 1, 2 };\n",
+        encoding="utf-8",
+    )
+    assert decomp.read_width_table(src, "sFontNormalLatinGlyphWidths") == [6] * 8
+    out = decomp.patch_width_table(src, "sFontNormalLatinGlyphWidths", {0: 3, 7: 9})
+    src.write_text(out, encoding="utf-8")
+    assert decomp.read_width_table(src, "sFontNormalLatinGlyphWidths") == [3, 6, 6, 6, 6, 6, 6, 9]
+    assert decomp.read_width_table(src, "other") == [1, 2]      # untouched
+
+
+def test_patch_width_table_rejects_a_missing_array(tmp_path):
+    src = tmp_path / "text.c"
+    src.write_text("int x;\n", encoding="utf-8")
+    with pytest.raises(KeyError):
+        decomp.patch_width_table(src, "sFontNormalLatinGlyphWidths", {0: 1})
+
+
+def test_firered_profile_excludes_the_glyphs_that_are_in_use():
+    prof = profiles_mod.get("firered")
+    free = {b for lo, hi in prof.free_ranges for b in range(lo, hi + 1)}
+    assert 0x1B not in free, "0x1B is 'é', used in 1234 ROM strings"
+    assert 0x2D not in free, "0x2D is '&', used in real strings"
+    assert 0x01 in free and 0x77 in free
+    assert len(free) == 117
+    assert prof.placeholders["PLAYER"] == 0x01
+    assert "VERSION" not in prof.placeholders    # FireRed has no VERSION
 
 
 @pil
